@@ -387,6 +387,7 @@ drhoc.o : ../../Modules/constants.o
 drhoc.o : ../../Modules/kind.o
 dvloc_of_g.o : ../../Modules/constants.o
 dvloc_of_g.o : ../../Modules/kind.o
+dvloc_of_g.o : esm.o
 dynamics_module.o : ../../Modules/basic_algebra_routines.o
 dynamics_module.o : ../../Modules/cell_base.o
 dynamics_module.o : ../../Modules/constants.o

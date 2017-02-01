@@ -18,6 +18,8 @@ $ECHO "$EXAMPLE_DIR : starting"
 $ECHO
 $ECHO "This example shows how to use ESM to calculate H2O and Al(001)"
 $ECHO "using the three available sets of boundary conditions."
+$ECHO "This example also shows how to use ESM to calculate stress of"
+$ECHO "graphene using the three available sets of boundary conditions."
 $ECHO
 
 # set the needed environment variables
@@ -25,7 +27,7 @@ $ECHO
 
 # required executables and pseudopotentials
 BIN_LIST="pw.x"
-PSEUDO_LIST="Al.pbe-n-van.UPF H.pbe-van_ak.UPF O.pbe-van_ak.UPF"
+PSEUDO_LIST="Al.pbe-n-van.UPF H.pbe-van_ak.UPF O.pbe-van_ak.UPF C.pz-van_ak.UPF"
 
 $ECHO
 $ECHO "  executables directory: $BIN_DIR"
@@ -64,6 +66,7 @@ for FILE in $PSEUDO_LIST ; do
     if test ! -r $PSEUDO_DIR/$FILE ; then
        $ECHO
        $ECHO "Downloading $FILE to $PSEUDO_DIR...\c"
+       echo $WGET $PSEUDO_DIR/$FILE $NETWORK_PSEUDO/$FILE
             $WGET $PSEUDO_DIR/$FILE $NETWORK_PSEUDO/$FILE 2> /dev/null
     fi
     if test $? != 0; then
@@ -80,6 +83,7 @@ PW_COMMAND="$PARA_PREFIX $BIN_DIR/pw.x $PARA_POSTFIX"
 $ECHO
 $ECHO "  running pw.x     as: $PW_COMMAND"
 $ECHO
+
 
 # scf calculation for H2O with no ESM
 cat > H2O_pbc.in << EOF
@@ -561,6 +565,143 @@ $PW_COMMAND < Al001_bc3_vm05.in > Al001_bc3_vm05.out
 check_failure $?
 $ECHO " done"
 mv $TMP_DIR/Al001_bc3_vm05.esm1 .
+
+
+# stress calculation for graphene with PBC (slab-slab-slab)
+cat > graphene.pbc.in << EOF
+&control
+ calculation = 'scf', prefix='graphene.pbc',
+ tstress = .true., tprnfor = .true.
+ pseudo_dir = '$PSEUDO_DIR/', outdir='$TMP_DIR/',
+ disk_io='low'
+ wf_collect=.true.
+/
+&system
+ ibrav = 4, celldm(1) = 5.000, celldm(3) = 2.00,
+ nat = 2, ntyp = 1,
+ ecutwfc = 36.0, ecutrho = 144.0,
+ occupations = 'smearing', smearing = 'm-p', degauss = 0.01,
+ assume_isolated = 'none',  esm_bc = 'pbc', esm_w = 5.0
+/
+&electrons
+ mixing_beta = 0.7, conv_thr = 1.0d-8
+/
+ATOMIC_SPECIES
+C  12.0107  C.pz-van_ak.UPF
+ATOMIC_POSITIONS {alat}
+C 0.00 0.00 0.00
+C 0.00 0.57735026918962576451 0.00
+K_POINTS {automatic}
+12 12 1 0 0 0
+EOF
+$ECHO "  running the stress calculation for graphen with PBC (slab-slab-slab)"
+$PW_COMMAND < graphene.pbc.in > graphene.pbc.out
+check_failure $?
+$ECHO " done"
+
+
+# stress calculation for graphene with ESM bc1 (vacuum-slab-vacuum)
+cat > graphene.bc1.in << EOF
+&control
+ calculation = 'scf', prefix='graphene.bc1',
+ tstress = .true., tprnfor = .true.
+ pseudo_dir = '$PSEUDO_DIR/', outdir='$TMP_DIR/',
+ disk_io='low'
+ wf_collect=.true.
+/
+&system
+ ibrav = 4, celldm(1) = 5.000, celldm(3) = 2.00,
+ nat = 2, ntyp = 1,
+ ecutwfc = 36.0, ecutrho = 144.0,
+ occupations = 'smearing', smearing = 'm-p', degauss = 0.01,
+ assume_isolated = 'esm',  esm_bc = 'bc1', esm_w = 5.0
+/
+&electrons
+ mixing_beta = 0.7, conv_thr = 1.0d-8
+/
+ATOMIC_SPECIES
+C  12.0107  C.pz-van_ak.UPF
+ATOMIC_POSITIONS {alat}
+C 0.00 0.00 0.00
+C 0.00 0.57735026918962576451 0.00
+K_POINTS {automatic}
+12 12 1 0 0 0
+EOF
+$ECHO "  running the stress calculation for graphen with BC1 (vacuum-slab-vacuum)"
+$PW_COMMAND < graphene.bc1.in > graphene.bc1.out
+check_failure $?
+$ECHO " done"
+mv $TMP_DIR/graphene.bc1.esm1 .
+
+
+
+# stress calculation for graphene with ESM bc2 (metal-slab-metal)
+cat > graphene.bc2.in << EOF
+&control
+ calculation = 'scf', prefix='graphene.bc2',
+ tstress = .true., tprnfor = .true.
+ pseudo_dir = '$PSEUDO_DIR/', outdir='$TMP_DIR/',
+ disk_io='low'
+ wf_collect=.true.
+/
+&system
+ ibrav = 4, celldm(1) = 5.000, celldm(3) = 2.00,
+ nat = 2, ntyp = 1,
+ ecutwfc = 36.0, ecutrho = 144.0,
+ occupations = 'smearing', smearing = 'm-p', degauss = 0.01,
+ assume_isolated = 'esm',  esm_bc = 'bc2', esm_w = 5.0
+/
+&electrons
+ mixing_beta = 0.7, conv_thr = 1.0d-8
+/
+ATOMIC_SPECIES
+C  12.0107  C.pz-van_ak.UPF
+ATOMIC_POSITIONS {alat}
+C 0.00 0.00 0.00
+C 0.00 0.57735026918962576451 0.00
+K_POINTS {automatic}
+12 12 1 0 0 0
+EOF
+$ECHO "  running the stress calculation for graphen with BC2 (metal-slab-metal)"
+$PW_COMMAND < graphene.bc2.in > graphene.bc2.out
+check_failure $?
+$ECHO " done"
+mv $TMP_DIR/graphene.bc2.esm1 .
+
+
+# stress calculation for graphene with ESM bc3 (vacuum-slab-metal)
+cat > graphene.bc3.in << EOF
+&control
+ calculation = 'scf', prefix='graphene.bc3',
+ tstress = .true., tprnfor = .true.
+ pseudo_dir = '$PSEUDO_DIR/', outdir='$TMP_DIR/',
+ disk_io='low'
+ wf_collect=.true.
+/
+&system
+ ibrav = 4, celldm(1) = 5.000, celldm(3) = 2.00,
+ nat = 2, ntyp = 1,
+ ecutwfc = 36.0, ecutrho = 144.0,
+ occupations = 'smearing', smearing = 'm-p', degauss = 0.01,
+ assume_isolated = 'esm',  esm_bc = 'bc3', esm_w = 5.0
+/
+&electrons
+ mixing_beta = 0.7, conv_thr = 1.0d-8
+/
+ATOMIC_SPECIES
+C  12.0107  C.pz-van_ak.UPF
+ATOMIC_POSITIONS {alat}
+C 0.00 0.00 0.00
+C 0.00 0.57735026918962576451 0.00
+K_POINTS {automatic}
+12 12 1 0 0 0
+EOF
+$ECHO "  running the stress calculation for graphen with BC3 (vacuum-slab-metal)"
+$PW_COMMAND < graphene.bc3.in > graphene.bc3.out
+check_failure $?
+$ECHO " done"
+mv $TMP_DIR/graphene.bc3.esm1 .
+
 
 # clean TMP_DIR
 $ECHO "  cleaning $TMP_DIR...\c"

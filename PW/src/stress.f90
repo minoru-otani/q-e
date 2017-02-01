@@ -31,7 +31,10 @@ subroutine stress ( sigma )
   USE xdm_module,    ONLY : stress_xdm
   USE exx,           ONLY : exx_stress
   USE funct,         ONLY : dft_is_hybrid
-  use tsvdw_module,  only : HtsvdW
+  USE tsvdw_module,  ONLY : HtsvdW
+  USE ener,          ONLY : etot ! DEBUG for ESM stress
+  USE esm,           ONLY : do_comp_esm, esm_bc ! for ESM stress
+  USE esm,           ONLY : esm_stres_har, esm_stres_ewa, esm_stres_loclong ! for ESM stress
   !
   IMPLICIT NONE
   !
@@ -41,6 +44,7 @@ subroutine stress ( sigma )
        sigmaxc (3, 3), sigmaxcc (3, 3), sigmaewa (3, 3), sigmanlc (3, 3), &
        sigmabare (3, 3), sigmah (3, 3), sigmael( 3, 3), sigmaion(3, 3), &
        sigmalon ( 3 , 3 ), sigmaxdm(3, 3), sigma_nonloc_dft (3 ,3), sigmaexx(3,3), sigma_ts(3,3)
+  real(DP) :: sigmaloclong(3,3)  ! for ESM stress
   integer :: l, m
   !
   WRITE( stdout, '(//5x,"Computing stress (Cartesian axis) and pressure"/)')
@@ -60,11 +64,21 @@ subroutine stress ( sigma )
   !
   !   contribution from local  potential
   !
-  call stres_loc (sigmaloc)
+  IF ( do_comp_esm .and. ( esm_bc .ne. 'pbc' ) ) THEN ! for ESM stress
+     call stres_loc(sigmaloc) ! short range part
+     call esm_stres_loclong( sigmaloclong, rho%of_g ) ! long range part
+     sigmaloc(:,:) = sigmaloc(:,:) + sigmaloclong(:,:)
+  ELSE
+     call stres_loc (sigmaloc)
+  END IF
   !
   !  hartree contribution
   !
-  call stres_har (sigmahar)
+  IF ( do_comp_esm .and. ( esm_bc .ne. 'pbc' ) ) THEN ! for ESM stress
+     call esm_stres_har( sigmahar, rho%of_g )
+  ELSE
+     call stres_har (sigmahar)
+  END IF
   !
   !  xc contribution (diagonal)
   !
@@ -85,8 +99,12 @@ subroutine stress ( sigma )
   !
   !  ewald contribution
   !
-  call stres_ewa (alat, nat, ntyp, ityp, zv, at, bg, tau, omega, g, &
-       gg, ngm, gstart, gamma_only, gcutm, sigmaewa)
+  IF ( do_comp_esm .and. ( esm_bc .ne. 'pbc' ) ) THEN ! for ESM stress
+     call esm_stres_ewa( sigmaewa )
+  ELSE
+     call stres_ewa (alat, nat, ntyp, ityp, zv, at, bg, tau, omega, g, &
+          gg, ngm, gstart, gamma_only, gcutm, sigmaewa)
+  END IF
   !
   !  semi-empirical dispersion contribution
   !
@@ -138,6 +156,9 @@ subroutine stress ( sigma )
                sigmanlc(:,:) + sigmah(:,:) + sigmael(:,:) +  &
                sigmaion(:,:) + sigmalon(:,:) + sigmaxdm(:,:) + &
                sigma_nonloc_dft(:,:) + sigma_ts(:,:)
+
+!!$  write(*,"(f6.3,f8.3,f12.6,f12.6,a)") alat, omega, etot, sigma(1,1)+sigma(2,2), " # alat, omega, etot, sigma11+sigma22"
+
   !
   IF (dft_is_hybrid()) THEN
      sigmaexx = exx_stress()

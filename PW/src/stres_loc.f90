@@ -20,7 +20,7 @@ subroutine stres_loc (sigmaloc)
   USE gvect,                ONLY : ngm, gstart, nl, g, ngl, gl, igtongl
   USE lsda_mod,             ONLY : nspin
   USE scf,                  ONLY : rho
-  USE vlocal,               ONLY : strf, vloc
+  USE vlocal,               ONLY : strf !!, vloc !! for ESM stress
   USE control_flags,        ONLY : gamma_only
   USE wavefunctions_module, ONLY : psic
   USE uspp_param,           ONLY : upf
@@ -32,6 +32,7 @@ subroutine stres_loc (sigmaloc)
   !
   real(DP) :: sigmaloc (3, 3)
   real(DP) , allocatable :: dvloc(:)
+  real(DP) , allocatable :: vlocg(:) ! for ESM stress
   real(DP) :: evloc, fact
   integer :: ng, nt, l, m, is
   ! counter on g vectors
@@ -40,6 +41,7 @@ subroutine stres_loc (sigmaloc)
   ! counter on spin components
 
   allocate(dvloc(ngl))
+  allocate(vlocg(ngl)) ! for ESM stress
   sigmaloc(:,:) = 0.d0
   psic(:)=(0.d0,0.d0)
   do is = 1, nspin_lsda
@@ -54,12 +56,23 @@ subroutine stres_loc (sigmaloc)
      fact = 1.d0
   end if
   evloc = 0.0d0
+
   do nt = 1, ntyp
-     if (gstart==2) evloc = evloc + &
-          psic (nl (1) ) * strf (1, nt) * vloc (igtongl (1), nt)
+     ! for ESM stress
+     call vloc_of_g (rgrid(nt)%mesh, msh (nt), rgrid(nt)%rab, rgrid(nt)%r, &
+          upf(nt)%vloc(:), upf(nt)%zp, tpiba2, ngl, gl, omega, vlocg(:) )
+
+     if (gstart==2) then
+!!$        evloc = evloc + &
+!!$             psic (nl (1) ) * strf (1, nt) * vloc (igtongl (1), nt)
+        evloc = evloc + &
+             psic (nl (1) ) * strf (1, nt) * vlocg(igtongl(1))
+     end if
      do ng = gstart, ngm
+!!$        evloc = evloc +  DBLE (CONJG(psic (nl (ng) ) ) * strf (ng, nt) ) &
+!!$             * vloc (igtongl (ng), nt) * fact
         evloc = evloc +  DBLE (CONJG(psic (nl (ng) ) ) * strf (ng, nt) ) &
-             * vloc (igtongl (ng), nt) * fact
+             * vlocg(igtongl(ng)) * fact
      enddo
   enddo
   !
@@ -110,6 +123,7 @@ subroutine stres_loc (sigmaloc)
   call mp_sum(  sigmaloc, intra_bgrp_comm )
   !
   deallocate(dvloc)
+  deallocate(vlocg) ! for ESM stress
   return
 end subroutine stres_loc
 
