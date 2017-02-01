@@ -391,6 +391,9 @@ MODULE input_parameters
         REAL(DP) :: starting_charge( nsx ) = 0.0_DP
           ! ONLY PW
 
+        REAL(DP) :: starting_charge( nsx ) = 0.0_DP
+          ! ONLY PW
+
         REAL(DP) :: starting_magnetization( nsx ) = 0.0_DP
           ! ONLY PW
 
