@@ -388,6 +388,9 @@ MODULE input_parameters
           ! pseudopotential files; 'none' means DFT is read from pseudos.
           ! Only used in PW - allowed values: any legal DFT value
 
+        REAL(DP) :: starting_charge( nsx ) = 0.0_DP
+          ! ONLY PW
+
         REAL(DP) :: starting_magnetization( nsx ) = 0.0_DP
           ! ONLY PW
 
@@ -585,7 +588,7 @@ MODULE input_parameters
         NAMELIST / system / ibrav, celldm, a, b, c, cosab, cosac, cosbc, nat, &
              ntyp, nbnd, ecutwfc, ecutrho, nr1, nr2, nr3, nr1s, nr2s,         &
              nr3s, nr1b, nr2b, nr3b, nosym, nosym_evc, noinv, use_all_frac,   &
-             force_symmorphic, starting_magnetization,                        &
+             force_symmorphic, starting_charge, starting_magnetization,       &
              occupations, degauss, nspin, ecfixed,                            &
              qcutz, q2sigma, lda_plus_U, lda_plus_u_kind,                     &
              Hubbard_U, Hubbard_J, Hubbard_alpha,                             &

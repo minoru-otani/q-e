@@ -190,6 +190,7 @@ MODULE read_namelists_module
        q2sigma = 0.01_DP
        input_dft = 'none'
        ecutfock  = -1.0_DP
+       starting_charge = 0.0_DP
 !
 ! ... set starting_magnetization to an invalid value:
 ! ... in PW starting_magnetization MUST be set for at least one atomic type
@@ -797,6 +798,7 @@ MODULE read_namelists_module
        CALL mp_bcast( yukawa,                 ionode_id, intra_image_comm )
        CALL mp_bcast( ecutvcut,               ionode_id, intra_image_comm )
        CALL mp_bcast( ecutfock,               ionode_id, intra_image_comm )
+       CALL mp_bcast( starting_charge,        ionode_id, intra_image_comm )
        CALL mp_bcast( starting_magnetization, ionode_id, intra_image_comm )
        CALL mp_bcast( starting_ns_eigenvalue, ionode_id, intra_image_comm )
        CALL mp_bcast( U_projection_type,      ionode_id, intra_image_comm )

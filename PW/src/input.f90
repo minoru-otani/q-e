@@ -137,6 +137,7 @@ SUBROUTINE iosys()
                             ecutvcut_         => ecutvcut, &
                             ecutfock_         => ecutfock
   !
+  USE vlocal,        ONLY : starting_charge_ => starting_charge
   !
   USE lsda_mod,      ONLY : nspin_                  => nspin, &
                             starting_magnetization_ => starting_magnetization, &
@@ -232,7 +233,7 @@ SUBROUTINE iosys()
                                ecutwfc, ecutrho, nr1, nr2, nr3, nr1s, nr2s, &
                                nr3s, noinv, nosym, nosym_evc, no_t_rev,     &
                                use_all_frac, force_symmorphic,              &
-                               starting_magnetization,                      &
+                               starting_charge, starting_magnetization,     &
                                occupations, degauss, smearing, nspin,       &
                                ecfixed, qcutz, q2sigma, lda_plus_U,         &
                                lda_plus_U_kind, Hubbard_U, Hubbard_J,       &
@@ -1210,6 +1211,7 @@ SUBROUTINE iosys()
   lda_plus_u_kind_        = lda_plus_u_kind
   la2F_                   = la2F
   nspin_                  = nspin
+  starting_charge_        = starting_charge
   starting_magnetization_ = starting_magnetization
   starting_ns             = starting_ns_eigenvalue
   U_projection            = U_projection_type
