@@ -222,6 +222,14 @@ SUBROUTINE summary()
      ENDDO
   ENDIF
 
+  IF (ANY(starting_charge(:) /= 0.D0)) THEN
+     WRITE( stdout, '(/5x,"Starting charge structure ", &
+          &      /5x,"atomic species   charge")')
+     DO nt = 1, ntyp
+        WRITE( stdout, '(5x,a6,9x,f6.3)') atm(nt), starting_charge(nt)
+     ENDDO
+  ENDIF
+
   IF (lsda) THEN
      WRITE( stdout, '(/5x,"Starting magnetic structure ", &
           &      /5x,"atomic species   magnetization")')
