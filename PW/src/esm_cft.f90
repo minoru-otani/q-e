@@ -102,6 +102,8 @@ SUBROUTINE esm_cft_1z_init(nsl, nz, ldz)
   
 #endif
 
+  IF(cft_initialized) RETURN
+
   !   initialize a new one
 
   nth = 1
