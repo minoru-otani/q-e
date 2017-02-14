@@ -101,7 +101,7 @@ CONTAINS
                  TRIM( int_to_char( i ) ) // "/"
             !
 #if ! defined (__XSD)
-            CALL pw_readfile('fcpopt', ierr)
+            CALL pw_readfile('ef', ierr)
 #else
             CALL errore('fcp_opt_routines','XSD implementation pending',1)
 #endif

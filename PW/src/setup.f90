@@ -175,23 +175,13 @@ SUBROUTINE setup()
   END IF
   !
   ! 
-  IF (lfcpopt .AND. restart ) THEN  
-     CALL init_vars_from_schema( 'fcpopt', ierr,  output_obj, parinfo_obj, geninfo_obj)
+  IF ( (lfcpopt .OR. lfcpdyn) .AND. restart ) THEN
+     CALL init_vars_from_schema( 'ef', ierr,  output_obj, parinfo_obj, geninfo_obj)
      tot_charge = ionic_charge - nelec
-  END IF 
-  IF (lfcpdyn .AND. restart ) THEN    
-     CALL init_vars_from_schema( 'fcpdyn', ierr,  output_obj, parinfo_obj, geninfo_obj ) 
-     tot_charge = ionic_charge - nelec 
   END IF
 #else 
-  IF ( lfcpopt .AND. restart ) THEN
-     CALL pw_readfile( 'fcpopt', ierr )
-     tot_charge = ionic_charge - nelec
-  END IF
-  !
-  IF ( lfcpdyn .AND. restart ) THEN
-
-     CALL pw_readfile( 'fcpdyn', ierr )
+  IF ( (lfcpopt .OR. lfcpdyn) .AND. restart ) THEN
+     CALL pw_readfile( 'ef', ierr )
      tot_charge = ionic_charge - nelec
   END IF
 #endif
