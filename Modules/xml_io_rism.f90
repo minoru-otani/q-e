@@ -17,7 +17,7 @@ MODULE xml_io_rism
   USE constants,   ONLY : eps8
   USE kinds,       ONLY : DP
   USE lauefft,     ONLY : lauefft_type
-  USE mp,          ONLY : mp_rank, mp_size, mp_sum, mp_get, mp_bcast
+  USE mp,          ONLY : mp_rank, mp_size, mp_sum, mp_get, mp_bcast, mp_barrier
   USE xml_io_base, ONLY : check_file_exst
   USE parallel_include
   !
@@ -701,9 +701,6 @@ CONTAINS
     ! ... allocate memory
     ALLOCATE(sowner(nsite))
     ALLOCATE(zuv_site(nr1 * nr2 * nr3))
-#if defined (__MPI)
-    ALLOCATE(zuv_tmp( nr1 * nr2 * nr3))
-#endif
     !
     ! ... get process info.
     me_group    = mp_rank(intra_group_comm)
@@ -769,6 +766,8 @@ CONTAINS
       !
       IF (sowner(isite) == my_group_id) THEN
         !
+        CALL mp_barrier(intra_group_comm)
+        !
         zuv_site = CMPLX(0.0_DP, 0.0_DP, kind=DP)
         !
         DO igxy = 1, lfft%ngxy
@@ -803,6 +802,16 @@ CONTAINS
         END DO
         !
 #if defined (__MPI)
+#if defined (__FUJITSU)
+        CALL mp_sum(zuv_site, intra_group_comm)
+        !
+#else
+        IF (me_group == io_group) THEN
+          ALLOCATE(zuv_tmp(nr1 * nr2 * nr3))
+        ELSE
+          ALLOCATE(zuv_tmp(1))
+        END IF
+        !
         CALL MPI_REDUCE(zuv_site(1), zuv_tmp(1), nr1 * nr2 * nr3, MPI_DOUBLE_COMPLEX, &
                       & MPI_SUM, io_group, intra_group_comm, ierr)
         !
@@ -810,13 +819,21 @@ CONTAINS
           CALL errore('write_lauerism_xml', 'error at MPI_REDUCE', 1)
         END IF
         !
-        zuv_site = zuv_tmp
+        IF (me_group == io_group) THEN
+          zuv_site = zuv_tmp
+        END IF
+        DEALLOCATE(zuv_tmp)
         !
 #endif
+#endif
+        !
       END IF
       !
       IF (sowner(isite) /= io_group_id) THEN
         IF (me_group == io_group) THEN
+          !
+          CALL mp_barrier(inter_group_comm)
+          !
           CALL mp_get(zuv_site, zuv_site, my_group_id, io_group_id, &
                     & sowner(isite), isite, inter_group_comm)
         END IF
@@ -836,9 +853,6 @@ CONTAINS
     ! ... deallocate memory
     DEALLOCATE(sowner)
     DEALLOCATE(zuv_site)
-#if defined (__MPI)
-    DEALLOCATE(zuv_tmp)
-#endif
     !
   END SUBROUTINE write_lauerism_xml
   !

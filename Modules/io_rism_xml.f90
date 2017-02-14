@@ -242,7 +242,8 @@ CONTAINS
       CALL write_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
                         & rismt%csr, ecut, file_base, datname)
     ELSE
-      CALL write_3drism_x(rismt, 1, 1, rdummy, ecut, file_base, datname)
+      CALL write_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
+                        & rdummy, ecut, file_base, datname)
     END IF
     !
     ! ... write hr
@@ -253,7 +254,8 @@ CONTAINS
       CALL write_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
                         & rismt%hr, ecut, file_base, datname)
     ELSE
-      CALL write_3drism_x(rismt, 1, 1, rdummy, ecut, file_base, datname)
+      CALL write_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
+                        & rdummy, ecut, file_base, datname)
     END IF
     !
     ! ... write gr
@@ -264,7 +266,8 @@ CONTAINS
       CALL write_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
                         & rismt%gr, ecut, file_base, datname)
     ELSE
-      CALL write_3drism_x(rismt, 1, 1, rdummy, ecut, file_base, datname)
+      CALL write_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
+                        & rdummy, ecut, file_base, datname)
     END IF
     !
     IF (rismt%itype == ITYPE_LAUERISM) THEN
@@ -277,7 +280,8 @@ CONTAINS
         CALL write_lauerism_x(rismt, (rismt%nrzl * rismt%lfft%ngxy), rismt%nsite, &
                             & rismt%hsgz, ecut, gamma_only, file_base, datname)
       ELSE
-        CALL write_lauerism_x(rismt, 1, 1, cdummy, ecut, gamma_only, file_base, datname)
+        CALL write_lauerism_x(rismt, (rismt%nrzl * rismt%lfft%ngxy), rismt%nsite, &
+                            & cdummy, ecut, gamma_only, file_base, datname)
       END IF
       !
       ! ... write hl(laue)
@@ -288,7 +292,8 @@ CONTAINS
         CALL write_lauerism_x(rismt, (rismt%nrzl * rismt%lfft%ngxy), rismt%nsite, &
                             & rismt%hlgz, ecut, gamma_only, file_base, datname)
       ELSE
-        CALL write_lauerism_x(rismt, 1, 1, cdummy, ecut, gamma_only, file_base, datname)
+        CALL write_lauerism_x(rismt, (rismt%nrzl * rismt%lfft%ngxy), rismt%nsite, &
+                            & cdummy, ecut, gamma_only, file_base, datname)
       END IF
       !
     END IF
@@ -383,7 +388,8 @@ CONTAINS
       CALL read_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
                        & rismt%csr, ecut, file_base)
     ELSE
-      CALL read_3drism_x(rismt, 1, 1, rdummy, ecut, file_base)
+      CALL read_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
+                       & rdummy, ecut, file_base)
     END IF
     !
     ! ... read hr
@@ -393,7 +399,8 @@ CONTAINS
       CALL read_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
                        & rismt%hr, ecut, file_base)
     ELSE
-      CALL read_3drism_x(rismt, 1, 1, rdummy, ecut, file_base)
+      CALL read_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
+                       & rdummy, ecut, file_base)
     END IF
     !
     ! ... read gr
@@ -403,7 +410,8 @@ CONTAINS
       CALL read_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
                        & rismt%gr, ecut, file_base)
     ELSE
-      CALL read_3drism_x(rismt, 1, 1, rdummy, ecut, file_base)
+      CALL read_3drism_x(rismt, rismt%cfft%dfftt%nnr, rismt%nsite, &
+                       & rdummy, ecut, file_base)
     END IF
     !
     IF (rismt%itype == ITYPE_LAUERISM) THEN
@@ -415,7 +423,8 @@ CONTAINS
         CALL read_lauerism_x(rismt, (rismt%nrzl * rismt%lfft%ngxy), rismt%nsite, &
                            & rismt%hsgz, ecut, file_base)
       ELSE
-        CALL read_lauerism_x(rismt, 1, 1, cdummy, ecut, file_base)
+        CALL read_lauerism_x(rismt, (rismt%nrzl * rismt%lfft%ngxy), rismt%nsite, &
+                           & cdummy, ecut, file_base)
       END IF
       !
       ! ... read hl(laue)
@@ -425,7 +434,8 @@ CONTAINS
         CALL read_lauerism_x(rismt, (rismt%nrzl * rismt%lfft%ngxy), rismt%nsite, &
                            & rismt%hlgz, ecut, file_base)
       ELSE
-        CALL read_lauerism_x(rismt, 1, 1, cdummy, ecut, file_base)
+        CALL read_lauerism_x(rismt, (rismt%nrzl * rismt%lfft%ngxy), rismt%nsite, &
+                           & cdummy, ecut, file_base)
       END IF
       !
     END IF
