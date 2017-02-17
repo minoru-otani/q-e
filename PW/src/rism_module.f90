@@ -766,13 +766,16 @@ CONTAINS
     !
     IMPLICIT NONE
     !
+    REAL(DP), PARAMETER :: TR2_EXPON = 0.50_DP
+    !
     IF (.NOT. lrism) THEN
       RETURN
     END IF
     !
     IF (ionode) THEN
-      IF (epsv > 0.0_DP .AND. tr2 > 0.0_DP .AND. starting_scf_threshold > 0.0_DP) THEN
-        epsv = 10.0_DP ** (LOG10(starting_epsv) * LOG10(tr2) / LOG10(starting_scf_threshold))
+      IF (epsv > 0.0_DP .AND. starting_epsv          > 0.0_DP .AND. &
+          tr2  > 0.0_DP .AND. starting_scf_threshold > 0.0_DP) THEN
+        epsv = starting_epsv * ((tr2 / starting_scf_threshold) ** TR2_EXPON)
       ELSE
         epsv = starting_epsv
       END IF
