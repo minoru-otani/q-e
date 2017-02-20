@@ -210,12 +210,12 @@ CONTAINS
       CALL stop_by_err_rism('write_3drism', IERR_RISM_INCORRECT_DATA_TYPE)
     END IF
     !
-    IF (rismt%nr > rismt%cfft%dfftt%nnr) THEN
+    IF (rismt%nr < rismt%cfft%dfftt%nnr) THEN
       CALL stop_by_err_rism('write_3drism', IERR_RISM_INCORRECT_DATA_TYPE)
     END IF
     !
     IF (rismt%itype == ITYPE_LAUERISM) THEN
-      IF (rismt%nrzl > rismt%lfft%nrz) THEN
+      IF (rismt%nrzl < rismt%lfft%nrz) THEN
         CALL stop_by_err_rism('write_3drism', IERR_RISM_INCORRECT_DATA_TYPE)
       END IF
       !
@@ -370,7 +370,7 @@ CONTAINS
       CALL stop_by_err_rism('read_3drism', IERR_RISM_INCORRECT_DATA_TYPE)
     END IF
     !
-    IF (rismt%nr > rismt%cfft%dfftt%nnr) THEN
+    IF (rismt%nr < rismt%cfft%dfftt%nnr) THEN
       CALL stop_by_err_rism('read_3drism', IERR_RISM_INCORRECT_DATA_TYPE)
     END IF
     !

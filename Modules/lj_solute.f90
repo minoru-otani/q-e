@@ -202,7 +202,7 @@ SUBROUTINE lj_setup_solU_vlj(rismt, rsmax, ierr)
     RETURN
   END IF
   !
-  IF (rismt%nr > rismt%cfft%dfftt%nnr) THEN
+  IF (rismt%nr < rismt%cfft%dfftt%nnr) THEN
     ierr = IERR_RISM_INCORRECT_DATA_TYPE
     RETURN
   END IF
@@ -406,7 +406,7 @@ SUBROUTINE lj_get_force(rismt, force, rsmax, ierr)
     RETURN
   END IF
   !
-  IF (rismt%nr > rismt%cfft%dfftt%nnr) THEN
+  IF (rismt%nr < rismt%cfft%dfftt%nnr) THEN
     ierr = IERR_RISM_INCORRECT_DATA_TYPE
     RETURN
   END IF
@@ -658,7 +658,7 @@ SUBROUTINE lj_get_stress(rismt, sigma, rsmax, ierr)
     RETURN
   END IF
   !
-  IF (rismt%nr > rismt%cfft%dfftt%nnr) THEN
+  IF (rismt%nr < rismt%cfft%dfftt%nnr) THEN
     ierr = IERR_RISM_INCORRECT_DATA_TYPE
     RETURN
   END IF
