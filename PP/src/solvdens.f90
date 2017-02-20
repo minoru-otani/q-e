@@ -15,6 +15,7 @@ SUBROUTINE solvdens(filplot, lpunch)
   ! ... into a file format suitable for plotting
   !
   USE cell_base,      ONLY : at, bg, celldm, ibrav, alat, omega, tpiba, tpiba2
+  USE chdens_module,  ONLY : plot_1d, plot_2d, plot_3d, plot_2ds, plot_fast
   USE constants,      ONLY : eps6, tpi
   USE control_flags,  ONLY : gamma_only
   USE fft_base,       ONLY : dfftp, dffts

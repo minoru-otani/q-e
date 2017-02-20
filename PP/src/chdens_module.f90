@@ -18,7 +18,7 @@ SUBROUTINE chdens (plot_files,plot_num)
   !
   !      If plot_files (the list of intermediate quantities) isn't empty, one
   !      output file is written per entry.
-  !   
+  !
   !      If plot_files is empty, files are read from the filepp input variable
   !      and one output file is written.
   !
@@ -41,8 +41,8 @@ SUBROUTINE chdens (plot_files,plot_num)
   USE fft_interfaces,  ONLY : fwfft
   USE fft_types,  ONLY : fft_type_allocate
   USE gvect,      ONLY : ngm, nl, g, gcutm
-  USE gvecs,      ONLY : gcutms, doublegrid, dual, ecuts 
-  USE recvec_subs,ONLY: ggen 
+  USE gvecs,      ONLY : gcutms, doublegrid, dual, ecuts
+  USE recvec_subs,ONLY: ggen
   USE gvecw,      ONLY: ecutwfc
   USE run_info,   ONLY: title
   USE control_flags, ONLY: gamma_only
@@ -78,7 +78,7 @@ SUBROUTINE chdens (plot_files,plot_num)
           'XCrySDen     ', &
           'gOpenMol     ', &
           'XCrySDen     ', &
-          'Gaussian cube', & 
+          'Gaussian cube', &
           'gnuplot x,y,f' /)
   CHARACTER (len=20), DIMENSION(0:4) :: plotname = &
        (/ '1D spherical average', &
@@ -169,7 +169,7 @@ SUBROUTINE chdens (plot_files,plot_num)
   CALL mp_bcast( isovalue, ionode_id, world_comm )
   CALL mp_bcast( heightmin, ionode_id, world_comm )
   CALL mp_bcast( heightmax, ionode_id, world_comm )
-  CALL mp_bcast( direction, ionode_id, world_comm )  
+  CALL mp_bcast( direction, ionode_id, world_comm )
 
   IF (output_format == -1 .or. iflag == -1) THEN
      CALL infomsg ('chdens', 'output format not set, exiting' )
@@ -274,7 +274,7 @@ SUBROUTINE chdens (plot_files,plot_num)
                .or. heightmax < 0.0 ) THEN
          CALL errore('isostm','problem with heightmax/min',1)
      ENDIF
-      
+
      IF (direction /= 1 .and. direction /= -1) THEN
          CALL errore('isostm','direction not equal to +- 1',1)
      ENDIF
@@ -332,7 +332,7 @@ SUBROUTINE chdens (plot_files,plot_num)
 
 
   ! Looping over output files to be written
-  DO iplot=1, SIZE(output_files) 
+  DO iplot=1, SIZE(output_files)
 
     fileout = output_files(iplot)
     IF (.NOT. luse_filepp) filepp(1) = plot_files(iplot)
@@ -352,7 +352,7 @@ SUBROUTINE chdens (plot_files,plot_num)
        CALL plot_io (filepp (ifile), title, nr1sxa, nr2sxa, nr3sxa, &
             nr1sa, nr2sa, nr3sa, nats, ntyps, ibravs, celldms, ats, gcutmsa, &
             duals, ecuts, idum, atms, ityps, zvs, taus, rhos, - 1)
-  
+
        IF (ifile==1.and.plot_num==-1) THEN
           atm=atms
           ityp=ityps
@@ -394,23 +394,23 @@ SUBROUTINE chdens (plot_files,plot_num)
           ounit = 6
        ENDIF
     ENDIF
-  
+
     ! the isostm subroutine is called only when isostm_flag is true and the
-    ! charge density is related to an STM image (5) or is read from a file 
+    ! charge density is related to an STM image (5) or is read from a file
     IF ( (isostm_flag) .AND. ( (plot_num == -1) .OR. (plot_num == 5) ) ) THEN
        IF ( .NOT. (iflag == 2))&
           CALL errore ('chdens', 'isostm should have iflag = 2', 1)
        CALL isostm_plot(rhor, dfftp%nr1x, dfftp%nr2x, dfftp%nr3x, &
-             isovalue, heightmin, heightmax, direction)     
+             isovalue, heightmin, heightmax, direction)
     END IF
-  
-    
+
+
     !
     !    At this point we start the calculations, first we normalize the
     !    vectors defining the plotting region.
     !    If these vectors have 0 length, replace them with crystal axis
     !
-  
+
     m1 = sqrt (e1 (1)**2 + e1 (2)**2 + e1 (3)**2)
     IF (abs(m1) < 1.d-6) THEN
        e1 (:) = at(:,1)
@@ -444,7 +444,7 @@ SUBROUTINE chdens (plot_files,plot_num)
          ( at(2,1) == 0.d0  .and.  at(3,1) == 0.d0) .and. &
          ( at(1,2) == 0.d0  .and.  at(3,2) == 0.d0) .and. &
          ( at(1,3) == 0.d0  .and.  at(2,3) == 0.d0)
-  
+
     fast3d = fast3d .and. (trim(interpolation) == 'fourier')
     !
     !    Initialise FFT for rho(r) => rho(G) conversion if needed
@@ -497,21 +497,21 @@ SUBROUTINE chdens (plot_files,plot_num)
     !     And now the plot (rhog in G-space, rhor in real space)
     !
     IF (iflag <= 1) THEN
-  
+
        IF (TRIM(interpolation) == 'fourier') THEN
           CALL plot_1d (nx, m1, x0, e1, ngm, g, rhog, alat, iflag, ounit)
        ELSE
-          CALL plot_1d_bspline (nx, m1, x0, e1, rhor, alat, iflag, ounit)
+          CALL plot_1d_bspline (nx, m1, x0, e1, rhor, alat, iflag, ounit, .FALSE.)
        ENDIF
-  
+
     ELSEIF (iflag == 2) THEN
-  
+
        IF (TRIM(interpolation) == 'fourier') THEN
          CALL plot_2d (nx, ny, m1, m2, x0, e1, e2, ngm, g, rhog, alat, &
               at, nat, tau, atm, ityp, output_format, ounit)
        ELSE
          CALL plot_2d_bspline (nx, ny, m1, m2, x0, e1, e2, rhor, alat, &
-              at, nat, tau, atm, ityp, output_format, ounit)
+              at, nat, tau, atm, ityp, output_format, ounit, .FALSE.)
        ENDIF
        IF (output_format == 2.and.ionode) THEN
           WRITE (ounit, '(i4)') nat
@@ -519,13 +519,13 @@ SUBROUTINE chdens (plot_files,plot_num)
           WRITE (ounit, '(f10.6)') celldm (1)
           WRITE (ounit, '(3(3f12.6/))') at
        ENDIF
-  
+
     ELSEIF (iflag == 3) THEN
-  
+
        IF (output_format == 4.and.ionode) THEN
-  
+
           ! gopenmol wants the coordinates in a separate file
-  
+
           IF (fileout /= ' ') THEN
              OPEN (unit = ounit+1, file = trim(fileout)//'.xyz', &
                   form = 'formatted', status = 'unknown')
@@ -537,8 +537,8 @@ SUBROUTINE chdens (plot_files,plot_num)
              WRITE( stdout, '("Writing coordinates to file coord.xyz")')
           ENDIF
        ENDIF
-  
-  
+
+
        IF (output_format == 5.and.ionode) THEN
           !
           ! XCRYSDEN FORMAT
@@ -546,7 +546,7 @@ SUBROUTINE chdens (plot_files,plot_num)
           CALL xsf_struct (alat, at, nat, tau, atm, ityp, ounit)
           CALL xsf_fast_datagrid_3d &
                (rhor, dfftp%nr1, dfftp%nr2, dfftp%nr3, dfftp%nr1x, dfftp%nr2x, dfftp%nr3x, at, alat, ounit)
-  
+
        ELSEIF (output_format == 6.and.ionode ) THEN
           !
           ! GAUSSIAN CUBE FORMAT
@@ -557,15 +557,15 @@ SUBROUTINE chdens (plot_files,plot_num)
           ELSE
              CALL plot_3d_bspline(celldm(1), at, nat, tau, atm, ityp, rhor,&
                   nx, ny, nz, m1, m2, m3, x0, e1, e2, e3, output_format, &
-                  ounit, rhotot)
+                  ounit, rhotot, .FALSE.)
           END IF
-  
+
        ELSEIF (ionode) THEN
           !
           ! GOPENMOL OR XCRYSDEN FORMAT
           !
           IF (fast3d) THEN
-  
+
              CALL plot_fast (celldm (1), at, nat, tau, atm, ityp, &
                  dfftp%nr1x, dfftp%nr2x, dfftp%nr3x, dfftp%nr1, dfftp%nr2, dfftp%nr3, rhor, &
                  bg, m1, m2, m3, x0, e1, e2, e3, output_format, ounit, &
@@ -573,7 +573,7 @@ SUBROUTINE chdens (plot_files,plot_num)
           ELSE
              IF (nx<=0 .or. ny <=0 .or. nz <=0) &
                  CALL errore("chdens","nx,ny,nz, required",1)
-  
+
              IF (TRIM(interpolation) == 'fourier') THEN
                 CALL plot_3d (celldm (1), at, nat, tau, atm, ityp, ngm, g, rhog,&
                      nx, ny, nz, m1, m2, m3, x0, e1, e2, e3, output_format, &
@@ -581,19 +581,19 @@ SUBROUTINE chdens (plot_files,plot_num)
              ELSE
                 CALL plot_3d_bspline(celldm(1), at, nat, tau, atm, ityp, rhor,&
                      nx, ny, nz, m1, m2, m3, x0, e1, e2, e3, output_format, &
-                     ounit, rhotot)
+                     ounit, rhotot, .FALSE.)
              ENDIF
              !
           ENDIF
        ENDIF
-  
+
     ELSEIF (iflag == 4) THEN
        radius = radius / alat
        CALL plot_2ds (nx, ny, radius, ngm, g, rhog, output_format, ounit)
     ELSE
-  
+
        CALL errore ('chdens', 'wrong iflag', 1)
-  
+
     ENDIF
     !
     WRITE(stdout, '(5x,"Plot Type: ",a,"   Output format: ",a)') &
@@ -601,7 +601,7 @@ SUBROUTINE chdens (plot_files,plot_num)
     !
     IF (allocated(rhog)) DEALLOCATE(rhog)
     DEALLOCATE(rhor)
-  
+
   ENDDO
 
   DEALLOCATE(tau)
@@ -869,7 +869,7 @@ SUBROUTINE plot_2d (nx, ny, m1, m2, x0, e1, e2, ngm, g, rhog, alat, &
         !     gnuplot format : x, y, f(x,y)
         !
         DO i=1, nx
-           DO j=1, ny 
+           DO j=1, ny
               WRITE (ounit, '(3e20.8)')  alat*deltax * (i - 1), &
                       alat*deltay * (j - 1), dble(carica(i,j))
            ENDDO
@@ -1339,21 +1339,21 @@ SUBROUTINE write_openmol_file (alat, at, nat, tau, atm, ityp, x0, &
   RETURN
 END SUBROUTINE write_openmol_file
 !
-SUBROUTINE isostm_plot(rhor, nr1x, nr2x, nr3x, & 
+SUBROUTINE isostm_plot(rhor, nr1x, nr2x, nr3x, &
                       isovalue, heightmin, heightmax, direction)
   !-----------------------------------------------------------------------
   !
-  !   Written by Andrea Cepellotti (2011), modified by Marco Pividori (2014) 
+  !   Written by Andrea Cepellotti (2011), modified by Marco Pividori (2014)
   !   to better interface with the postprocessing suite of QE
   !
-  !      This subroutine calculates 2D images of STM as isosurface of 
+  !      This subroutine calculates 2D images of STM as isosurface of
   !      integrated ldos.
   !      It receives as input the STM charge density (that will be
   !      overwritten!) and the dimension of the grid in the real space.
   !      Works only for surfaces perpendicular to idir=3, searching for the
   !      highest isovalue found from heightmax to heightmin or viceversa
   !      according to the variable direction.
-  !      
+  !
   !
   !      DESCRIPTION of the INPUT CARD  ISOSTM :
   !
@@ -1363,9 +1363,9 @@ SUBROUTINE isostm_plot(rhor, nr1x, nr2x, nr3x, &
   !                   ! default value -> 0.0d0
   !      heightmax    ! (real) maximum value of the plane in which searching for the isosurface
   !                   ! default value -> 1.0d0
-  !                   ! the two parameters above are in percentage with respect to the 
+  !                   ! the two parameters above are in percentage with respect to the
   !                   ! height of the cell, i.e. between 0.0 and 1.0.
-  !                   ! If heightmax < heightmin, it treats it as if it's in the 
+  !                   ! If heightmax < heightmin, it treats it as if it's in the
   !                   !  upper periodically repeated slab.
   !                   ! Put heightmin somewhere in the bulk and heightmax in the vacuum
   !      direction    ! (integer) direction along z of the scan for the stm image:
@@ -1387,7 +1387,7 @@ SUBROUTINE isostm_plot(rhor, nr1x, nr2x, nr3x, &
   real(DP) :: rhor(nr1x*nr2x*nr3x)
   ! charge in R space
 
-  REAL(DP), ALLOCATABLE :: image (:,:)  
+  REAL(DP), ALLOCATABLE :: image (:,:)
   ! array for storing z coordinates
 
   REAL(DP), ALLOCATABLE :: reorder (:)
@@ -1398,7 +1398,7 @@ SUBROUTINE isostm_plot(rhor, nr1x, nr2x, nr3x, &
   ! difference between kmin and kmax
   ! counters on grid
   ! direction of scan
-   
+
   REAL(DP) :: isovalue,heightmin,heightmax
   ! input parameters
   REAL(DP) :: maximum,minimum
@@ -1412,7 +1412,7 @@ SUBROUTINE isostm_plot(rhor, nr1x, nr2x, nr3x, &
   !
 
   kmin=NINT(heightmin*nr3x)
-  kmax=NINT(heightmax*nr3x)   
+  kmax=NINT(heightmax*nr3x)
   deltakz=0
 
   ! if heightmin > heightmax, translate the z coordinates so that heightmin < heightmax
@@ -1420,25 +1420,25 @@ SUBROUTINE isostm_plot(rhor, nr1x, nr2x, nr3x, &
   IF ( heightmin > heightmax ) THEN
     ALLOCATE (reorder(nr1x*nr2x*nr3x))
     kmin=NINT(heightmin*nr3x)
-    kmax=NINT(heightmax*nr3x)       
+    kmax=NINT(heightmax*nr3x)
     deltakz=nr3x-kmin+1
-   
+
     DO k = 1,nr3x
       DO j = 1,nr2x
         DO i = 1,nr1x
             ir  = i + (j - 1) * nr1x + (k - 1) * nr1x * nr2x
             ir2 = i + (j - 1) * nr1x + ( mod((k + deltakz),nr3x) &
                      - 1) * nr1x * nr2x
-            reorder(ir2) = rhor(ir)               
-        ENDDO    
+            reorder(ir2) = rhor(ir)
+        ENDDO
       ENDDO
     ENDDO
     rhor=reorder
     DEALLOCATE (reorder)
-   
+
     kmin= mod( kmin + deltakz, nr3x)
     kmax= mod( kmax + deltakz, nr3x)
- 
+
   ENDIF
 
   IF (kmax > nr3x .or. kmin > nr3x .or. kmax <0 .or. kmin <0) THEN
@@ -1450,7 +1450,7 @@ SUBROUTINE isostm_plot(rhor, nr1x, nr2x, nr3x, &
   !
 
   ! if heightmin is 0.0d0, the lower limit is set to alat/nr3x
-  IF (kmin == 0) kmin = 1  
+  IF (kmin == 0) kmin = 1
 
   ALLOCATE (image(nr1x,nr2x))
   image=0.d0
@@ -1482,19 +1482,19 @@ SUBROUTINE isostm_plot(rhor, nr1x, nr2x, nr3x, &
 
   WRITE( stdout, * )
   WRITE( stdout, * )  '    image of z coordinates of the constant isovalue'
-  WRITE( stdout, * )  '    -----------------------------------------------'  
-  WRITE( stdout, * )  '    max density found: ',maximum       
+  WRITE( stdout, * )  '    -----------------------------------------------'
+  WRITE( stdout, * )  '    max density found: ',maximum
   WRITE( stdout, * )  '    min density found: ',minimum
   WRITE( stdout, * )  '    isovalue:          ', isovalue
- 
+
   IF (minimum > isovalue) CALL errore('isostm','too low isovalue',1)
-  IF (maximum < isovalue) CALL errore('isostm','too high isovalue',1)     
+  IF (maximum < isovalue) CALL errore('isostm','too high isovalue',1)
 
   IF (saturation) THEN
       WRITE( stdout, * )  '!! WARNING: possibly saturated image, change heights or isovalue'
   ENDIF
 
-  !--------  
+  !--------
   !WARNING!  We overwrite image(x,y) in the 3D real grid to use the FFT3D algorithm
   !--------
 
