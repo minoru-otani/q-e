@@ -13,7 +13,7 @@ SUBROUTINE eqn_3drism(rismt, ierr)
   ! ... solve 3D-RISM equation, which is defined as
   ! ...   h1(g) = c2(g) * x21(g)
   ! ...
-  ! ... (A.Kovalenko, F.Hirata, Chem. Phys. Lett. 1998, 290, 237–244)
+  ! ... (A.Kovalenko, F.Hirata, Chem. Phys. Lett. 1998, 290, 237-244)
   !
   USE constants, ONLY : K_BOLTZMANN_RY
   USE err_rism,  ONLY : IERR_RISM_NULL, IERR_RISM_INCORRECT_DATA_TYPE

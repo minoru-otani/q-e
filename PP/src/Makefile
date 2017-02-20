@@ -37,7 +37,9 @@ plot_whole_cell.o \
 projections_mod.o \
 projwfc_box.o \
 punch_plot.o \
+punch_rism.o \
 smallgk.o \
+solvdens.o \
 stm.o \
 stop_pp.o \
 sym_band.o \
@@ -58,7 +60,7 @@ all : tldeps average.x bands.x dos.x epsilon.x initial_state.x fs.x \
       plan_avg.x plotband.x plotproj.x plotrho.x pmw.x pp.x projwfc.x \
       pawplot.x sumpdos.x pw2wannier90.x pw_export.x pw2gw.x \
       wannier_ham.x wannier_plot.x molecularpdos.x \
-      pw2bgw.x bgw2pw.x wfck2r.x importexport_binary.x
+      pw2bgw.x bgw2pw.x wfck2r.x importexport_binary.x pprism.x
 
 
 libpp.a : $(PPOBJS) 
@@ -199,6 +201,12 @@ bgw2pw.x : bgw2pw.o libpp.a $(MODULES) $(LIBOBJS)
 fs.x : fermisurface.o libpp.a $(MODULES) $(LIBOBJS)
 	$(LD) $(LDFLAGS) -o $@ \
 		fermisurface.o libpp.a $(MODULES) $(LIBOBJS) $(LIBS)
+	- ( cd ../../bin ; ln -fs ../PP/src/$@ . )
+
+pprism.x : postrism.o libpp.a $(MODULES) $(LIBOBJS)
+	$(LD) $(LDFLAGS) -o $@ \
+		postrism.o libpp.a $(MODULES) \
+		$(LIBOBJS) $(LIBS)
 	- ( cd ../../bin ; ln -fs ../PP/src/$@ . )
 
 tldeps :

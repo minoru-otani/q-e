@@ -152,3 +152,7 @@ cluster_example:
 vdwDF_example:
     This example shows how to use the vdw-DF functional in pw.x. 
 
+RISM_example:
+    This example shows how to use the 3D-RISM-SCF in pw.x, to calculate
+    solvent effect for solute and solvent distributions around solute.
+

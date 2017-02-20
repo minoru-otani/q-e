@@ -681,10 +681,15 @@ CONTAINS
     CHARACTER(LEN=256)       :: rismlaue_file
     CHARACTER(LEN=10)        :: rismlaue_extension
     CHARACTER(iotk_attlenx)  :: attr
+    INTEGER                  :: io_group
     INTEGER                  :: io_group_id
+    INTEGER                  :: me_group
     INTEGER                  :: my_group_id
     INTEGER,     ALLOCATABLE :: sowner(:)
     COMPLEX(DP), ALLOCATABLE :: zuv_site(:)
+#if defined (__MPI)
+    COMPLEX(DP), ALLOCATABLE :: zuv_tmp(:)
+#endif
     !
     INTEGER, EXTERNAL        :: find_free_unit
     !
@@ -696,8 +701,12 @@ CONTAINS
     ! ... allocate memory
     ALLOCATE(sowner(nsite))
     ALLOCATE(zuv_site(nr1 * nr2 * nr3))
+#if defined (__MPI)
+    ALLOCATE(zuv_tmp( nr1 * nr2 * nr3))
+#endif
     !
     ! ... get process info.
+    me_group    = mp_rank(intra_group_comm)
     my_group_id = mp_rank(inter_group_comm)
     !
     ! ... decide file name and unit
@@ -736,6 +745,14 @@ CONTAINS
     END IF
     CALL mp_sum(io_group_id, intra_group_comm)
     CALL mp_sum(io_group_id, inter_group_comm)
+    !
+    ! ... find the index of the ionode within its own group
+    io_group = 0
+    IF (ionode) THEN
+      io_group = me_group
+    END IF
+    CALL mp_sum(io_group, intra_group_comm)
+    CALL mp_sum(io_group, inter_group_comm)
     !
     ! ... find out the owner of each solvent's site
     sowner = 0
@@ -785,13 +802,24 @@ CONTAINS
           END IF
         END DO
         !
-        CALL mp_sum(zuv_site, intra_group_comm)
+#if defined (__MPI)
+        CALL MPI_REDUCE(zuv_site(1), zuv_tmp(1), nr1 * nr2 * nr3, MPI_DOUBLE_COMPLEX, &
+                      & MPI_SUM, io_group, intra_group_comm, ierr)
         !
+        IF (ierr /= MPI_SUCCESS) THEN
+          CALL errore('write_lauerism_xml', 'error at MPI_REDUCE', 1)
+        END IF
+        !
+        zuv_site = zuv_tmp
+        !
+#endif
       END IF
       !
       IF (sowner(isite) /= io_group_id) THEN
-        CALL mp_get(zuv_site, zuv_site, my_group_id, io_group_id, &
-                  & sowner(isite), isite, inter_group_comm)
+        IF (me_group == io_group) THEN
+          CALL mp_get(zuv_site, zuv_site, my_group_id, io_group_id, &
+                    & sowner(isite), isite, inter_group_comm)
+        END IF
       END IF
       !
       IF (ionode) THEN
@@ -808,6 +836,9 @@ CONTAINS
     ! ... deallocate memory
     DEALLOCATE(sowner)
     DEALLOCATE(zuv_site)
+#if defined (__MPI)
+    DEALLOCATE(zuv_tmp)
+#endif
     !
   END SUBROUTINE write_lauerism_xml
   !
@@ -848,7 +879,9 @@ CONTAINS
     INTEGER                  :: nsite_
     REAL(DP)                 :: ecut_
     INTEGER                  :: nr(3)
+    INTEGER                  :: io_group
     INTEGER                  :: io_group_id
+    INTEGER                  :: me_group
     INTEGER                  :: my_group_id
     LOGICAL                  :: exst
     INTEGER,     ALLOCATABLE :: sowner(:)
@@ -866,6 +899,7 @@ CONTAINS
     ALLOCATE(zuv_site(nr1 * nr2 * nr3))
     !
     ! ... get process info.
+    me_group    = mp_rank(intra_group_comm)
     my_group_id = mp_rank(inter_group_comm)
     !
     ! ... search file
@@ -921,6 +955,14 @@ CONTAINS
     CALL mp_sum(io_group_id, intra_group_comm)
     CALL mp_sum(io_group_id, inter_group_comm)
     !
+    ! ... find the index of the ionode within its own group
+    io_group = 0
+    IF (ionode) THEN
+      io_group = me_group
+    END IF
+    CALL mp_sum(io_group, intra_group_comm)
+    CALL mp_sum(io_group, inter_group_comm)
+    !
     ! ... find out the owner of each solvent's site
     sowner = 0
     sowner(isite_start:isite_end) = my_group_id
@@ -936,6 +978,10 @@ CONTAINS
       !
       IF (ionode) THEN
         CALL iotk_scan_dat(rismlaue_unit, "site" // iotk_index(isite), zuv_site)
+      END IF
+      !
+      IF (my_group_id == io_group_id) THEN
+        CALL mp_bcast(zuv_site, io_group, intra_group_comm)
       END IF
       !
       IF (sowner(isite) /= io_group_id) THEN

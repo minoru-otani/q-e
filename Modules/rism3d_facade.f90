@@ -460,12 +460,18 @@ CONTAINS
   END SUBROUTINE rism3d_run
   !
   !----------------------------------------------------------------------------
-  SUBROUTINE rism3d_potential()
+  SUBROUTINE rism3d_potential(vrs, rhog)
     !----------------------------------------------------------------------------
     !
-    ! ... calculate 3D-RISM's potential
+    ! ... calculate 3D-RISM's potential (both solute and solvent)
+    ! ...
+    ! ...   vrs:  electronic coulomb potential in R-space.
+    ! ...   rhog: electronic density in G-space, which is used only if Laue-RISM.
     !
     IMPLICIT NONE
+    !
+    REAL(DP),    INTENT(IN)  :: vrs(:)
+    COMPLEX(DP), INTENT(IN)  :: rhog(:)
     !
     INTEGER :: ierr
     !
@@ -475,6 +481,14 @@ CONTAINS
     !
     CALL start_clock('3DRISM_pot')
     !
+    ! ... potential from solute
+    CALL potential_3drism(rism3t, vrs, rhog, ierr)
+    !
+    IF (ierr /= IERR_RISM_NULL) THEN
+      CALL stop_by_err_rism('rism3d_potential', ierr)
+    END IF
+    !
+    ! ... potential from solvent
     IF (rism3t%itype == ITYPE_3DRISM) THEN
       CALL solvation_3drism(rism3t, ierr)
     ELSE !IF (rism3t%itype == ITYPE_LAUERISM) THEN

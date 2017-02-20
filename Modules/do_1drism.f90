@@ -58,6 +58,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
   REAL(DP), ALLOCATABLE :: work(:,:)
   REAL(DP), ALLOCATABLE :: dcsrr(:,:)
   REAL(DP), ALLOCATABLE :: csrr(:,:)
+  REAL(DP), ALLOCATABLE :: csr_(:,:)
   TYPE(mdiis_type)      :: mdiist
   ! if mdiist is an automatic variable,
   ! pointers in mdiis_type may not work well.
@@ -239,13 +240,15 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     ! ... remove large `g' components from Cs
     IF (rismt%in_intra) THEN
       IF (gmax > 0.0_DP) THEN
+        ALLOCATE(csr_(rismt%nr, rismt%nsite))
+        csr_ = rismt%csr
         CALL remove_glarge_csr()
       END IF
     END IF
     !
-    ! ... calculate chemical potential
+    ! ... correct correlations at G = 0 or R = 0
     IF (rismt%in_intra) THEN
-      CALL chempot(rismt, ierr)
+      CALL correctat0_vv(rismt, ierr)
     ELSE
       ierr = IERR_RISM_NULL
     END IF
@@ -254,9 +257,9 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
       GOTO 100
     END IF
     !
-    ! ... correct correlations at G = 0 or R = 0
+    ! ... calculate chemical potential
     IF (rismt%in_intra) THEN
-      CALL correctat0_vv(rismt, ierr)
+      CALL chempot(rismt, ierr)
     ELSE
       ierr = IERR_RISM_NULL
     END IF
@@ -274,6 +277,20 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     CALL merge_ierr_rism(ierr, rismt%super_comm)
     IF (ierr /= IERR_RISM_NULL) THEN
       GOTO 100
+    END IF
+    !
+    ! ... restore Cs
+    IF (rismt%in_intra) THEN
+      IF (gmax > 0.0_DP) THEN
+#ifndef __RISM_SMOOTH_CSVV
+        IF (rismt%mp_task%ivec_start == 1) THEN
+          rismt%csr(2:rismt%nr, :) = csr_(2:rismt%nr, :)
+        ELSE
+          rismt%csr = csr_
+        END IF
+#endif
+        DEALLOCATE(csr_)
+      END IF
     END IF
     !
     ! ... set conditions

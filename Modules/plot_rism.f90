@@ -9,7 +9,7 @@
 !
 !--------------------------------------------------------------------------
 SUBROUTINE plot_rism(filplot, title, nsite, nr1x, nr2x, nr3x, nr1, nr2, nr3, &
-                   & nat, ntyp, ibrav, celldm, at, gcutm, dual, ecut, laue, &
+                   & nat, ntyp, ibrav, celldm, at, gcutm, laue, &
                    & asite, atm, ityp, zv, tau, plot, iflag)
   !--------------------------------------------------------------------------
   !
@@ -36,8 +36,6 @@ SUBROUTINE plot_rism(filplot, title, nsite, nr1x, nr2x, nr3x, nr1, nr2, nr3, &
   REAL(DP),          INTENT(INOUT) :: celldm(6)
   REAL(DP),          INTENT(INOUT) :: at(3, 3)
   REAL(DP),          INTENT(INOUT) :: gcutm
-  REAL(DP),          INTENT(INOUT) :: dual
-  REAL(DP),          INTENT(INOUT) :: ecut
   LOGICAL,           INTENT(INOUT) :: laue
   CHARACTER(LEN=12), INTENT(INOUT) :: asite(1:*)
   CHARACTER(LEN=3),  INTENT(INOUT) :: atm(1:*)
@@ -94,11 +92,11 @@ SUBROUTINE plot_rism(filplot, title, nsite, nr1x, nr2x, nr3x, nr1, nr2, nr3, &
         WRITE(iunplot, '(3E22.12e3)') (at(ipol, i), ipol = 1, 3)
       END DO
     END IF
-    WRITE(iunplot, '(3F20.10,L3)')         gcutm, dual, ecut, laue
+    WRITE(iunplot, '(F20.10,L3)')          gcutm, laue
     WRITE(iunplot, '(I4,3X,A12)')          (is, asite(is), is = 1, nsite)
     WRITE(iunplot, '(I4,3X,A2,3X,F5.2)')   (it, atm(it), zv(it), it = 1, ntyp)
     WRITE(iunplot, '(I4,3X,3F15.9,3X,I2)') (ia, (tau(ipol, ia), ipol = 1, 3), ityp(ia), ia = 1, nat)
-    WRITE(iunplot, '(5(1PE17.9))')         (plot(ir) , ir = 1, nr1x * nr2x * nr3x * nsite)
+    WRITE(iunplot, '(5(1PE18.9e3))')       (plot(ir) , ir = 1, nr1x * nr2x * nr3x * nsite)
     !
   ELSE
     ! ... read file
@@ -110,7 +108,7 @@ SUBROUTINE plot_rism(filplot, title, nsite, nr1x, nr2x, nr3x, nr1, nr2, nr3, &
         READ(iunplot, *) (at(ipol, i), ipol = 1, 3)
       END DO
     END IF
-    READ(iunplot, *)                    gcutm, dual, ecut, laue
+    READ(iunplot, *)                    gcutm, laue
     READ(iunplot, '(I4,3X,A12)')        (ndum, asite(is), is = 1, nsite)
     READ(iunplot, '(I4,3X,A2,3X,F5.2)') (ndum, atm(it), zv(it), it = 1, ntyp)
     READ(iunplot, *)                    (ndum, (tau(ipol, ia), ipol = 1, 3), ityp(ia), ia = 1, nat)
@@ -125,7 +123,7 @@ END SUBROUTINE plot_rism
 !
 !--------------------------------------------------------------------------
 SUBROUTINE read_rism_header(filplot, title, nsite, nr1x, nr2x, nr3x, nr1, nr2, nr3, &
-                          & nat, ntyp, ibrav, celldm, at, gcutm, dual, ecut, laue)
+                          & nat, ntyp, ibrav, celldm, at, gcutm, laue)
   !--------------------------------------------------------------------------
   !
   ! ... read header of file "filplot"
@@ -150,8 +148,6 @@ SUBROUTINE read_rism_header(filplot, title, nsite, nr1x, nr2x, nr3x, nr1, nr2, n
   REAL(DP),          INTENT(OUT) :: celldm(6)
   REAL(DP),          INTENT(OUT) :: at(3, 3)
   REAL(DP),          INTENT(OUT) :: gcutm
-  REAL(DP),          INTENT(OUT) :: dual
-  REAL(DP),          INTENT(OUT) :: ecut
   LOGICAL,           INTENT(OUT) :: laue
   !
   INTEGER           :: i
@@ -186,7 +182,7 @@ SUBROUTINE read_rism_header(filplot, title, nsite, nr1x, nr2x, nr3x, nr1, nr2, n
       READ(iunplot, *) (at(ipol, i), ipol = 1, 3)
     END DO
   END IF
-  READ(iunplot, *) gcutm, dual, ecut, laue
+  READ(iunplot, *) gcutm, laue
   !
   ! ... close file
   CLOSE(unit=iunplot)

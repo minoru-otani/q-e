@@ -209,7 +209,7 @@ SUBROUTINE set_lauefft_offset_x(lauefft0, wright, wleft)
     ELSE
       lauefft0%izleft_end = lauefft0%izcell_end - lauefft0%dfft%nr3 / 2
     END IF
-    lauefft0%izleft_end = lauefft0%izleft_end - nleft
+    lauefft0%izleft_end = lauefft0%izleft_end + nleft
     !
     IF (lauefft0%izleft_start > lauefft0%izleft_end) THEN
       CALL errore(' set_lauefft_offset_x ', ' izleft_start > izleft_end ', 1)
@@ -666,8 +666,12 @@ SUBROUTINE allocate_lauefft_gxy(lauefft0, ngmt, ig1t, ig2t, gt, comm)
     END IF
     !
     ! ... 2D-FFT index
+#if defined (__MPI) && !defined (__USE_3D_FFT)
     lauefft0%nlxy(igxy) = &
     & (lauefft0%dfft%isind(igx + (igy - 1) * lauefft0%dfft%nr1x) - 1) * lauefft0%dfft%nr3x
+#else
+    lauefft0%nlxy(igxy) = igx + (igy - 1) * lauefft0%dfft%nr1x
+#endif
     !
     ! ... mapping (igx,igy) -> igxy
     igxymap(igx, igy) = igxy
@@ -689,8 +693,12 @@ SUBROUTINE allocate_lauefft_gxy(lauefft0, ngmt, ig1t, ig2t, gt, comm)
       END IF
       !
       ! ... 2D-FFT index (0 > Gxy)
+#if defined (__MPI) && !defined (__USE_3D_FFT)
       lauefft0%nlmxy(igxy) = &
       & (lauefft0%dfft%isind(igx + (igy - 1) * lauefft0%dfft%nr1x) - 1) * lauefft0%dfft%nr3x
+#else
+      lauefft0%nlmxy(igxy) = igx + (igy - 1) * lauefft0%dfft%nr1x
+#endif
       !
     END DO
   END IF

@@ -13,7 +13,7 @@ TLDEPS= bindir mods libs pw libfft libla
 
 LIBOBJS        = ../../clib/clib.a ../../iotk/src/libiotk.a
 
-all : tldeps dist.x ev.x kpoints.x pwi2xsf.x
+all : tldeps dist.x ev.x kpoints.x pwi2xsf.x rism1d.x
 
 dist.x : dist.o $(PWOBJS) $(QEMODS) $(LIBOBJS)
 	$(LD) $(LDFLAGS) -o $@ \
@@ -33,6 +33,11 @@ kpoints.x : kpoints.o $(PWOBJS) $(QEMODS) $(LIBOBJS)
 pwi2xsf.x : pwi2xsf.o $(PWOBJS) $(QEMODS) $(LIBOBJS)
 	$(LD) $(LDFLAGS) -o $@ \
 		pwi2xsf.o $(PWOBJS) $(QEMODS) $(LIBOBJS) $(LIBS)
+	- ( cd ../../bin ; ln -fs ../PW/tools/$@ . )
+
+rism1d.x : rism1d.o $(PWOBJS) $(QEMODS) $(LIBOBJS)
+	$(LD) $(LDFLAGS) -o $@ \
+		rism1d.o $(PWOBJS) $(QEMODS) $(LIBOBJS) $(LIBS)
 	- ( cd ../../bin ; ln -fs ../PW/tools/$@ . )
 
 tldeps:

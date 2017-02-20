@@ -151,7 +151,7 @@ SUBROUTINE read_xml_file_internal(withbs)
   USE esm,                  ONLY : do_comp_esm, esm_init
   USE solvmol,              ONLY : nsolV, solVs, allocate_solVs
   USE read_solv_module,     ONLY : read_solvents
-  USE rism_module,          ONLY : rism_pot3d
+  USE rism_module,          ONLY : rism_tobe_alive, rism_pot3d
   USE rism3d_facade,        ONLY : lrism3d, rism3d_initialize
   USE mp_bands,             ONLY : intra_bgrp_comm
   !
@@ -242,6 +242,7 @@ SUBROUTINE read_xml_file_internal(withbs)
   !
   IF ( lrism3d ) THEN
      CALL allocate_solVs()
+     CALL rism_tobe_alive()
   END IF
   !
   ! ... here we read all the variables defining the system
@@ -371,7 +372,7 @@ SUBROUTINE read_xml_file_internal(withbs)
   ! ... recalculate the solvation potential (3D-RISM)
   !
   IF ( lrism3d ) THEN
-     CALL rism_pot3d(v%of_r)
+     CALL rism_pot3d(rho%of_g, v%of_r)
   END IF
   !
   RETURN

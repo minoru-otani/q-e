@@ -82,7 +82,7 @@ MODULE qexml_module
             qexml_read_bands_pw, qexml_read_bands_cp, qexml_read_bands_info,                  &
             qexml_read_gk, qexml_read_wfc, qexml_read_rho, qexml_read_magnetization, &
             qexml_read_exx, qexml_read_para, qexml_read_esm, qexml_read_3drism
-  
+
   !
   PUBLIC :: qexml_wfc_filename, qexml_create_directory, &
             qexml_kpoint_dirname, qexml_restart_dirname
@@ -468,10 +468,10 @@ CONTAINS
       CHARACTER(LEN=6)   :: kindex1
       !
       IF (ik<99999) THEN
-         WRITE( kindex, FMT = '( I5.5 )' ) ik     
+         WRITE( kindex, FMT = '( I5.5 )' ) ik
          kdirname = TRIM( basedir ) // '/K' // kindex
       ELSEIF (ik<999999) THEN
-         WRITE( kindex1, FMT = '( I6.6 )' ) ik     
+         WRITE( kindex1, FMT = '( I6.6 )' ) ik
          kdirname = TRIM( basedir ) // '/K' // kindex1
       ELSE
          call errore('qexml_kpoint_dirname','ik too large, increase format',1)
@@ -652,7 +652,7 @@ CONTAINS
     END SUBROUTINE qexml_write_header
     !
     !
-    !------------------------------------------------------------------------  
+    !------------------------------------------------------------------------
     SUBROUTINE qexml_write_control( pp_check_flag, lkpoint_dir, q_real_space, tq_smoothing, tbeta_smoothing, beta_real_space)
       !------------------------------------------------------------------------
       !
@@ -676,10 +676,10 @@ CONTAINS
       ! This flag says if Beta functions were treated in real space
       IF ( PRESENT( beta_real_space ) ) &
          CALL iotk_write_dat( ounit, "BETA_REAL_SPACE", beta_real_space )
-      ! This flag says if the Q are being smoothed 
+      ! This flag says if the Q are being smoothed
       IF ( PRESENT( tq_smoothing ) ) &
          CALL iotk_write_dat( ounit, "TQ_SMOOTHING", tq_smoothing )
-      ! This flag says if the beta are being smoothed 
+      ! This flag says if the beta are being smoothed
       IF ( PRESENT( tbeta_smoothing ) ) &
          CALL iotk_write_dat( ounit, "TBETA_SMOOTHING", tbeta_smoothing )
       !
@@ -697,7 +697,7 @@ CONTAINS
       INTEGER, INTENT(in) :: nfi
       REAL(DP), INTENT(in) :: simtime, ekin,eht,esr,eself,epseu,enl,exc,vave,enthal
       CHARACTER(len=*), INTENT(in) :: time_units, title, energy_units
-      
+
       CALL iotk_write_begin( ounit, "STATUS" )
       !
       CALL iotk_write_attr( attr, "ITERATION", nfi, FIRST = .TRUE. )
@@ -1013,7 +1013,7 @@ CONTAINS
       LOGICAL, INTENT(in)   :: dipfield       ! if .TRUE. the dipole field is subtracted
       LOGICAL, INTENT(in)   :: monopole       ! if .TRUE. counter charge is represented by monopole (gate)
       LOGICAL, INTENT(in)   :: block          ! add potential barrier
-      LOGICAL, INTENT(in)   :: relaxz         ! relax in z direction  
+      LOGICAL, INTENT(in)   :: relaxz         ! relax in z direction
       INTEGER, INTENT(in)   :: edir           ! direction of the field
       REAL(DP), INTENT(in) :: emaxpos        ! position of the maximum of the field (0<emaxpos<1)
       REAL(DP), INTENT(in) :: eopreg         ! amplitude of the inverse region (0<eopreg<1)
@@ -1254,7 +1254,7 @@ CONTAINS
 
       CALL iotk_write_dat( ounit,"CONSTRAINT_MAG", i_cons)
 
-      CALL iotk_write_dat( ounit, "NUMBER_OF_SPECIES", nsp ) 
+      CALL iotk_write_dat( ounit, "NUMBER_OF_SPECIES", nsp )
 
       DO i = 1, nsp
          !
@@ -1318,7 +1318,7 @@ CONTAINS
     SUBROUTINE qexml_write_xc( dft, nsp, lda_plus_u, lda_plus_u_kind, U_projection, &
                          Hubbard_lmax, Hubbard_l, Hubbard_U, Hubbard_J, Hubbard_J0, &
                          Hubbard_beta, Hubbard_alpha,                               &
-                         inlc, vdw_table_name, pseudo_dir, acfdt_in_pw, dirname, & 
+                         inlc, vdw_table_name, pseudo_dir, acfdt_in_pw, dirname, &
                          llondon, london_s6, london_rcut, lxdm, ts_vdw, vdw_isolated )
       !------------------------------------------------------------------------
       !
@@ -1348,7 +1348,7 @@ CONTAINS
       IF ( lda_plus_u ) THEN
          !
          IF ( .NOT. PRESENT( Hubbard_lmax ) .OR. &
-              .NOT. PRESENT( Hubbard_l )    .OR. & 
+              .NOT. PRESENT( Hubbard_l )    .OR. &
               .NOT. PRESENT( Hubbard_U )    .OR. &
               .NOT. PRESENT( nsp )              )&
             CALL errore( 'write_xc', &
@@ -1387,7 +1387,7 @@ CONTAINS
                  .NOT. PRESENT( pseudo_dir )     .OR. &
                  .NOT. PRESENT( dirname ))            &
                  CALL errore( 'write_xc', ' variable vdw_table_name not present', 1 )
-        
+
             CALL iotk_write_dat( ounit, "NON_LOCAL_DF", inlc )
             CALL iotk_write_dat( ounit, "VDW_KERNEL_NAME", TRIM(vdw_table_name))
             !
@@ -1408,7 +1408,7 @@ CONTAINS
       IF ( PRESENT (llondon) ) THEN
          IF ( llondon ) THEN
             IF ( .NOT. PRESENT( london_s6 )  .OR. &
-                 .NOT. PRESENT( london_rcut ) ) & 
+                 .NOT. PRESENT( london_rcut ) ) &
                CALL errore( 'write_xc', &
                             ' variables for DFT+D not present', 1 )
             CALL iotk_write_begin( ounit, "DFT_D2" )
@@ -1630,11 +1630,11 @@ CONTAINS
     !
     !------------------------------------------------------------------------
     SUBROUTINE qexml_write_para( kunit, nproc, nproc_pool, nproc_image, &
-                                 ntask_groups, nproc_bgrp, nproc_ortho ) 
+                                 ntask_groups, nproc_bgrp, nproc_ortho )
       !------------------------------------------------------------------------
       !
       INTEGER,  INTENT(IN) :: kunit, nproc, nproc_pool, nproc_image, &
-                              ntask_groups, nproc_bgrp, nproc_ortho 
+                              ntask_groups, nproc_bgrp, nproc_ortho
       !
       !
       CALL iotk_write_begin( ounit, "PARALLELISM" )
@@ -1734,7 +1734,7 @@ CONTAINS
     END SUBROUTINE qexml_write_bands_info
     !
     !
-    !------------------------------------------------------------------------  
+    !------------------------------------------------------------------------
     SUBROUTINE qexml_write_bands_pw( nbnd, num_k_points, nspin, xk, wk, wg , et, energy_units,  lkpoint_dir ,auxunit, dirname )
       !------------------------------------------------------------------------
       !
@@ -1743,7 +1743,7 @@ CONTAINS
       CHARACTER(len=*), INTENT(IN) :: energy_units
       LOGICAL, INTENT(in) :: lkpoint_dir
       CHARACTER(len=*), INTENT(in) :: dirname
-      
+
       !
       REAL(DP), ALLOCATABLE :: raux(:)
       INTEGER :: ik,ispin,ik_eff
@@ -1949,7 +1949,7 @@ CONTAINS
                        filename, CREATE = .FALSE., BINARY = .FALSE. )
                   IF( iss == 2 ) CALL iotk_link( ounit, "DATAFILE.2", &
                        filename, CREATE = .FALSE., BINARY = .FALSE. )
-                  
+
                   IF( iss == 1 ) filename = qexml_wfc_filename( dirname, 'eigenval1', ik, EXTENSION='xml' )
                   IF( iss == 2 ) filename = qexml_wfc_filename( dirname, 'eigenval2', ik, EXTENSION='xml' )
                ELSE
@@ -1957,7 +1957,7 @@ CONTAINS
                   CALL iotk_link( ounit, "DATAFILE", filename, CREATE = .FALSE., BINARY = .FALSE. )
                   filename = qexml_wfc_filename( dirname, 'eigenval', ik, EXTENSION='xml' )
                END IF
-               
+
                dtmp ( 1:nupdwn( iss ) ) = occ0( iupdwn( iss ) : iupdwn( iss ) + nupdwn( iss ) - 1 ) / wk(ik)
                !
                CALL qexml_write_eig( auxunit, filename, nbnd, et( 1:nbnd, iss) , energy_units, &
@@ -2254,7 +2254,10 @@ CONTAINS
     !
     !------------------------------------------------------------------------
     SUBROUTINE qexml_write_3drism( lrism3d, ecutsolv, cutoff_units, &
-                                   laue, laue_charge, laue_right, laue_left, laue_units, &
+                                   laue, laue_charge, laue_nfit, &
+                                   laue_right_start, laue_right_expand, &
+                                   laue_left_start, laue_left_expand, laue_units, &
+                                   laue_both_hands, laue_pot_ref, &
                                    nmol, molfile, molec_dir, dens1, dens2, dens_units, &
                                    dirname, lbinary )
       !------------------------------------------------------------------------
@@ -2266,9 +2269,14 @@ CONTAINS
       CHARACTER(LEN=*), INTENT(in) :: cutoff_units
       LOGICAL,          INTENT(in) :: laue
       REAL(DP),         INTENT(in) :: laue_charge
-      REAL(DP),         INTENT(in) :: laue_right
-      REAL(DP),         INTENT(in) :: laue_left
+      INTEGER,          INTENT(in) :: laue_nfit
+      REAL(DP),         INTENT(in) :: laue_right_start
+      REAL(DP),         INTENT(in) :: laue_right_expand
+      REAL(DP),         INTENT(in) :: laue_left_start
+      REAL(DP),         INTENT(in) :: laue_left_expand
       CHARACTER(LEN=*), INTENT(in) :: laue_units
+      LOGICAL,          INTENT(in) :: laue_both_hands
+      INTEGER,          INTENT(in) :: laue_pot_ref
       INTEGER,          INTENT(in) :: nmol
       CHARACTER(LEN=*), INTENT(in) :: molfile(:)
       CHARACTER(LEN=*), INTENT(in) :: molec_dir
@@ -2300,12 +2308,22 @@ CONTAINS
          !
          CALL iotk_write_dat( ounit, "LAUE_SOLVENT_CHARGE", laue_charge )
          !
+         CALL iotk_write_dat( ounit, "LAUE_NUM_FIT", laue_nfit )
+         !
          CALL iotk_write_attr ( attr, "UNITS", TRIM( laue_units ), FIRST=.TRUE. )
          CALL iotk_write_empty( ounit, "UNITS_FOR_LAUE_LENGTH", ATTR=attr )
          !
-         CALL iotk_write_dat( ounit, "LAUE_LENGTH_RIGHT", laue_right )
+         CALL iotk_write_dat( ounit, "LAUE_START_RIGHT", laue_right_start )
          !
-         CALL iotk_write_dat( ounit, "LAUE_LENGTH_LEFT", laue_left )
+         CALL iotk_write_dat( ounit, "LAUE_EXPAND_RIGHT", laue_right_expand )
+         !
+         CALL iotk_write_dat( ounit, "LAUE_START_LEFT", laue_left_start )
+         !
+         CALL iotk_write_dat( ounit, "LAUE_EXPAND_LEFT", laue_left_expand )
+         !
+         CALL iotk_write_dat( ounit, "LAUE_BOTH_HANDS", laue_both_hands )
+         !
+         CALL iotk_write_dat( ounit, "LAUE_POTENTIAL_REFERENCE", laue_pot_ref )
          !
       END IF
       !
@@ -2383,17 +2401,22 @@ CONTAINS
          CALL iotk_link( ounit, "DISTRIBUTION_FUNCTION", TRIM( filename ), &
                                  CREATE=.FALSE., BINARY=.TRUE. )
          !
-         filename = "./3d-rism_hsuv_l.dat"
-         IF ( .NOT. lbinary ) filename = "./3d-rism_hsuv_l.xml"
+         IF ( laue ) THEN
+            !
+            filename = "./3d-rism_hsuv_l.dat"
+            IF ( .NOT. lbinary ) filename = "./3d-rism_hsuv_l.xml"
+            !
+            CALL iotk_link( ounit, "TOTAL_CORRELATION_AS_LAUE_SHORT", TRIM( filename ), &
+                                    CREATE=.FALSE., BINARY=.TRUE. )
+            !
+            filename = "./3d-rism_hluv_l.dat"
+            IF ( .NOT. lbinary ) filename = "./3d-rism_hluv_l.xml"
+            !
+            CALL iotk_link( ounit, "TOTAL_CORRELATION_AS_LAUE_LONG", TRIM( filename ), &
+                                    CREATE=.FALSE., BINARY=.TRUE. )
+            !
+         END IF
          !
-         CALL iotk_link( ounit, "TOTAL_CORRELATION_AS_LAUE_SHORT", TRIM( filename ), &
-                                 CREATE=.FALSE., BINARY=.TRUE. )
-         !
-         filename = "./3d-rism_hluv_l.dat"
-         IF ( .NOT. lbinary ) filename = "./3d-rism_hluv_l.xml"
-         !
-         CALL iotk_link( ounit, "TOTAL_CORRELATION_AS_LAUE_LONG", TRIM( filename ), &
-                                 CREATE=.FALSE., BINARY=.TRUE. )
       END IF
       !
       CALL iotk_write_end( ounit, "_3D-RISM" )
@@ -2451,7 +2474,7 @@ CONTAINS
     END SUBROUTINE qexml_read_header
     !
     !
-    !------------------------------------------------------------------------  
+    !------------------------------------------------------------------------
     SUBROUTINE qexml_read_status_cp( nfi,simtime,time_units,title, &
                                   ekin, eht, esr, eself, epseu, enl, exc, vave, enthal, &
                                   energy_units, found, ierr )
@@ -2818,7 +2841,7 @@ CONTAINS
       LOGICAL  :: two_fermi_energies_,found_,found2
       REAL(DP) :: ef_up_, ef_dw_, nelup_, neldw_, lambda_, bfield_(3)
       REAL(DP), ALLOCATABLE :: angle1_(:), angle2_(:)
-      REAL(DP), ALLOCATABLE :: mcons_(:,:), starting_magnetization_(:) 
+      REAL(DP), ALLOCATABLE :: mcons_(:,:), starting_magnetization_(:)
       CHARACTER(256) :: energy_units_
       !
       !
@@ -2879,7 +2902,7 @@ CONTAINS
             DEALLOCATE( mcons_)
             !
          ELSE IF (i_cons_==4) THEN
-            ! 
+            !
             CALL iotk_scan_dat( iunit, "MAGNETIC_FIELD_1", bfield_(1) )
             CALL iotk_scan_dat( iunit, "MAGNETIC_FIELD_2", bfield_(2) )
             CALL iotk_scan_dat( iunit, "MAGNETIC_FIELD_3", bfield_(3) )
@@ -3040,7 +3063,7 @@ CONTAINS
       ENDDO
       !
       DO i = nsym_+1, nrot_
-         !    
+         !
          CALL iotk_scan_begin( iunit, "SYMM" // TRIM( iotk_index( i ) ), IERR=ierr )
          IF (ierr/=0) RETURN
          !
@@ -3792,7 +3815,7 @@ CONTAINS
       !
       !
       ngauss_=0
-      degauss_=-1.0d0 
+      degauss_=-1.0d0
       degauss_units_="none"
       !
       IF ( lgauss_ ) THEN
@@ -4010,7 +4033,7 @@ CONTAINS
          END DO
          !
       END IF
-      !   
+      !
       CALL iotk_scan_dat( iunit, "NORM-OF-Q", qnorm_, FOUND = found )
       IF (.not. found) qnorm_=0.0_DP
       !
@@ -4295,7 +4318,7 @@ CONTAINS
     !--------------------------------------------------------------------------
     SUBROUTINE qexml_read_bands_pw( num_k_points, nbnd, nkstot, lsda, lkpoint_dir, &
                                     filename, isk, et, wg , ierr )
-      !------------------------------------------------------------------------ 
+      !------------------------------------------------------------------------
       !
       INTEGER,   INTENT(in) :: num_k_points, nbnd, nkstot
       LOGICAL,   INTENT(in) :: lsda, lkpoint_dir
@@ -4772,7 +4795,10 @@ CONTAINS
     !
     !------------------------------------------------------------------------
     SUBROUTINE qexml_read_3drism( lrism3d, ecutsolv, cutoff_units, &
-                                  laue, laue_charge, laue_right, laue_left, laue_units, &
+                                  laue, laue_charge, laue_nfit, &
+                                  laue_right_start, laue_right_expand, &
+                                  laue_left_start, laue_left_expand, laue_units, &
+                                  laue_both_hands, laue_pot_ref, &
                                   nmol, molfile, molec_dir, dens1, dens2, dens_units, &
                                   found, ierr )
       !------------------------------------------------------------------------
@@ -4782,9 +4808,14 @@ CONTAINS
       CHARACTER(LEN=*), OPTIONAL, INTENT(out) :: cutoff_units
       LOGICAL,          OPTIONAL, INTENT(out) :: laue
       REAL(DP),         OPTIONAL, INTENT(out) :: laue_charge
-      REAL(DP),         OPTIONAL, INTENT(out) :: laue_right
-      REAL(DP),         OPTIONAL, INTENT(out) :: laue_left
+      INTEGER,          OPTIONAL, INTENT(out) :: laue_nfit
+      REAL(DP),         OPTIONAL, INTENT(out) :: laue_right_start
+      REAL(DP),         OPTIONAL, INTENT(out) :: laue_right_expand
+      REAL(DP),         OPTIONAL, INTENT(out) :: laue_left_start
+      REAL(DP),         OPTIONAL, INTENT(out) :: laue_left_expand
       CHARACTER(LEN=*), OPTIONAL, INTENT(out) :: laue_units
+      LOGICAL,          OPTIONAL, INTENT(out) :: laue_both_hands
+      INTEGER,          OPTIONAL, INTENT(out) :: laue_pot_ref
       INTEGER,          OPTIONAL, INTENT(out) :: nmol
       CHARACTER(LEN=*), OPTIONAL, INTENT(out) :: molfile(:)
       CHARACTER(LEN=*), OPTIONAL, INTENT(out) :: molec_dir
@@ -4799,9 +4830,14 @@ CONTAINS
       CHARACTER(256)              :: cutoff_units_
       LOGICAL                     :: laue_
       REAL(DP)                    :: laue_charge_
-      REAL(DP)                    :: laue_right_
-      REAL(DP)                    :: laue_left_
+      INTEGER                     :: laue_nfit_
+      REAL(DP)                    :: laue_right_start_
+      REAL(DP)                    :: laue_right_expand_
+      REAL(DP)                    :: laue_left_start_
+      REAL(DP)                    :: laue_left_expand_
       CHARACTER(256)              :: laue_units_
+      LOGICAL                     :: laue_both_hands_
+      INTEGER                     :: laue_pot_ref_
       INTEGER                     :: nmol_
       CHARACTER(256), ALLOCATABLE :: molfile_(:)
       CHARACTER(256)              :: molec_dir_
@@ -4836,15 +4872,30 @@ CONTAINS
          CALL iotk_scan_dat( iunit, "LAUE_SOLVENT_CHARGE", laue_charge_, IERR=ierr )
          IF (ierr/=0) RETURN
          !
+         CALL iotk_scan_dat( iunit, "LAUE_NUM_FIT", laue_nfit_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
          CALL iotk_scan_empty( iunit, "UNITS_FOR_LAUE_LENGTH", ATTR=attr, IERR=ierr )
          IF (ierr/=0) RETURN
          CALL iotk_scan_attr( attr, "UNITS", laue_units_, IERR=ierr )
          IF (ierr/=0) RETURN
          !
-         CALL iotk_scan_dat( iunit, "LAUE_LENGTH_RIGHT", laue_right_, IERR=ierr )
+         CALL iotk_scan_dat( iunit, "LAUE_START_RIGHT", laue_right_start_, IERR=ierr )
          IF (ierr/=0) RETURN
          !
-         CALL iotk_scan_dat( iunit, "LAUE_LENGTH_LEFT", laue_left_, IERR=ierr )
+         CALL iotk_scan_dat( iunit, "LAUE_EXPAND_RIGHT", laue_right_expand_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+         CALL iotk_scan_dat( iunit, "LAUE_START_LEFT", laue_left_start_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+         CALL iotk_scan_dat( iunit, "LAUE_EXPAND_LEFT", laue_left_expand_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+         CALL iotk_scan_dat( iunit, "LAUE_BOTH_HANDS", laue_both_hands_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+         CALL iotk_scan_dat( iunit, "LAUE_POTENTIAL_REFERENCE", laue_pot_ref_, IERR=ierr )
          IF (ierr/=0) RETURN
          !
       END IF
@@ -4898,10 +4949,15 @@ CONTAINS
       IF ( present(cutoff_units) )   cutoff_units     = cutoff_units_
       IF ( present(laue) )           laue             = laue_
       IF ( laue_ ) THEN
-         IF ( present(laue_charge) ) laue_charge      = laue_charge_
-         IF ( present(laue_right) )  laue_right       = laue_right_
-         IF ( present(laue_left) )   laue_left        = laue_left_
-         IF ( present(laue_units) )  laue_units       = laue_units_
+         IF ( present(laue_charge) )       laue_charge       = laue_charge_
+         IF ( present(laue_nfit) )         laue_nfit         = laue_nfit_
+         IF ( present(laue_right_start) )  laue_right_start  = laue_right_start_
+         IF ( present(laue_right_expand) ) laue_right_expand = laue_right_expand_
+         IF ( present(laue_left_start) )   laue_left_start   = laue_left_start_
+         IF ( present(laue_left_expand) )  laue_left_expand  = laue_left_expand_
+         IF ( present(laue_units) )        laue_units        = laue_units_
+         IF ( present(laue_both_hands) )   laue_both_hands   = laue_both_hands_
+         IF ( present(laue_pot_ref) )      laue_pot_ref      = laue_pot_ref_
       END IF
       IF ( present(nmol) )           nmol             = nmol_
       !

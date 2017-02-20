@@ -25,8 +25,13 @@ MODULE mp_rism
     INTEGER :: me_sitg    = 0  ! index of the process within a site group
     INTEGER :: root_sitg  = 0  ! index of the root process within a site group
     INTEGER :: my_sitg_id = 0  ! index of my site group
+#if defined(__MPI)
     INTEGER :: inter_sitg_comm = MPI_COMM_NULL  ! inter site group communicator
     INTEGER :: intra_sitg_comm = MPI_COMM_NULL  ! intra site group communicator
+#else
+    INTEGER :: inter_sitg_comm = 0
+    INTEGER :: intra_sitg_comm = 0
+#endif
     LOGICAL :: inter_sitg_keep = .FALSE.        ! keep inter_sitg_comm by oneself or not
     LOGICAL :: intra_sitg_keep = .FALSE.        ! keep intra_sitg_comm by oneself or not
     ! ... site splitting
@@ -41,7 +46,11 @@ MODULE mp_rism
     INTEGER :: nproc_task = 1  ! number of processies within a task group
     INTEGER :: me_task    = 0  ! index of the process within a task group
     INTEGER :: root_task  = 0  ! index of the root process within a task group
+#if defined(__MPI)
     INTEGER :: itask_comm = MPI_COMM_NULL  ! task group communicator
+#else
+    INTEGER :: itask_comm = 0
+#endif
     LOGICAL :: itask_keep = .FALSE.        ! keep itask_comm by oneself or not
     ! ... vector splitting
     INTEGER          :: nvec       = 0  ! total number of vector
@@ -109,8 +118,8 @@ CONTAINS
     mp_risms%me_sitg         = 0
     mp_risms%root_sitg       = 0
     mp_risms%my_sitg_id      = 0
-    mp_risms%inter_sitg_comm = MPI_COMM_NULL
-    mp_risms%intra_sitg_comm = MPI_COMM_NULL
+    mp_risms%inter_sitg_comm = 0 !MPI_COMM_NULL
+    mp_risms%intra_sitg_comm = 0 !MPI_COMM_NULL
     mp_risms%inter_sitg_keep = .FALSE.
     mp_risms%intra_sitg_keep = .FALSE.
     !
@@ -118,7 +127,7 @@ CONTAINS
     mp_rismt%nproc_task      = 1
     mp_rismt%me_task         = 0
     mp_rismt%root_task       = 0
-    mp_rismt%itask_comm      = MPI_COMM_NULL
+    mp_rismt%itask_comm      = 0 !MPI_COMM_NULL
     mp_rismt%itask_keep      = .FALSE.
     !
 #endif
@@ -188,8 +197,8 @@ CONTAINS
     mp_risms%me_sitg         = 0
     mp_risms%root_sitg       = 0
     mp_risms%my_sitg_id      = 0
-    mp_risms%inter_sitg_comm = MPI_COMM_NULL
-    mp_risms%intra_sitg_comm = MPI_COMM_NULL
+    mp_risms%inter_sitg_comm = 0 !MPI_COMM_NULL
+    mp_risms%intra_sitg_comm = 0 !MPI_COMM_NULL
     mp_risms%inter_sitg_keep = .FALSE.
     mp_risms%intra_sitg_keep = .FALSE.
     !
@@ -197,7 +206,7 @@ CONTAINS
     mp_rismt%nproc_task      = 1
     mp_rismt%me_task         = 0
     mp_rismt%root_task       = 0
-    mp_rismt%itask_comm      = MPI_COMM_NULL
+    mp_rismt%itask_comm      = 0 !MPI_COMM_NULL
     mp_rismt%itask_keep      = .FALSE.
     !
 #endif

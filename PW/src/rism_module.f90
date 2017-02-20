@@ -39,7 +39,7 @@ MODULE rism_module
                              & rism1d_write_to_restart, rism1d_write_to_show, rism1d_print_clock, &
                              & starting_1d => starting_corr
   USE rism3d_facade,    ONLY : lrism3d, epsv, starting_epsv, &
-                             & rism3t, rism3d_initialize, rism3d_finalize, &
+                             & rism3t, rism3d_initialize, rism3d_finalize, rism3d_is_laue, &
                              & rism3d_iosys, rism3d_summary, rism3d_prepare, rism3d_reprepare, &
                              & rism3d_run, rism3d_update_solute, rism3d_potential, &
                              & rism3d_force, rism3d_stress, rism3d_printpot, &
@@ -71,6 +71,7 @@ MODULE rism_module
   PUBLIC :: rism_pot3d
   PUBLIC :: force_rism
   PUBLIC :: stres_rism
+  PUBLIC :: rism_tobe_alive
   PUBLIC :: rism_set_restart
   PUBLIC :: rism_setlocal
   PUBLIC :: rism_new_conv_thr
@@ -437,18 +438,20 @@ CONTAINS
   END SUBROUTINE rism_calc3d
   !
   !----------------------------------------------------------------------------
-  SUBROUTINE rism_pot3d(vr)
+  SUBROUTINE rism_pot3d(rhog, vr)
     !----------------------------------------------------------------------------
     !
     ! ... create solvation potential of 3D-RISM, if possible.
     !
     IMPLICIT NONE
     !
-    REAL(DP), INTENT(INOUT) :: vr(dfftp%nnr, nspin)
+    COMPLEX(DP), INTENT(IN)    :: rhog(ngm, nspin)
+    REAL(DP),    INTENT(INOUT) :: vr(dfftp%nnr, nspin)
     !
     INTEGER                  :: is
     REAL(DP),    ALLOCATABLE :: vpot(:)
     COMPLEX(DP), ALLOCATABLE :: vpog(:)
+    COMPLEX(DP), ALLOCATABLE :: chgg(:)
     !
     ! ... if 3D-RISM's data are kept,
     ! ... one can calculate solvation potential.
@@ -458,8 +461,19 @@ CONTAINS
     !
     ALLOCATE(vpot(dfftp%nnr))
     ALLOCATE(vpog(ngm))
+    IF (llaue) THEN
+      ALLOCATE(chgg(ngm))
+    ELSE
+      ALLOCATE(chgg(1))
+    END IF
     !
-    CALL rism3d_potential()
+    CALL solute_pot(rhog, vpot)
+    IF (llaue) THEN
+      CALL solute_chg(rhog, chgg)
+    END IF
+    !
+    CALL rism3d_potential(vpot, chgg)
+    !
     CALL solvation_pot(vpot, vpog)
     !
     DO is = 1, nspin_lsda
@@ -468,6 +482,7 @@ CONTAINS
     !
     DEALLOCATE(vpot)
     DEALLOCATE(vpog)
+    DEALLOCATE(chgg)
     !
   END SUBROUTINE rism_pot3d
   !
@@ -688,6 +703,19 @@ CONTAINS
     CALL rism3d_stress(sigmasol)
     !
   END SUBROUTINE stres_rism
+  !
+  !----------------------------------------------------------------------------
+  SUBROUTINE rism_tobe_alive()
+    !----------------------------------------------------------------------------
+    !
+    ! ... restore status from rism3d_facade.
+    !
+    IMPLICIT NONE
+    !
+    lrism = lrism3d
+    llaue = rism3d_is_laue()
+    !
+  END SUBROUTINE rism_tobe_alive
   !
   !----------------------------------------------------------------------------
   SUBROUTINE rism_set_restart()

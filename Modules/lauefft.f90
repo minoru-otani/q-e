@@ -32,7 +32,9 @@ MODULE lauefft
   USE fft_scalar,    ONLY : cft_1z, cft_2xy
   USE fft_types,     ONLY : fft_type_descriptor
   USE kinds,         ONLY : DP
+  USE mp,            ONLY : mp_sum, mp_rank, mp_size
   USE scatter_mod,   ONLY : fft_scatter
+  USE parallel_include
   !
   IMPLICIT NONE
   SAVE
@@ -103,6 +105,8 @@ MODULE lauefft
   PUBLIC :: inv_lauefft_1z_exp
   PUBLIC :: fw_lauefft_2xy
   PUBLIC :: inv_lauefft_2xy
+  PUBLIC :: gather_lauefft
+  PUBLIC :: gather_lauefft_to_real
   !
 CONTAINS
   !
@@ -255,11 +259,15 @@ CONTAINS
     INTEGER                  :: igxy
     INTEGER                  :: jgxy1
     INTEGER                  :: jgxy2
-    INTEGER                  :: n3, nx3
+    INTEGER                  :: nx1
+    INTEGER                  :: nx2
+    INTEGER                  :: nx3, n3
     COMPLEX(DP), ALLOCATABLE :: cinp(:)
     COMPLEX(DP), ALLOCATABLE :: cout(:)
     !
     n3  = lauefft0%dfft%nr3
+    nx1 = lauefft0%dfft%nr1x
+    nx2 = lauefft0%dfft%nr2x
     nx3 = lauefft0%dfft%nr3x
     !
     ALLOCATE(cinp(nx3 * lauefft0%ngxy))
@@ -287,7 +295,11 @@ CONTAINS
       jgxy1 = lauefft0%nlxy(igxy)
       jgxy2 = (igxy - 1) * nx3
       DO igz = 1, lauefft0%ngz
+#if defined (__MPI) && !defined (__USE_3D_FFT)
         cg(lauefft0%nlz(igz) + jgxy1) = cout(lauefft0%nlz(igz) + jgxy2)
+#else
+        cg(nx1 * nx2 * (lauefft0%nlz(igz) - 1) + jgxy1) = cout(lauefft0%nlz(igz) + jgxy2)
+#endif
       END DO
     END DO
     !
@@ -296,8 +308,13 @@ CONTAINS
         jgxy1 = lauefft0%nlxy( igxy)
         jgxy2 = lauefft0%nlmxy(igxy)
         DO igz = 1, lauefft0%ngz
+#if defined (__MPI) && !defined (__USE_3D_FFT)
           jgz1 = lauefft0%nlz(igz)
           jgz2 = lauefft0%nlz(lauefft0%ngz - igz + 1)
+#else
+          jgz1 = nx1 * nx2 * (lauefft0%nlz(igz) - 1)
+          jgz2 = nx1 * nx2 * (lauefft0%nlz(lauefft0%ngz - igz + 1) - 1)
+#endif
           cg(jgz2 + jgxy2) = CONJG(cg(jgz1 + jgxy1))
         END DO
       END DO
@@ -329,11 +346,15 @@ CONTAINS
     INTEGER                  :: igxy
     INTEGER                  :: jgxy1
     INTEGER                  :: jgxy2
-    INTEGER                  :: n3, nx3
+    INTEGER                  :: nx1
+    INTEGER                  :: nx2
+    INTEGER                  :: nx3, n3
     COMPLEX(DP), ALLOCATABLE :: cinp(:)
     COMPLEX(DP), ALLOCATABLE :: cout(:)
     !
     n3  = lauefft0%dfft%nr3
+    nx1 = lauefft0%dfft%nr1x
+    nx2 = lauefft0%dfft%nr2x
     nx3 = lauefft0%dfft%nr3x
     !
     ALLOCATE(cinp(nx3 * lauefft0%ngxy))
@@ -344,7 +365,11 @@ CONTAINS
       jgxy1 = lauefft0%nlxy(igxy)
       jgxy2 = (igxy - 1) * nx3
       DO igz = 1, lauefft0%ngz
+#if defined (__MPI) && !defined (__USE_3D_FFT)
         cinp(lauefft0%nlz(igz) + jgxy2) = cg(lauefft0%nlz(igz) + jgxy1)
+#else
+        cinp(lauefft0%nlz(igz) + jgxy2) = cg(nx1 * nx2 * (lauefft0%nlz(igz) - 1) + jgxy1)
+#endif
       END DO
     END DO
     !
@@ -546,8 +571,12 @@ CONTAINS
     !
     CALL cft_2xy(cinp, lauefft0%dfft%npp(me_p), n1, n2, nx1, nx2, -1, planes)
     !
+#if defined (__MPI) && !defined (__USE_3D_FFT)
     CALL fft_scatter(lauefft0%dfft, &
     & cout, nx3, lauefft0%dfft%nnr, cinp, lauefft0%dfft%nsp, lauefft0%dfft%npp, -1)
+#else
+    cout = cinp
+#endif
     !
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
@@ -559,7 +588,11 @@ CONTAINS
         ELSE
           jrz2 = irz - (n3 / 2)
         END IF
+#if defined (__MPI) && !defined (__USE_3D_FFT)
         cl(jrz1 + jgxy1) = cout(jrz2 + jgxy2)
+#else
+        cl(jrz1 + jgxy1) = cout(nx1 * nx2 * (jrz2 - 1) + jgxy2)
+#endif
       END DO
     END DO
     !
@@ -618,7 +651,11 @@ CONTAINS
         ELSE
           jrz2 = irz - (n3 / 2)
         END IF
+#if defined (__MPI) && !defined (__USE_3D_FFT)
         cinp(jrz2 + jgxy2) = cl(jrz1 + jgxy1)
+#else
+        cinp(nx1 * nx2 * (jrz2 - 1) + jgxy2) = cl(jrz1 + jgxy1)
+#endif
       END DO
     END DO
     !
@@ -627,7 +664,11 @@ CONTAINS
         jgxy1 = lauefft0%nlxy( igxy)
         jgxy2 = lauefft0%nlmxy(igxy)
         DO irz = 1, n3
+#if defined (__MPI) && !defined (__USE_3D_FFT)
           cinp(irz + jgxy2) = CONJG(cinp(irz + jgxy1))
+#else
+          cinp(nx1 * nx2 * (irz - 1) + jgxy2) = CONJG(cinp(nx1 * nx2 * (irz - 1) + jgxy1))
+#endif
         END DO
       END DO
     END IF
@@ -636,8 +677,12 @@ CONTAINS
     !
     planes = lauefft0%dfft%iplp
     !
+#if defined (__MPI) && !defined (__USE_3D_FFT)
     CALL fft_scatter(lauefft0%dfft, &
     & cinp, nx3, lauefft0%dfft%nnr, cout, lauefft0%dfft%nsp, lauefft0%dfft%npp, +1)
+#else
+    cout = cinp
+#endif
     !
     CALL cft_2xy(cout, lauefft0%dfft%npp(me_p), n1, n2, nx1, nx2, +1, planes)
     !
@@ -649,5 +694,174 @@ CONTAINS
     DEALLOCATE(cout)
     !
   END SUBROUTINE inv_lauefft_2xy
+  !
+  !--------------------------------------------------------------------------
+  SUBROUTINE gather_lauefft(lauefft0, cl, nrz, cltot, lall)
+    !--------------------------------------------------------------------------
+    !
+    ! ... gathers a distributed Laue-rep. FFT grid to lauefft0%dfft%root, that is,
+    ! ... the first processor of input descriptor lauefft0%dfft
+    !
+    IMPLICIT NONE
+    !
+    TYPE(lauefft_type), INTENT(IN)  :: lauefft0
+    COMPLEX(DP),        INTENT(IN)  :: cl(1:*)     ! distributed variable (nrz*ngxy)  ; stick major
+    INTEGER,            INTENT(IN)  :: nrz         ! leading dimension of Z
+    COMPLEX(DP),        INTENT(OUT) :: cltot(1:*)  ! gathered variable (nr1x*nr2x*nrz); plane major
+    LOGICAL, OPTIONAL,  INTENT(IN)  :: lall        ! bcast to all ranks, or not
+    !
+    LOGICAL                  :: lall_
+    INTEGER                  :: ierr
+    INTEGER                  :: isign
+    INTEGER                  :: irz
+    INTEGER                  :: igxy
+    INTEGER                  :: jgxy1
+    INTEGER                  :: jgxy2
+    INTEGER                  :: igx, igy
+    INTEGER                  :: mx, my
+    INTEGER                  :: n1, nx1
+    INTEGER                  :: n2, nx2
+    INTEGER                  :: n3
+    INTEGER                  :: ntot
+    REAL(DP)                 :: creal
+    REAL(DP)                 :: cimag
+    COMPLEX(DP), ALLOCATABLE :: cltmp(:)
+    !
+    lall_ = .FALSE.
+    IF (PRESENT(lall)) THEN
+      lall_ = lall
+    END IF
+    !
+    n1   = lauefft0%dfft%nr1
+    n2   = lauefft0%dfft%nr2
+    n3   = lauefft0%nrz
+    nx1  = lauefft0%dfft%nr1x
+    nx2  = lauefft0%dfft%nr2x
+    ntot = nx1 * nx2 * n3
+    !
+    ALLOCATE(cltmp(ntot))
+    cltmp(1:ntot) = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    !
+    DO igxy = 1, lauefft0%ngxy
+      isign = 1
+   10 CONTINUE
+      !
+      mx  = isign * lauefft0%millxy(1, igxy)
+      igx = mx + 1
+      IF (igx < 1) THEN
+        igx = igx + n1
+      END IF
+      !
+      my  = isign * lauefft0%millxy(2, igxy)
+      igy = my + 1
+      IF (igy < 1) THEN
+        igy = igy + n2
+      END IF
+      !
+      jgxy1 = nrz * (igxy - 1)
+      jgxy2 = igx + (igy - 1) * nx1
+      DO irz = 1, n3
+        creal = DBLE( cl(irz + jgxy1))
+        cimag = AIMAG(cl(irz + jgxy1))
+        cltmp(nx1 * nx2 * (irz - 1) + jgxy2) = CMPLX(creal, DBLE(isign) * cimag, kind=DP)
+      END DO
+      !
+      IF (gamma_only .AND. isign > 0 .AND. igxy >= lauefft0%gxystart) THEN
+        isign = -1
+        GOTO 10
+      END IF
+    END DO
+    !
+#if defined (__MPI)
+    IF (lall_) THEN
+      CALL mp_sum(cltmp, lauefft0%dfft%comm)
+      cltot(1:ntot) = cltmp(1:ntot)
+      !
+    ELSE
+      CALL MPI_REDUCE(cltmp(1), cltot(1), ntot, MPI_DOUBLE_COMPLEX, MPI_SUM, &
+                    & lauefft0%dfft%root, lauefft0%dfft%comm, ierr)
+      IF (ierr /= MPI_SUCCESS) THEN
+        CALL errore('gather_lauefft', 'error at MPI_REDUCE', 1)
+      END IF
+    END IF
+    !
+#else
+    cltot(1:ntot) = cltmp(1:ntot)
+    !
+#endif
+    DEALLOCATE(cltmp)
+    !
+  END SUBROUTINE gather_lauefft
+  !
+  !--------------------------------------------------------------------------
+  SUBROUTINE gather_lauefft_to_real(lauefft0, cl, nrz, crtot)
+    !--------------------------------------------------------------------------
+    !
+    ! ... gathers a distributed Laue-rep. FFT grid to lauefft0%dfft%root, that is,
+    ! ... the first processor of input descriptor lauefft0%dfft, as R-space
+    !                                                               ^^^^^^^
+    !
+    IMPLICIT NONE
+    !
+    TYPE(lauefft_type), INTENT(IN)  :: lauefft0
+    COMPLEX(DP),        INTENT(IN)  :: cl(1:*)     ! distributed variable (nrz*ngxy)  ; stick major
+    INTEGER,            INTENT(IN)  :: nrz         ! leading dimension of Z
+    REAL(DP),           INTENT(OUT) :: crtot(1:*)  ! gathered variable (nr1x*nr2x*nrz); plane major
+    !
+    INTEGER                  :: ierr
+    INTEGER                  :: irz
+    INTEGER                  :: nsta
+    INTEGER                  :: nend
+    INTEGER                  :: n1, nx1
+    INTEGER                  :: n2, nx2
+    INTEGER                  :: n3
+    INTEGER                  :: ntot
+    INTEGER                  :: irank
+    INTEGER                  :: nproc
+    REAL(DP),    ALLOCATABLE :: crtmp(:)
+    COMPLEX(DP), ALLOCATABLE :: cltot(:)
+    !
+    n1   = lauefft0%dfft%nr1
+    n2   = lauefft0%dfft%nr2
+    n3   = lauefft0%nrz
+    nx1  = lauefft0%dfft%nr1x
+    nx2  = lauefft0%dfft%nr2x
+    ntot = nx1 * nx2 * n3
+    !
+    ALLOCATE(crtmp(ntot))
+    ALLOCATE(cltot(ntot))
+    !
+    crtmp = 0.0_DP
+    CALL gather_lauefft(lauefft0, cl, nrz, cltot, lall=.TRUE.)
+    !
+    irank = mp_rank(lauefft0%dfft%comm)
+    nproc = mp_size(lauefft0%dfft%comm)
+    !
+    DO irz = 1, n3
+      IF (irank /= MOD(irz - 1, nproc)) THEN
+        CYCLE
+      END IF
+      !
+      nsta = nx1 * nx2 * (irz - 1) + 1
+      nend = nx1 * nx2 * irz
+      CALL cft_2xy(cltot(nsta:nend), 1, n1, n2, nx1, nx2, +1)
+      crtmp(nsta:nend) = DBLE(cltot(nsta:nend))
+    END DO
+    !
+#if defined (__MPI)
+    CALL MPI_REDUCE(crtmp(1), crtot(1), ntot, MPI_DOUBLE_PRECISION, MPI_SUM, &
+                  & lauefft0%dfft%root, lauefft0%dfft%comm, ierr)
+    IF (ierr /= MPI_SUCCESS) THEN
+      CALL errore('gather_lauefft_to_real', 'error at MPI_REDUCE', 1)
+    END IF
+    !
+#else
+    crtot(1:ntot) = crtmp(1:ntot)
+    !
+#endif
+    DEALLOCATE(crtmp)
+    DEALLOCATE(cltot)
+    !
+  END SUBROUTINE gather_lauefft_to_real
   !
 END MODULE lauefft

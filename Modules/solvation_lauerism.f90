@@ -98,6 +98,11 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
     RETURN
   END IF
   !
+  IF (rismt%ngxy < rismt%lfft%ngxy) THEN
+    ierr = IERR_RISM_INCORRECT_DATA_TYPE
+    RETURN
+  END IF
+  !
   ! ... allocate memory
   IF (rismt%nrzs * rismt%ngxy * rismt%nsite > 0) THEN
     ALLOCATE(ggz(rismt%nrzs * rismt%ngxy, rismt%nsite))
