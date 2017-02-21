@@ -18,15 +18,18 @@ MODULE lauefft
   !
   !           zleft     -z0                              z0         zright
   !     ------|----------|-------------------------------|----------|--------> z
-  !                      ^  ^      ^           ^      ^  ^
-  !                      |  |      |           |      |  |
-  !                      |  |      izleft_end  izright_start
+  !                      ^  ^   ^  ^           ^  ^   ^  ^
+  !                      |  |   |  |           |  |   |  |
+  !                      |  |   |  izleft_end  izright_start
+  !                      |  |   |                 |   |  |
+  !                      |  |   izleft_gedge      izright_gedge
   !                      |  |                         |  |
   !                      |  izleft_start              izright_end
   !                      |                               |
   !                      izcell_start                    izcell_end
   !
   ! ... , where it has to be izright_end <= izcell_end and izleft_start >= izcell_start.
+  ! ... in [izleft_gedge,izleft_end] or [izright_start,izright_gedge], g(z) has to be 0.
   !
   USE control_flags, ONLY : gamma_only
   USE fft_scalar,    ONLY : cft_1z, cft_2xy
@@ -59,8 +62,10 @@ MODULE lauefft
     INTEGER           :: izcell_end     ! ending index of unit cell.
     INTEGER           :: izright_start  ! starting index of integral region for right.
     INTEGER           :: izright_end    ! ending index of integral region for right.
+    INTEGER           :: izright_gedge  ! in [izright_start, izright_gedge], g(z) = 0.
     INTEGER           :: izleft_start   ! starting index of integral region for left.
     INTEGER           :: izleft_end     ! ending index of integral region for left.
+    INTEGER           :: izleft_gedge   ! in [izleft_gedge, izleft_end], g(z) = 0.
     !
     ! ... properties about Z-stick (G-space, corresponding to unit cell)
     INTEGER           :: ngz            ! number of Gz-vectors
@@ -99,6 +104,7 @@ MODULE lauefft
   PUBLIC :: allocate_lauefft
   PUBLIC :: deallocate_lauefft
   PUBLIC :: set_lauefft_offset
+  PUBLIC :: set_lauefft_barrier
   PUBLIC :: fw_lauefft_1z
   PUBLIC :: inv_lauefft_1z
   PUBLIC :: fw_lauefft_1z_exp
@@ -181,8 +187,10 @@ CONTAINS
     lauefft0%izcell_end    = 0
     lauefft0%izright_start = 0
     lauefft0%izright_end   = 0
+    lauefft0%izright_gedge = 0
     lauefft0%izleft_start  = 0
     lauefft0%izleft_end    = 0
+    lauefft0%izleft_gedge  = 0
     !
     ! ... clear properties about Z-stick (G-space of unit cell)
     lauefft0%ngz    = 0
@@ -223,8 +231,8 @@ CONTAINS
     ! ... set offsets from z=0.
     ! ...
     ! ... Variables:
-    ! ...   wright: length of offset on right-hand side (in alat units)
-    ! ...   wleft:  lenght of offset on left-hand side (in alat units)
+    ! ...   wright: offset on right-hand side (in alat units)
+    ! ...   wleft:  offset on left-hand side (in alat units)
     !
     IMPLICIT NONE
     !
@@ -235,6 +243,26 @@ CONTAINS
     CALL set_lauefft_offset_x(lauefft0, wright, wleft)
     !
   END SUBROUTINE set_lauefft_offset
+  !
+  !--------------------------------------------------------------------------
+  SUBROUTINE set_lauefft_barrier(lauefft0, wright, wleft)
+    !--------------------------------------------------------------------------
+    !
+    ! ... set offset of barrier, where g(z) = 0.
+    ! ...
+    ! ... Variables:
+    ! ...   wright: offset of barrier on right-hand side (in alat units)
+    ! ...   wleft:  offset of barrier on left-hand side (in alat units)
+    !
+    IMPLICIT NONE
+    !
+    TYPE(lauefft_type), INTENT(INOUT) :: lauefft0
+    REAL(DP),           INTENT(IN)    :: wright
+    REAL(DP),           INTENT(IN)    :: wleft
+    !
+    CALL set_lauefft_barrier_x(lauefft0, wright, wleft)
+    !
+  END SUBROUTINE set_lauefft_barrier
   !
   !--------------------------------------------------------------------------
   SUBROUTINE fw_lauefft_1z(lauefft0, cl, nrz, irz_start, cg)

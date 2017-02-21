@@ -2255,8 +2255,8 @@ CONTAINS
     !------------------------------------------------------------------------
     SUBROUTINE qexml_write_3drism( lrism3d, ecutsolv, cutoff_units, &
                                    laue, laue_charge, laue_nfit, &
-                                   laue_right_start, laue_right_expand, &
-                                   laue_left_start, laue_left_expand, laue_units, &
+                                   laue_right_start, laue_right_expand, laue_right_buffer, &
+                                   laue_left_start, laue_left_expand, laue_left_buffer, laue_units, &
                                    laue_both_hands, laue_pot_ref, &
                                    nmol, molfile, molec_dir, dens1, dens2, dens_units, &
                                    dirname, lbinary )
@@ -2272,8 +2272,10 @@ CONTAINS
       INTEGER,          INTENT(in) :: laue_nfit
       REAL(DP),         INTENT(in) :: laue_right_start
       REAL(DP),         INTENT(in) :: laue_right_expand
+      REAL(DP),         INTENT(in) :: laue_right_buffer
       REAL(DP),         INTENT(in) :: laue_left_start
       REAL(DP),         INTENT(in) :: laue_left_expand
+      REAL(DP),         INTENT(in) :: laue_left_buffer
       CHARACTER(LEN=*), INTENT(in) :: laue_units
       LOGICAL,          INTENT(in) :: laue_both_hands
       INTEGER,          INTENT(in) :: laue_pot_ref
@@ -2317,9 +2319,13 @@ CONTAINS
          !
          CALL iotk_write_dat( ounit, "LAUE_EXPAND_RIGHT", laue_right_expand )
          !
+         CALL iotk_write_dat( ounit, "LAUE_BUFFER_RIGHT", laue_right_buffer )
+         !
          CALL iotk_write_dat( ounit, "LAUE_START_LEFT", laue_left_start )
          !
          CALL iotk_write_dat( ounit, "LAUE_EXPAND_LEFT", laue_left_expand )
+         !
+         CALL iotk_write_dat( ounit, "LAUE_BUFFER_LEFT", laue_left_buffer )
          !
          CALL iotk_write_dat( ounit, "LAUE_BOTH_HANDS", laue_both_hands )
          !
@@ -4796,8 +4802,8 @@ CONTAINS
     !------------------------------------------------------------------------
     SUBROUTINE qexml_read_3drism( lrism3d, ecutsolv, cutoff_units, &
                                   laue, laue_charge, laue_nfit, &
-                                  laue_right_start, laue_right_expand, &
-                                  laue_left_start, laue_left_expand, laue_units, &
+                                  laue_right_start, laue_right_expand, laue_right_buffer, &
+                                  laue_left_start, laue_left_expand, laue_left_buffer, laue_units, &
                                   laue_both_hands, laue_pot_ref, &
                                   nmol, molfile, molec_dir, dens1, dens2, dens_units, &
                                   found, ierr )
@@ -4811,8 +4817,10 @@ CONTAINS
       INTEGER,          OPTIONAL, INTENT(out) :: laue_nfit
       REAL(DP),         OPTIONAL, INTENT(out) :: laue_right_start
       REAL(DP),         OPTIONAL, INTENT(out) :: laue_right_expand
+      REAL(DP),         OPTIONAL, INTENT(out) :: laue_right_buffer
       REAL(DP),         OPTIONAL, INTENT(out) :: laue_left_start
       REAL(DP),         OPTIONAL, INTENT(out) :: laue_left_expand
+      REAL(DP),         OPTIONAL, INTENT(out) :: laue_left_buffer
       CHARACTER(LEN=*), OPTIONAL, INTENT(out) :: laue_units
       LOGICAL,          OPTIONAL, INTENT(out) :: laue_both_hands
       INTEGER,          OPTIONAL, INTENT(out) :: laue_pot_ref
@@ -4833,8 +4841,10 @@ CONTAINS
       INTEGER                     :: laue_nfit_
       REAL(DP)                    :: laue_right_start_
       REAL(DP)                    :: laue_right_expand_
+      REAL(DP)                    :: laue_right_buffer_
       REAL(DP)                    :: laue_left_start_
       REAL(DP)                    :: laue_left_expand_
+      REAL(DP)                    :: laue_left_buffer_
       CHARACTER(256)              :: laue_units_
       LOGICAL                     :: laue_both_hands_
       INTEGER                     :: laue_pot_ref_
@@ -4886,10 +4896,16 @@ CONTAINS
          CALL iotk_scan_dat( iunit, "LAUE_EXPAND_RIGHT", laue_right_expand_, IERR=ierr )
          IF (ierr/=0) RETURN
          !
+         CALL iotk_scan_dat( iunit, "LAUE_BUFFER_RIGHT", laue_right_buffer_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
          CALL iotk_scan_dat( iunit, "LAUE_START_LEFT", laue_left_start_, IERR=ierr )
          IF (ierr/=0) RETURN
          !
          CALL iotk_scan_dat( iunit, "LAUE_EXPAND_LEFT", laue_left_expand_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+         CALL iotk_scan_dat( iunit, "LAUE_BUFFER_LEFT", laue_left_buffer_, IERR=ierr )
          IF (ierr/=0) RETURN
          !
          CALL iotk_scan_dat( iunit, "LAUE_BOTH_HANDS", laue_both_hands_, IERR=ierr )
@@ -4953,8 +4969,10 @@ CONTAINS
          IF ( present(laue_nfit) )         laue_nfit         = laue_nfit_
          IF ( present(laue_right_start) )  laue_right_start  = laue_right_start_
          IF ( present(laue_right_expand) ) laue_right_expand = laue_right_expand_
+         IF ( present(laue_right_buffer) ) laue_right_buffer = laue_right_buffer_
          IF ( present(laue_left_start) )   laue_left_start   = laue_left_start_
          IF ( present(laue_left_expand) )  laue_left_expand  = laue_left_expand_
+         IF ( present(laue_left_buffer) )  laue_left_buffer  = laue_left_buffer_
          IF ( present(laue_units) )        laue_units        = laue_units_
          IF ( present(laue_both_hands) )   laue_both_hands   = laue_both_hands_
          IF ( present(laue_pot_ref) )      laue_pot_ref      = laue_pot_ref_

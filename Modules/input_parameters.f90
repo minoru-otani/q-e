@@ -1499,6 +1499,12 @@ MODULE input_parameters
         REAL(DP) :: laue_starting_left = 0.0_DP
           ! starting position on left-hand side in Laue-RISM calculation
 
+        REAL(DP) :: laue_buffer_right = 8.0_DP
+          ! buffering length on right-hand side in Laue-RISM calculation
+
+        REAL(DP) :: laue_buffer_left = 8.0_DP
+          ! buffering length on left-hand side in Laue-RISM calculation
+
         LOGICAL :: laue_both_hands = .FALSE.
           ! number of fitting points in Laue-RISM calculation
 
@@ -1519,7 +1525,8 @@ MODULE input_parameters
                           mdiis1d_size, mdiis3d_size, mdiis1d_step, mdiis3d_step, &
                           rism1d_bond_width, rism1d_nproc, rism3d_conv_always, rism3d_planar_average, &
                           laue_nfit, laue_expand_right, laue_expand_left, &
-                          laue_starting_right, laue_starting_left, laue_both_hands, laue_reference
+                          laue_starting_right, laue_starting_left, &
+                          laue_buffer_right, laue_buffer_left, laue_both_hands, laue_reference
 !  END manual
 ! ----------------------------------------------------------------------
 

@@ -116,6 +116,7 @@ SUBROUTINE allocate_lauefft_rz(lauefft0, dzright, dzleft)
     lauefft0%zright = z0 + DBLE(nzright) * hz
     lauefft0%izright_start = lauefft0%izcell_start + lauefft0%dfft%nr3 / 2
     lauefft0%izright_end   = lauefft0%izcell_end
+    lauefft0%izright_gedge = lauefft0%izright_start
     IF (lauefft0%izright_start > lauefft0%izright_end) THEN
       CALL errore(' allocate_lauefft_rz ', ' izright_start > izright_end ', 1)
     END IF
@@ -125,6 +126,7 @@ SUBROUTINE allocate_lauefft_rz(lauefft0, dzright, dzleft)
     lauefft0%zright        = z0
     lauefft0%izright_start = lauefft0%izcell_end + 1
     lauefft0%izright_end   = lauefft0%izcell_end
+    lauefft0%izright_gedge = lauefft0%izright_start
   END IF
   !
   ! ... set properties of left
@@ -137,6 +139,7 @@ SUBROUTINE allocate_lauefft_rz(lauefft0, dzright, dzleft)
     ELSE
       lauefft0%izleft_end = lauefft0%izcell_end - lauefft0%dfft%nr3 / 2
     END IF
+    lauefft0%izleft_gedge = lauefft0%izleft_end
     IF (lauefft0%izleft_start > lauefft0%izleft_end) THEN
       CALL errore(' allocate_lauefft_rz ', ' izleft_start > izleft_end ', 1)
     END IF
@@ -146,6 +149,7 @@ SUBROUTINE allocate_lauefft_rz(lauefft0, dzright, dzleft)
     lauefft0%zleft        = -z0
     lauefft0%izleft_start = lauefft0%izcell_start
     lauefft0%izleft_end   = lauefft0%izcell_start - 1
+    lauefft0%izleft_gedge = lauefft0%izleft_end
   END IF
   !
   ! ... check expanded cell
@@ -188,12 +192,10 @@ SUBROUTINE set_lauefft_offset_x(lauefft0, wright, wleft)
   IF (lauefft0%xright) THEN
     lauefft0%izright_start = lauefft0%izcell_start + lauefft0%dfft%nr3 / 2
     lauefft0%izright_start = lauefft0%izright_start + nright
+    lauefft0%izright_start = MAX(lauefft0%izright_start, lauefft0%izcell_start)
     !
     IF (lauefft0%izright_start > lauefft0%izright_end) THEN
       CALL errore(' set_lauefft_offset_x ', ' izright_start > izright_end ', 1)
-    END IF
-    IF (lauefft0%izright_start < lauefft0%izcell_start) THEN
-      CALL errore(' set_lauefft_offset_x ', ' izright_start < izcell_start ', 1)
     END IF
   END IF
   !
@@ -210,16 +212,80 @@ SUBROUTINE set_lauefft_offset_x(lauefft0, wright, wleft)
       lauefft0%izleft_end = lauefft0%izcell_end - lauefft0%dfft%nr3 / 2
     END IF
     lauefft0%izleft_end = lauefft0%izleft_end + nleft
+    lauefft0%izleft_end = MIN(lauefft0%izleft_end, lauefft0%izcell_start + lauefft0%dfft%nr3 - 1)
     !
     IF (lauefft0%izleft_start > lauefft0%izleft_end) THEN
       CALL errore(' set_lauefft_offset_x ', ' izleft_start > izleft_end ', 1)
     END IF
-    IF ((lauefft0%izcell_start + lauefft0%dfft%nr3 - 1) < lauefft0%izleft_end) THEN
-      CALL errore(' set_lauefft_offset_x ', ' izcell_start + nr3 - 1 < izleft_end ', 1)
-    END IF
   END IF
   !
 END SUBROUTINE set_lauefft_offset_x
+!
+!--------------------------------------------------------------------------
+SUBROUTINE set_lauefft_barrier_x(lauefft0, wright, wleft)
+  !--------------------------------------------------------------------------
+  !
+  ! ... set offset of barriers where g(z) = 0,
+  ! ... i.e. set izright_gedge and izleft_gedge.
+  !
+  USE kinds,   ONLY : DP
+  USE lauefft, ONLY : lauefft_type
+  !
+  IMPLICIT NONE
+  !
+  TYPE(lauefft_type), INTENT(INOUT) :: lauefft0
+  REAL(DP),           INTENT(IN)    :: wright
+  REAL(DP),           INTENT(IN)    :: wleft
+  !
+  INTEGER :: nright
+  INTEGER :: nleft
+  !
+  ! ... check zstep
+  IF (lauefft0%zstep <= 0.0_DP) THEN
+    RETURN
+  END IF
+  !
+  ! ... set offset of right
+  nright = 0
+  IF (wright /= 0.0_DP) THEN
+    nright = NINT(wright / lauefft0%zstep)
+  END IF
+  !
+  IF (lauefft0%xright) THEN
+    lauefft0%izright_gedge = lauefft0%izcell_start + lauefft0%dfft%nr3 / 2
+    lauefft0%izright_gedge = lauefft0%izright_gedge + nright
+    !
+    IF (lauefft0%izright_gedge > lauefft0%izright_end) THEN
+      CALL errore(' set_lauefft_barrier_x ', ' izright_gedge > izright_end ', 1)
+    END IF
+    IF (lauefft0%izright_gedge < lauefft0%izright_start) THEN
+      CALL errore(' set_lauefft_barrier_x ', ' izright_gedge < izright_start ', 1)
+    END IF
+  END IF
+  !
+  ! ... set offset of left
+  nleft = 0
+  IF (wleft /= 0.0_DP) THEN
+    nleft = NINT(wleft / lauefft0%zstep)
+  END IF
+  !
+  IF (lauefft0%xleft) THEN
+    IF (lauefft0%xright) THEN
+      lauefft0%izleft_gedge = lauefft0%izcell_start + lauefft0%dfft%nr3 / 2 - 1
+    ELSE
+      lauefft0%izleft_gedge = lauefft0%izcell_end - lauefft0%dfft%nr3 / 2
+    END IF
+    lauefft0%izleft_gedge = lauefft0%izleft_gedge + nleft
+    !
+    IF (lauefft0%izleft_start > lauefft0%izleft_gedge) THEN
+      CALL errore(' set_lauefft_offset_x ', ' izleft_start > izleft_gedge ', 1)
+    END IF
+    IF (lauefft0%izleft_end < lauefft0%izleft_gedge) THEN
+      CALL errore(' set_lauefft_offset_x ', ' izleft_end < izleft_gedge ', 1)
+    END IF
+  END IF
+  !
+END SUBROUTINE set_lauefft_barrier_x
 !
 !--------------------------------------------------------------------------
 SUBROUTINE allocate_lauefft_gz(lauefft0, ngmt, ig1t, ig2t, ig3t, gt)

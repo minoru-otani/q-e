@@ -97,7 +97,7 @@ MODULE pw_restart
                                        lscf, lkpoint_dir, gamma_only, &
                                        tqr, tq_smoothing, tbeta_smoothing, &
                                        noinv, do_makov_payne, smallmem, &
-                                       llondon, lxdm, ts_vdw 
+                                       llondon, lxdm, ts_vdw
       USE realus,               ONLY : real_space
       USE global_version,       ONLY : version_number
       USE cell_base,            ONLY : at, bg, alat, tpiba, tpiba2, &
@@ -154,17 +154,17 @@ MODULE pw_restart
                                        get_screening_parameter, exx_is_active
       USE exx,                  ONLY : x_gamma_extrapolation, nq1, nq2, nq3, &
                                        exxdiv_treatment, yukawa, ecutvcut, ecutfock
-      USE cellmd,               ONLY : lmovecell, cell_factor 
+      USE cellmd,               ONLY : lmovecell, cell_factor
       USE martyna_tuckerman,    ONLY : do_comp_mt
       USE esm,                  ONLY : do_comp_esm, esm_nfit, esm_efield, esm_w, &
                                        esm_a, esm_bc
-      USE acfdt_ener,           ONLY : acfdt_in_pw 
+      USE acfdt_ener,           ONLY : acfdt_in_pw
       USE london_module,        ONLY : scal6, lon_rcut
       USE tsvdw_module,         ONLY : vdw_isolated
       USE solvmol,              ONLY : nsolV, solVs
       USE rism3d_facade,        ONLY : lrism3d, ecutsolv, qsol, laue_nfit, expand_r, expand_l, &
-                                       starting_r, starting_l, both_hands, ireference, &
-                                       rism3d_is_laue, rism3d_write_to_restart
+                                       starting_r, starting_l, buffer_r, buffer_l, both_hands, &
+                                       ireference, rism3d_is_laue, rism3d_write_to_restart
 
       !
       IMPLICIT NONE
@@ -197,7 +197,7 @@ MODULE pw_restart
          lwfc  = twfcollect
          !
       CASE( "config" )
-         ! 
+         !
          ! ... write just the xml data file, not the charge density and the wavefunctions
          !
          lwfc  = .FALSE.
@@ -206,7 +206,7 @@ MODULE pw_restart
       CASE DEFAULT
          !
          CALL errore( 'pw_writefile', 'unexpected case: '//TRIM(what), 1 )
-         ! 
+         !
       END SELECT
       !
       IF ( ionode ) THEN
@@ -274,7 +274,7 @@ MODULE pw_restart
       ! ... build the igk_l2g array, yielding the correspondence between
       ! ... the local k+G index and the global G index - see also ig_l2g
       ! ... igk_l2g is build from arrays igk, previously stored in hinit0
-      ! ... Beware: for variable-cell case, one has to use starting G and 
+      ! ... Beware: for variable-cell case, one has to use starting G and
       ! ... k+G vectors
       !
       ALLOCATE ( igk_l2g( npwx, nks ) )
@@ -340,7 +340,7 @@ MODULE pw_restart
       CALL errore( 'pw_writefile ', &
                    'cannot open restart file for writing', ierr )
       !
-      IF ( ionode ) THEN  
+      IF ( ionode ) THEN
          !
          ! ... here we start writing the punch-file
          !
@@ -351,7 +351,7 @@ MODULE pw_restart
          CALL qexml_write_header( "PWSCF", TRIM(version_number) )
          !
 !-------------------------------------------------------------------------------
-! ... CONTROL 
+! ... CONTROL
 !-------------------------------------------------------------------------------
          !
          CALL qexml_write_control( PP_CHECK_FLAG=conv_ions, LKPOINT_DIR=lkpoint_dir, &
@@ -390,7 +390,7 @@ MODULE pw_restart
          !
          CALL qexml_write_efield( tefield, dipfield, edir, emaxpos, eopreg, eamp, &
                                   monopole, zmon, relaxz, block, block_1, block_2,&
-                                  block_height ) 
+                                  block_height )
          !
 !
 !-------------------------------------------------------------------------------
@@ -499,7 +499,8 @@ MODULE pw_restart
          !
          CALL qexml_write_3drism( lrism3d, ecutsolv/e2, 'Hartree', &
                                   rism3d_is_laue(), qsol, laue_nfit, &
-                                  starting_r, expand_r, starting_l, expand_l, 'alat', &
+                                  starting_r, expand_r, buffer_r, &
+                                  starting_l, expand_l, buffer_l, 'alat', &
                                   both_hands, ireference, &
                                   nsolV, molfile, pseudo_dir, solvrho1, solvrho2, 'Bohr^-3', &
                                   dirname, l3drism_binary )
@@ -645,7 +646,7 @@ MODULE pw_restart
           INTEGER, ALLOCATABLE :: igwk(:,:)
           INTEGER, ALLOCATABLE :: itmp(:)
           CHARACTER(LEN = 256) :: filename_hdf5
-          INTEGER              :: ierr 
+          INTEGER              :: ierr
           !
           !
           ALLOCATE( igwk( npwx_g, nkstot ) )
@@ -738,7 +739,7 @@ MODULE pw_restart
           !
           IF ( nspin == 2 ) THEN
              !
-             ! ... beware: with pools, isk(ik) has the correct value for 
+             ! ... beware: with pools, isk(ik) has the correct value for
              ! ... all k-points only on first pool (ionode proc is ok)
              !
              ispin = isk(ik)
@@ -751,7 +752,7 @@ MODULE pw_restart
                 CALL iotk_link( iunpun, "WFC" // TRIM( iotk_index (ispin) ), &
                      filename, CREATE = .FALSE., BINARY = .TRUE. )
                 !
-                filename = qexml_wfc_filename( dirname, 'evc', ik, ispin, & 
+                filename = qexml_wfc_filename( dirname, 'evc', ik, ispin, &
                      DIR=lkpoint_dir )
                 !
              END IF
@@ -1101,7 +1102,7 @@ MODULE pw_restart
       END IF
       IF (linit_mag) THEN
          !
-         CALL read_magnetization( ierr ) 
+         CALL read_magnetization( ierr )
          IF ( ierr > 0 ) THEN
             errmsg='error reading magnetization in xml data file'
             GOTO 100
@@ -1174,7 +1175,7 @@ MODULE pw_restart
 
       IF ( lrho ) THEN
          !
-         ! ... to read the charge-density we use the routine from io_rho_xml 
+         ! ... to read the charge-density we use the routine from io_rho_xml
          ! ... it also reads ns for ldaU and becsum for PAW
          !
          CALL read_rho( rho, nspin )
@@ -1289,7 +1290,7 @@ MODULE pw_restart
       !------------------------------------------------------------------------
       !
       ! ... this routine collects array dimensions from various sections
-      ! ... plus with some other variables needed for array allocation 
+      ! ... plus with some other variables needed for array allocation
       !
       USE ions_base,        ONLY : nat, nsp
       USE symm_base,        ONLY : nsym
@@ -1307,7 +1308,7 @@ MODULE pw_restart
       USE solvmol,          ONLY : nsolV
       USE rism3d_facade,    ONLY : lrism3d, ecutsolv, laue_nfit, &
                                    expand_r, expand_l, starting_r, starting_l, &
-                                   both_hands, rism3d_set_laue
+                                   buffer_r, buffer_l, both_hands, rism3d_set_laue
       USE mp_pools,         ONLY : kunit
       USE mp_global,        ONLY : nproc_file, nproc_pool_file, &
                                    nproc_image_file, ntask_groups_file, &
@@ -1325,7 +1326,7 @@ MODULE pw_restart
       !
       !
       ! ... first the entire CELL section is read
-      ! ... 
+      ! ...
       ierr=0
       !
       CALL read_cell( ierr )
@@ -1394,6 +1395,8 @@ MODULE pw_restart
             expand_l   = -1.0_DP
             starting_r = 0.0_DP
             starting_l = 0.0_DP
+            buffer_r   = 0.0_DP
+            buffer_l   = 0.0_DP
             both_hands = .FALSE.
          ENDIF
          !
@@ -1451,6 +1454,8 @@ MODULE pw_restart
       CALL mp_bcast( expand_l,   ionode_id, intra_image_comm )
       CALL mp_bcast( starting_r, ionode_id, intra_image_comm )
       CALL mp_bcast( starting_l, ionode_id, intra_image_comm )
+      CALL mp_bcast( buffer_r,   ionode_id, intra_image_comm )
+      CALL mp_bcast( buffer_l,   ionode_id, intra_image_comm )
       CALL mp_bcast( both_hands, ionode_id, intra_image_comm )
       CALL mp_bcast( nsolV,      ionode_id, intra_image_comm )
       CALL mp_bcast( kunit,      ionode_id, intra_image_comm )
@@ -1464,7 +1469,7 @@ MODULE pw_restart
       RETURN
       !
     END SUBROUTINE read_dim
-    ! 
+    !
     !--------------------------------------------------------------------------
     SUBROUTINE read_cell( ierr )
       !------------------------------------------------------------------------
@@ -1476,7 +1481,7 @@ MODULE pw_restart
       USE control_flags,     ONLY : do_makov_payne
       USE martyna_tuckerman, ONLY : do_comp_mt
       USE esm,               ONLY : do_comp_esm
-      
+
       !
       IMPLICIT NONE
       !
@@ -1504,7 +1509,7 @@ MODULE pw_restart
          CASE ("Makov-Payne")
             do_makov_payne = .true.
             do_comp_mt     = .false.
-            do_comp_esm    = .false. 
+            do_comp_esm    = .false.
          CASE ("Martyna-Tuckerman")
             do_makov_payne = .false.
             do_comp_mt     = .true.
@@ -1531,7 +1536,7 @@ MODULE pw_restart
          CASE( "Hexagonal and Trigonal P" )
             ibrav = 4
          CASE( "Trigonal R" )
-            ibrav = 5 
+            ibrav = 5
          CASE( "Tetragonal P (st)" )
             ibrav = 6
          CASE( "Tetragonal I (bct)" )
@@ -1557,7 +1562,7 @@ MODULE pw_restart
          ! ... some internal variables
          !
          tpiba  = 2.D0 * pi / alat
-         tpiba2 = tpiba**2 
+         tpiba2 = tpiba**2
          !
          ! ... to alat units
          !
@@ -1628,7 +1633,7 @@ MODULE pw_restart
       !
       ! this is where PP files should be read from
       !
-      pseudo_dir_cur = trimcheck ( dirname ) 
+      pseudo_dir_cur = trimcheck ( dirname )
       !
       IF ( ionode ) THEN
          !
@@ -1740,7 +1745,7 @@ MODULE pw_restart
             END DO
             !
             ! indices of inverse operations and matrices in cartesian axis
-            ! are not saved to disk (maybe they should), are recalculated here 
+            ! are not saved to disk (maybe they should), are recalculated here
             !
             CALL inverse_s ()
             CALL s_axis_to_cart ()
@@ -1887,7 +1892,7 @@ MODULE pw_restart
       !
       RETURN
       !
-    END SUBROUTINE read_planewaves  
+    END SUBROUTINE read_planewaves
     !
     !------------------------------------------------------------------------
     SUBROUTINE read_spin( ierr )
@@ -1973,7 +1978,7 @@ MODULE pw_restart
          !
          IF (two_fermi_energies) THEN
             !
-            ef_up = ef_up * e2 
+            ef_up = ef_up * e2
             ef_dw = ef_dw * e2
             !
          ENDIF
@@ -2194,7 +2199,7 @@ MODULE pw_restart
       USE fixed_occ,      ONLY : tfixed_occ, f_inp
       USE ktetra,         ONLY : ntetra, tetra
       USE klist,          ONLY : ltetra, lgauss, ngauss, degauss, smearing
-      USE electrons_base, ONLY : nupdwn 
+      USE electrons_base, ONLY : nupdwn
       USE wvfct,          ONLY : nbnd
       !
       IMPLICIT NONE
@@ -2320,8 +2325,8 @@ MODULE pw_restart
       !
     END SUBROUTINE read_occupations
     !
-        
- 
+
+
     !------------------------------------------------------------------------
     SUBROUTINE read_band_structure( dirname, ierr )
       !------------------------------------------------------------------------
@@ -2464,7 +2469,7 @@ MODULE pw_restart
       iks = global_kpoint_index (nkstot, 1)
       ike = iks + nks - 1
       !
-      ! ... find out the global number of G vectors: ngm_g  
+      ! ... find out the global number of G vectors: ngm_g
       !
       ngm_g = ngm
       !
@@ -2517,9 +2522,9 @@ MODULE pw_restart
       !
       npwx_g = MAXVAL( ngk_g(1:nkstot) )
       !
-      ! 
-      ! ... define a further l2g map to read gkvectors and wfc coherently 
-      ! 
+      !
+      ! ... define a further l2g map to read gkvectors and wfc coherently
+      !
       ALLOCATE( igk_l2g_kdip( npwx_g, nks ) )
       igk_l2g_kdip = 0
       !
@@ -2577,7 +2582,7 @@ MODULE pw_restart
          !
          IF ( nspin == 2 ) THEN
             !
-            ispin = 1 
+            ispin = 1
             evc=(0.0_DP, 0.0_DP)
             !
             ! ... no need to read isk here: they are read from band structure
@@ -2650,7 +2655,7 @@ MODULE pw_restart
                   CALL read_wfc( iunout, ik, nkstot, kunit, ispin,          &
                                  npol, evc(nkl:nkr,:), npw_g, nbnd,         &
                                  igk_l2g_kdip(:,ik-iks+1), ngk(ik-iks+1),   &
-                                 filename, scalef, & 
+                                 filename, scalef, &
                                  ionode, root_pool, intra_pool_comm, inter_pool_comm, intra_image_comm )
                   !
                END DO
@@ -2666,7 +2671,7 @@ MODULE pw_restart
                !
                ! workaround for pot parallelization ( Viet Nguyen / SdG )
                ! -pot parallelization uses mp_image communicators
-               ! note that ionode must be also reset in the similar way 
+               ! note that ionode must be also reset in the similar way
                ! to image parallelization
                CALL read_wfc( iunout, ik, nkstot, kunit, ispin, nspin,         &
                               evc, npw_g, nbnd, igk_l2g_kdip(:,ik-iks+1),      &
@@ -2806,7 +2811,7 @@ MODULE pw_restart
       CALL set_exx_fraction(exx_fraction)
       CALL set_screening_parameter(screening_parameter)
       CALL set_gau_parameter(gau_parameter)
-      IF (exx_is_active) CALL start_exx( ) 
+      IF (exx_is_active) CALL start_exx( )
       !
       RETURN
       !
@@ -2853,7 +2858,8 @@ MODULE pw_restart
       !
       USE solvmol,       ONLY : nsolV, solVs
       USE rism3d_facade, ONLY : lrism3d, ecutsolv, qsol, laue_nfit, expand_r, expand_l, &
-                                starting_r, starting_l, both_hands, ireference, rism3d_set_laue
+                                starting_r, starting_l, buffer_r, buffer_l, &
+                                both_hands, ireference, rism3d_set_laue
       USE io_files,      ONLY : molfile, pseudo_dir, pseudo_dir_cur
       !
       IMPLICIT NONE
@@ -2890,8 +2896,10 @@ MODULE pw_restart
          !
          CALL qexml_read_3drism( LRISM3D=lrism3d, ECUTSOLV=ecutsolv, &
                                  LAUE=lauerism, LAUE_CHARGE=qsol, LAUE_NFIT=laue_nfit, &
-                                 LAUE_RIGHT_START=starting_r, LAUE_RIGHT_EXPAND=expand_r, &
-                                 LAUE_LEFT_START=starting_l, LAUE_LEFT_EXPAND=expand_l, &
+                                 LAUE_RIGHT_START=starting_r, &
+                                 LAUE_RIGHT_EXPAND=expand_r, LAUE_RIGHT_BUFFER=buffer_r, &
+                                 LAUE_LEFT_START=starting_l, &
+                                 LAUE_LEFT_EXPAND=expand_l, LAUE_LEFT_BUFFER=buffer_l, &
                                  LAUE_BOTH_HANDS=both_hands, LAUE_POT_REF=ireference, &
                                  NMOL=nsolV, MOLFILE=molfile, MOLEC_DIR=molec_dir, &
                                  DENS1=solvrho1, DENS2=solvrho2, FOUND=found, IERR=ierr )
@@ -2915,6 +2923,8 @@ MODULE pw_restart
             expand_l   = -1.0_DP
             starting_r = 0.0_DP
             starting_l = 0.0_DP
+            buffer_r   = 0.0_DP
+            buffer_l   = 0.0_DP
             both_hands = .FALSE.
             ireference = 0
          END IF
@@ -2931,6 +2941,8 @@ MODULE pw_restart
       CALL mp_bcast( expand_l,   ionode_id, intra_image_comm )
       CALL mp_bcast( starting_r, ionode_id, intra_image_comm )
       CALL mp_bcast( starting_l, ionode_id, intra_image_comm )
+      CALL mp_bcast( buffer_r,   ionode_id, intra_image_comm )
+      CALL mp_bcast( buffer_l,   ionode_id, intra_image_comm )
       CALL mp_bcast( both_hands, ionode_id, intra_image_comm )
       CALL mp_bcast( ireference, ionode_id, intra_image_comm )
       CALL mp_bcast( nsolV,      ionode_id, intra_image_comm )
@@ -3067,7 +3079,7 @@ MODULE pw_restart
          itmp(igk_l2g(ig)) = igk_l2g(ig)
          !
       END DO
-      
+
       !
       CALL mp_sum( itmp, intra_bgrp_comm )
       !

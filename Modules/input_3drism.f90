@@ -23,8 +23,8 @@ SUBROUTINE iosys_3drism(laue, linit)
   USE rism3d_facade,    ONLY : starting_corr, niter, epsv, starting_epsv, mdiis_size, mdiis_step, &
                              & ecutsolv_ => ecutsolv, rism3t, rism3d_initialize, &
                              & conv_always, planar_average, laue_nfit_ => laue_nfit, &
-                             & expand_r, expand_l, starting_r, starting_l, both_hands, &
-                             & ireference, IREFERENCE_NULL, IREFERENCE_AVERAGE, &
+                             & expand_r, expand_l, starting_r, starting_l, buffer_r, buffer_l, &
+                             & both_hands, ireference, IREFERENCE_NULL, IREFERENCE_AVERAGE, &
                              & IREFERENCE_RIGHT, IREFERENCE_LEFT
   USE solute,           ONLY : rmax_lj_ => rmax_lj, allocate_solU, set_solU_LJ_param
   USE solvmol,          ONLY : get_nuniq_in_solVs
@@ -40,8 +40,9 @@ SUBROUTINE iosys_3drism(laue, linit)
                                rism3d_maxstep, rism3d_conv_thr, mdiis3d_size, mdiis3d_step, &
                                rism3d_conv_always, rism3d_planar_average, &
                                laue_nfit, laue_expand_right, laue_expand_left, &
-                               laue_starting_right, laue_starting_left, laue_both_hands, &
-                               laue_reference
+                               laue_starting_right, laue_starting_left, &
+                               laue_buffer_right, laue_buffer_left, &
+                               laue_both_hands, laue_reference
   !
   IMPLICIT NONE
   !
@@ -112,6 +113,8 @@ SUBROUTINE iosys_3drism(laue, linit)
   expand_l       = laue_expand_left
   starting_r     = laue_starting_right
   starting_l     = laue_starting_left
+  buffer_r       = laue_buffer_right
+  buffer_l       = laue_buffer_left
   both_hands     = laue_both_hands
   rmax_lj_       = rmax_lj
   !
@@ -140,6 +143,14 @@ SUBROUTINE iosys_3drism(laue, linit)
   !
   IF (starting_l /= 0.0_DP) THEN
     starting_l = starting_l / alat
+  END IF
+  !
+  IF (buffer_r /= 0.0_DP) THEN
+    buffer_r = buffer_r / alat
+  END IF
+  !
+  IF (buffer_l /= 0.0_DP) THEN
+    buffer_l = buffer_l / alat
   END IF
   !
   ! ... initialize solute

@@ -728,6 +728,8 @@ MODULE read_namelists_module
        laue_expand_left      = -1.0_DP
        laue_starting_right   = 0.0_DP
        laue_starting_left    = 0.0_DP
+       laue_buffer_right     = 8.0_DP
+       laue_buffer_left      = 8.0_DP
        laue_both_hands       = .FALSE.
        laue_reference        = 'none'
        !
@@ -1361,6 +1363,8 @@ MODULE read_namelists_module
        CALL mp_bcast( laue_expand_left,      ionode_id, intra_image_comm )
        CALL mp_bcast( laue_starting_right,   ionode_id, intra_image_comm )
        CALL mp_bcast( laue_starting_left,    ionode_id, intra_image_comm )
+       CALL mp_bcast( laue_buffer_right,     ionode_id, intra_image_comm )
+       CALL mp_bcast( laue_buffer_left,      ionode_id, intra_image_comm )
        CALL mp_bcast( laue_both_hands,       ionode_id, intra_image_comm )
        CALL mp_bcast( laue_reference,        ionode_id, intra_image_comm )
        !

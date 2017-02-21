@@ -155,6 +155,9 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
       GOTO 100
     END IF
     !
+    ! ... barrier G(r)
+    CALL barrier_gr()
+    !
     ! ... Residual: G(r) -> dCs(r)
     IF (rismt%nr * rismt%nsite > 0) THEN
       dcsr = rismt%gr - rismt%hr - 1.0_DP
@@ -451,6 +454,66 @@ CONTAINS
     ngrid = mgrid
     !
   END SUBROUTINE clean_out_of_range
+  !
+  SUBROUTINE barrier_gr()
+    IMPLICIT NONE
+    !
+    INTEGER  :: ir
+    INTEGER  :: idx
+    INTEGER  :: idx0
+    INTEGER  :: i3min
+    INTEGER  :: i3max
+    INTEGER  :: i1, i2, i3
+    INTEGER  :: iz
+    !
+    IF (rismt%nsite < 1) THEN
+      RETURN
+    END IF
+    !
+    idx0 = rismt%cfft%dfftt%nr1x * rismt%cfft%dfftt%nr2x &
+       & * rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
+    !
+    i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
+    i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
+    !
+    DO ir = 1, rismt%cfft%dfftt%nnr
+      !
+      idx = idx0 + ir - 1
+      i3  = idx / (rismt%cfft%dfftt%nr1x * rismt%cfft%dfftt%nr2x)
+      IF (i3 < i3min .OR. i3 >= i3max .OR. i3 >= rismt%cfft%dfftt%nr3) THEN
+        CYCLE
+      END IF
+      !
+      idx = idx - (rismt%cfft%dfftt%nr1x * rismt%cfft%dfftt%nr2x) * i3
+      i2  = idx / rismt%cfft%dfftt%nr1x
+      IF (i2 >= rismt%cfft%dfftt%nr2) THEN
+        CYCLE
+      END IF
+      !
+      idx = idx - rismt%cfft%dfftt%nr1x * i2
+      i1  = idx
+      IF (i1 >= rismt%cfft%dfftt%nr1) THEN
+        CYCLE
+      END IF
+      !
+      IF (i3 < (rismt%cfft%dfftt%nr3 - (rismt%cfft%dfftt%nr3 / 2))) THEN
+        iz = i3 + (rismt%cfft%dfftt%nr3 / 2)
+      ELSE
+        iz = i3 - rismt%cfft%dfftt%nr3 + (rismt%cfft%dfftt%nr3 / 2)
+      END IF
+      iz = iz + rismt%lfft%izcell_start
+      !
+      IF (rismt%lfft%izright_start <= iz .AND. iz < rismt%lfft%izright_gedge) THEN
+        rismt%gr(ir, :) = 0.0_DP
+      END IF
+      !
+      IF (rismt%lfft%izleft_gedge < iz .AND. iz <= rismt%lfft%izleft_end) THEN
+        rismt%gr(ir, :) = 0.0_DP
+      END IF
+      !
+    END DO
+    !
+  END SUBROUTINE barrier_gr
   !
   SUBROUTINE modify_edge_dcsr()
     IMPLICIT NONE

@@ -58,6 +58,8 @@ MODULE rism3d_facade
   REAL(DP)               :: expand_l       = -1.0_DP  ! expanding length of left (in alat, for Laue-RISM)
   REAL(DP)               :: starting_r     = 0.0_DP   ! starting position of right (in alat, for Laue-RISM)
   REAL(DP)               :: starting_l     = 0.0_DP   ! starting position of left (in alat, for Laue-RISM)
+  REAL(DP)               :: buffer_r       = 0.0_DP   ! buffering length of right (in alat, for Laue-RISM)
+  REAL(DP)               :: buffer_l       = 0.0_DP   ! buffering length of left (in alat, for Laue-RISM)
   LOGICAL                :: both_hands     = .FALSE.  ! apply both-hands calculation, or not (for Laue-RISM)
   INTEGER                :: ireference     = 0        ! reference type of potential (for Laue-RISM)
   !
@@ -87,6 +89,8 @@ MODULE rism3d_facade
   PUBLIC :: expand_l
   PUBLIC :: starting_r
   PUBLIC :: starting_l
+  PUBLIC :: buffer_r
+  PUBLIC :: buffer_l
   PUBLIC :: both_hands
   PUBLIC :: ireference
   !
@@ -188,6 +192,10 @@ CONTAINS
     INTEGER  :: nv
     INTEGER  :: isolV
     INTEGER  :: iatom
+    REAL(DP) :: starting1_r
+    REAL(DP) :: starting1_l
+    REAL(DP) :: starting2_r
+    REAL(DP) :: starting2_l
     REAL(DP) :: rhotot1
     REAL(DP) :: rhotot2
     REAL(DP) :: rhov1
@@ -208,9 +216,15 @@ CONTAINS
     !
     IF (.NOT. laue_) THEN
       CALL allocate_3drism(rism3t, nq, ecutsolv, intra_bgrp_comm, intra_image_comm)
+      !
     ELSE
+      starting1_r = starting_r - MAX(0.0_DP, buffer_r)
+      starting1_l = starting_l + MAX(0.0_DP, buffer_l)
+      starting2_r = starting_r
+      starting2_l = starting_l
       CALL allocate_lauerism(rism3t, nq, ecutsolv, laue_nfit, expand_r, expand_l, &
-                           & starting_r, starting_l, both_hands, intra_bgrp_comm, intra_image_comm)
+                           & starting1_r, starting1_l, starting2_r, starting2_l, &
+                           & both_hands, intra_bgrp_comm, intra_image_comm)
     END IF
     !
     IF (rism3t%itype == ITYPE_LAUERISM) THEN
