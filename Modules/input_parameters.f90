@@ -1494,10 +1494,10 @@ MODULE input_parameters
           ! expanding length on left-hand side in Laue-RISM calculation
 
         REAL(DP) :: laue_starting_right = 0.0_DP
-          ! truncated length on right-hand side in Laue-RISM calculation
+          ! starting position on right-hand side in Laue-RISM calculation
 
         REAL(DP) :: laue_starting_left = 0.0_DP
-          ! truncated length on left-hand side in Laue-RISM calculation
+          ! starting position on left-hand side in Laue-RISM calculation
 
         LOGICAL :: laue_both_hands = .FALSE.
           ! number of fitting points in Laue-RISM calculation
