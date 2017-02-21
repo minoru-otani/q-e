@@ -2625,11 +2625,11 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
                     ( default for scf, *relax, *md )
                 }
                 opt -val 'file' {
-                    Start from existing "1d-rism_csvv_r.xml" file in the
+                    Start from existing "1d-rism_csvv_r.dat" file in the
                     directory specified by variables "prefix" and "outdir".
                 }
                 opt -val 'fix' {
-                    Read from existing "1d-rism_csvv_r.xml" file in the
+                    Read from existing "1d-rism_csvv_r.dat" file in the
                     directory specified by variables "prefix" and "outdir",
                     and never calculate 1D-RISM.
                     For nscf and bands calculation this is the default.
@@ -2644,7 +2644,7 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
                     ( default for scf, *relax, *md )
                 }
                 opt -val 'file' {
-                    Start from existing "3d-rism_csuv_r.xml" file in the
+                    Start from existing "3d-rism_csuv_r.dat" file in the
                     directory specified by variables "prefix" and "outdir".
                     For nscf and bands calculation this is the default.
                 }
