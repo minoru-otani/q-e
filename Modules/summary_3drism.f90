@@ -137,15 +137,27 @@ SUBROUTINE summary_3drism()
     &                                                                  (rism3t%lfft%zright * alat)
   IF (rism3t%lfft%xleft) THEN
   zstart = rism3t%lfft%zleft
-  zend   = rism3t%lfft%zleft + DBLE(rism3t%lfft%izleft_end) * rism3t%lfft%zstep
+  zend   = rism3t%lfft%zleft + DBLE(rism3t%lfft%izleft_gedge) * rism3t%lfft%zstep
   WRITE(stdout, '(5X,"solvent of left (in bohr)  : [",2F11.6,"]")')    (zstart * alat), &
     &                                                                  (zend   * alat)
+  IF (rism3t%lfft%izleft_gedge /= rism3t%lfft%izleft_end) THEN
+  zstart = rism3t%lfft%zleft + DBLE(rism3t%lfft%izleft_gedge) * rism3t%lfft%zstep
+  zend   = rism3t%lfft%zleft + DBLE(rism3t%lfft%izleft_end  ) * rism3t%lfft%zstep
+  WRITE(stdout, '(5X,"buffer  of left (in bohr)  : [",2F11.6,"]")')    (zstart * alat), &
+    &                                                                  (zend   * alat)
+  END IF
   END IF
   IF (rism3t%lfft%xright) THEN
-  zstart = rism3t%lfft%zright - DBLE(rism3t%lfft%nrz - rism3t%lfft%izright_start + 1) * rism3t%lfft%zstep
+  zstart = rism3t%lfft%zright - DBLE(rism3t%lfft%nrz - rism3t%lfft%izright_gedge + 1) * rism3t%lfft%zstep
   zend   = rism3t%lfft%zright
   WRITE(stdout, '(5X,"solvent of right (in bohr) : [",2F11.6,"]")')    (zstart * alat), &
     &                                                                  (zend   * alat)
+  IF (rism3t%lfft%izright_start /= rism3t%lfft%izright_gedge) THEN
+  zstart = rism3t%lfft%zright - DBLE(rism3t%lfft%nrz - rism3t%lfft%izright_start + 1) * rism3t%lfft%zstep
+  zend   = rism3t%lfft%zright - DBLE(rism3t%lfft%nrz - rism3t%lfft%izright_gedge + 1) * rism3t%lfft%zstep
+  WRITE(stdout, '(5X,"buffer  of right (in bohr) : [",2F11.6,"]")')    (zstart * alat), &
+    &                                                                  (zend   * alat)
+  END IF
   END IF
   WRITE(stdout, '(5X,"reference of potential     : ",A)')              TRIM(sreference)
   WRITE(stdout, '(5X,"#grids to fit at edges of unit-cell =",I5)')     laue_nfit
