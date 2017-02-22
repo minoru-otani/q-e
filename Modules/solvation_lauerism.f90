@@ -56,8 +56,8 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   INTEGER                  :: igxy
   INTEGER                  :: jgxy
   INTEGER                  :: kgxy
-  INTEGER                  :: izright_edge
-  INTEGER                  :: izleft_edge
+  INTEGER                  :: izright_tail
+  INTEGER                  :: izleft_tail
   REAL(DP)                 :: rhov
   REAL(DP)                 :: rhov1
   REAL(DP)                 :: rhov2
@@ -145,12 +145,12 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
         rismt%qsol(iiq) = rismt%qsol(iiq) + &
         & fac2 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)))
       END DO
-      DO irz = rismt%lfft%izleft_start, rismt%lfft%izleft_end
+      DO irz = rismt%lfft%izleft_start, rismt%lfft%izleft_gedge
         iirz = irz - rismt%lfft%izcell_start + 1
         rismt%qsol(iiq) = rismt%qsol(iiq) + &
         & fac2 * DBLE(ggz(iirz, iiq))
       END DO
-      DO irz = rismt%lfft%izright_start, rismt%lfft%izright_end
+      DO irz = rismt%lfft%izright_gedge, rismt%lfft%izright_end
         iirz = irz - rismt%lfft%izcell_start + 1
         rismt%qsol(iiq) = rismt%qsol(iiq) + &
         & fac1 * DBLE(ggz(iirz, iiq))
@@ -197,12 +197,12 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
         rismt%rhog(irz + jgxy) = rismt%rhog(irz + jgxy) &
         & + qv * rhov2 * (rismt%hsgz(irz + jgxy, iiq) + rismt%hlgz(irz + jgxy, iiq))
       END DO
-      DO irz = rismt%lfft%izleft_start, rismt%lfft%izleft_end
+      DO irz = rismt%lfft%izleft_start, rismt%lfft%izleft_gedge
         iirz = irz - rismt%lfft%izcell_start + 1
         rismt%rhog(irz + jgxy) = rismt%rhog(irz + jgxy) &
         & + qv * rhov2 * ggz(iirz + kgxy, iiq)
       END DO
-      DO irz = rismt%lfft%izright_start, rismt%lfft%izright_end
+      DO irz = rismt%lfft%izright_gedge, rismt%lfft%izright_end
         iirz = irz - rismt%lfft%izcell_start + 1
         rismt%rhog(irz + jgxy) = rismt%rhog(irz + jgxy) &
         & + qv * rhov1 * ggz(iirz + kgxy, iiq)
@@ -220,67 +220,67 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   !
   ! ... truncate rhog
   charge0 = 0.0_DP
-  izright_edge = 0
-  izleft_edge  = 0
+  izright_tail = 0
+  izleft_tail  = 0
   !
   IF (rismt%lfft%gxystart > 1) THEN
-    izleft_edge = 1
-    DO irz = 1, rismt%lfft%izleft_end
+    izleft_tail = 1
+    DO irz = 1, rismt%lfft%izleft_gedge
       IF (ABS(DBLE(rismt%rhog(irz))) < RHOG_THRESHOLD .OR. &
       &   ABS(irz - rismt%lfft%izcell_start) <= RHOG_NEDGE) THEN
         rismt%rhog(irz) = C_ZERO
       ELSE
-        izleft_edge = irz
+        izleft_tail = irz
         EXIT
       END IF
     END DO
     !
-    izright_edge = rismt%lfft%nrz
-    DO irz = rismt%lfft%izright_start, rismt%lfft%nrz
-      iirz = rismt%lfft%nrz + rismt%lfft%izright_start - irz
+    izright_tail = rismt%lfft%nrz
+    DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
+      iirz = rismt%lfft%nrz + rismt%lfft%izright_gedge - irz
       IF (ABS(DBLE(rismt%rhog(iirz))) < RHOG_THRESHOLD .OR. &
       &   ABS(iirz - rismt%lfft%izcell_end) <= RHOG_NEDGE) THEN
         rismt%rhog(iirz) = C_ZERO
       ELSE
-        izright_edge = iirz
+        izright_tail = iirz
         EXIT
       END IF
     END DO
     !
     fac = area_xy * dz
-    DO irz = izleft_edge, rismt%lfft%izleft_end
+    DO irz = izleft_tail, rismt%lfft%izleft_gedge
       charge0 = charge0 + fac * rismt%rhog(irz)
     END DO
-    DO irz = rismt%lfft%izright_start, izright_edge
+    DO irz = rismt%lfft%izright_gedge, izright_tail
       charge0 = charge0 + fac * rismt%rhog(irz)
     END DO
   END IF
   !
   CALL mp_sum(charge0,      rismt%mp_site%intra_sitg_comm)
-  CALL mp_sum(izright_edge, rismt%mp_site%intra_sitg_comm)
-  CALL mp_sum(izleft_edge,  rismt%mp_site%intra_sitg_comm)
+  CALL mp_sum(izright_tail, rismt%mp_site%intra_sitg_comm)
+  CALL mp_sum(izleft_tail,  rismt%mp_site%intra_sitg_comm)
   !
   ! ... renormalize rhog
   IF (ABS(charge0 - charge) > eps6) THEN
     IF (ABS(charge0) > eps6 .AND. ABS(charge) > eps6) THEN
       IF (rismt%lfft%gxystart > 1) THEN
-        DO irz = izleft_edge, rismt%lfft%izleft_end
+        DO irz = izleft_tail, rismt%lfft%izleft_gedge
           rismt%rhog(irz) = rismt%rhog(irz) / charge0 * charge
         END DO
-        DO irz = rismt%lfft%izright_start, izright_edge
+        DO irz = rismt%lfft%izright_gedge, izright_tail
           rismt%rhog(irz) = rismt%rhog(irz) / charge0 * charge
         END DO
       END IF
       !
     ELSE
       IF (rismt%lfft%gxystart > 1) THEN
-        nright = MAX(0, izright_edge - rismt%lfft%izright_start + 1)
-        nleft  = MAX(0, rismt%lfft%izleft_end - izleft_edge + 1)
+        nright = MAX(0, izright_tail - rismt%lfft%izright_gedge + 1)
+        nleft  = MAX(0, rismt%lfft%izleft_gedge - izleft_tail + 1)
         fac    = area_xy * dz * DBLE(nright + nleft)
-        DO irz = izleft_edge, rismt%lfft%izleft_end
+        DO irz = izleft_tail, rismt%lfft%izleft_gedge
           rismt%rhog(irz) = rismt%rhog(irz) - (charge0 - charge) / fac
         END DO
-        DO irz = rismt%lfft%izright_start, izright_edge
+        DO irz = rismt%lfft%izright_gedge, izright_tail
           rismt%rhog(irz) = rismt%rhog(irz) - (charge0 - charge) / fac
         END DO
       END IF

@@ -251,7 +251,7 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
     jgxy = rismt%nrzs * (igxy - 1)
     kgxy = rismt%nrzl * (igxy - 1)
     !
-    DO iz = 1, rismt%lfft%izleft_end
+    DO iz = 1, rismt%lfft%izleft_gedge
       jz = iz - rismt%lfft%izcell_start + 1
       IF (jz > 0) THEN
         csr = DBLE(rismt%csgz(jz + jgxy, isite))
@@ -264,7 +264,7 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
       usol1 = usol1 - rate * (cr + 0.5_DP * hr * cr)
     END DO
     !
-    DO iz = rismt%lfft%izright_start, rismt%lfft%nrz
+    DO iz = rismt%lfft%izright_gedge, rismt%lfft%nrz
       jz = iz - rismt%lfft%izcell_start + 1
       IF (jz <= rismt%cfft%dfftt%nr3) THEN
         csr = DBLE(rismt%csgz(jz + jgxy, isite))
@@ -283,7 +283,7 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
     jgxy = rismt%nrzs * (igxy - 1)
     kgxy = rismt%nrzl * (igxy - 1)
     !
-    DO iz = 1, rismt%lfft%izleft_end
+    DO iz = 1, rismt%lfft%izleft_gedge
       jz = iz - rismt%lfft%izcell_start + 1
       IF (jz > 0) THEN
         csr = DBLE( rismt%csgz(jz + jgxy, isite))
@@ -301,7 +301,7 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
       usol2 = usol2 - rate * 0.5_DP * (hr * cr + hi * ci)
     END DO
     !
-    DO iz = rismt%lfft%izright_start, rismt%lfft%nrz
+    DO iz = rismt%lfft%izright_gedge, rismt%lfft%nrz
       jz = iz - rismt%lfft%izcell_start + 1
       IF (jz <= rismt%cfft%dfftt%nr3) THEN
         csr = DBLE( rismt%csgz(jz + jgxy, isite))
