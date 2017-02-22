@@ -509,7 +509,7 @@ SUBROUTINE solvation_esm_force(rismt, alpha, force, ierr)
         dvloc(3, iz) = -ccoeff * (rterm1 - rterm2)
       END DO
       !
-      DO iz = 1, rismt%lfft%izleft_end
+      DO iz = 1, rismt%lfft%izleft_gedge
         rhogr = -DBLE( rhogz(iz))
         rhogi = -AIMAG(rhogz(iz))
         DO ipol = 1, 3
@@ -519,7 +519,7 @@ SUBROUTINE solvation_esm_force(rismt, alpha, force, ierr)
         END DO
       END DO
       !
-      DO iz = rismt%lfft%izright_start, rismt%lfft%nrz
+      DO iz = rismt%lfft%izright_gedge, rismt%lfft%nrz
         rhogr = -DBLE( rhogz(iz))
         rhogi = -AIMAG(rhogz(iz))
         DO ipol = 1, 3
@@ -570,7 +570,7 @@ SUBROUTINE solvation_esm_force(rismt, alpha, force, ierr)
         dvloc(3, iz) = CMPLX((-qa * e2 * tpi) * qe_erf((z - za) / alpha), 0.0_DP, kind=DP)
       END DO
       !
-      DO iz = 1, rismt%lfft%izleft_end
+      DO iz = 1, rismt%lfft%izleft_gedge
         rhogr = -DBLE(rhogz(iz))
         DO ipol = 1, 3
           dvlocr = DBLE(dvloc(ipol, iz))
@@ -578,7 +578,7 @@ SUBROUTINE solvation_esm_force(rismt, alpha, force, ierr)
         END DO
       END DO
       !
-      DO iz = rismt%lfft%izright_start, rismt%lfft%nrz
+      DO iz = rismt%lfft%izright_gedge, rismt%lfft%nrz
         rhogr = -DBLE(rhogz(iz))
         DO ipol = 1, 3
           dvlocr = DBLE(dvloc(ipol, iz))
