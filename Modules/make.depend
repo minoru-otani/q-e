@@ -301,6 +301,8 @@ lauefft.o : ../FFTXlib/fft_types.o
 lauefft.o : ../FFTXlib/scatter_mod.o
 lauefft.o : control_flags.o
 lauefft.o : kind.o
+lauefft.o : mp.o
+lauefft.o : parallel_include.o
 lauefft_subs.o : ../FFTXlib/fft_support.o
 lauefft_subs.o : cell_base.o
 lauefft_subs.o : constants.o
