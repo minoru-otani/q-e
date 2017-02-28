@@ -1499,10 +1499,10 @@ MODULE input_parameters
         REAL(DP) :: laue_starting_left = 0.0_DP
           ! starting position on left-hand side in Laue-RISM calculation
 
-        REAL(DP) :: laue_buffer_right = 8.0_DP
+        REAL(DP) :: laue_buffer_right = -1.0_DP
           ! buffering length on right-hand side in Laue-RISM calculation
 
-        REAL(DP) :: laue_buffer_left = 8.0_DP
+        REAL(DP) :: laue_buffer_left = -1.0_DP
           ! buffering length on left-hand side in Laue-RISM calculation
 
         LOGICAL :: laue_both_hands = .FALSE.

@@ -219,6 +219,10 @@ SUBROUTINE set_lauefft_offset_x(lauefft0, wright, wleft)
     END IF
   END IF
   !
+  IF (lauefft0%izleft_end >= lauefft0%izright_start) THEN
+    CALL errore(' set_lauefft_offset_x ', ' izleft_end >= izright_start ', 1)
+  END IF
+  !
 END SUBROUTINE set_lauefft_offset_x
 !
 !--------------------------------------------------------------------------

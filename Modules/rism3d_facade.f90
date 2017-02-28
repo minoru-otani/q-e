@@ -58,8 +58,8 @@ MODULE rism3d_facade
   REAL(DP)               :: expand_l       = -1.0_DP  ! expanding length of left (in alat, for Laue-RISM)
   REAL(DP)               :: starting_r     = 0.0_DP   ! starting position of right (in alat, for Laue-RISM)
   REAL(DP)               :: starting_l     = 0.0_DP   ! starting position of left (in alat, for Laue-RISM)
-  REAL(DP)               :: buffer_r       = 0.0_DP   ! buffering length of right (in alat, for Laue-RISM)
-  REAL(DP)               :: buffer_l       = 0.0_DP   ! buffering length of left (in alat, for Laue-RISM)
+  REAL(DP)               :: buffer_r       = -1.0_DP  ! buffering length of right (in alat, for Laue-RISM)
+  REAL(DP)               :: buffer_l       = -1.0_DP  ! buffering length of left (in alat, for Laue-RISM)
   LOGICAL                :: both_hands     = .FALSE.  ! apply both-hands calculation, or not (for Laue-RISM)
   INTEGER                :: ireference     = 0        ! reference type of potential (for Laue-RISM)
   !

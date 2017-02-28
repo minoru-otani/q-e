@@ -728,8 +728,8 @@ MODULE read_namelists_module
        laue_expand_left      = -1.0_DP
        laue_starting_right   = 0.0_DP
        laue_starting_left    = 0.0_DP
-       laue_buffer_right     = 8.0_DP
-       laue_buffer_left      = 8.0_DP
+       laue_buffer_right     = -1.0_DP  ! will initialize at iosys_3drism
+       laue_buffer_left      = -1.0_DP  ! will initialize at iosys_3drism
        laue_both_hands       = .FALSE.
        laue_reference        = 'none'
        !

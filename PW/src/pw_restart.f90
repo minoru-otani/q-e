@@ -1395,8 +1395,8 @@ MODULE pw_restart
             expand_l   = -1.0_DP
             starting_r = 0.0_DP
             starting_l = 0.0_DP
-            buffer_r   = 0.0_DP
-            buffer_l   = 0.0_DP
+            buffer_r   = -1.0_DP
+            buffer_l   = -1.0_DP
             both_hands = .FALSE.
          ENDIF
          !
@@ -2923,8 +2923,8 @@ MODULE pw_restart
             expand_l   = -1.0_DP
             starting_r = 0.0_DP
             starting_l = 0.0_DP
-            buffer_r   = 0.0_DP
-            buffer_l   = 0.0_DP
+            buffer_r   = -1.0_DP
+            buffer_l   = -1.0_DP
             both_hands = .FALSE.
             ireference = 0
          END IF

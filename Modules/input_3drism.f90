@@ -55,6 +55,7 @@ SUBROUTINE iosys_3drism(laue, linit)
   INTEGER,  PARAMETER :: MDIIS_SWITCH    = 4
   REAL(DP), PARAMETER :: MDIIS_STEP_DEF1 = 0.8_DP
   REAL(DP), PARAMETER :: MDIIS_STEP_DEF2 = 0.3_DP
+  REAL(DP), PARAMETER :: BUFFER_DEF      = 8.0_DP
   !
   ! ... check starting condition.
   IF (TRIM(restart_mode) == 'restart') THEN
@@ -72,6 +73,16 @@ SUBROUTINE iosys_3drism(laue, linit)
     ecutsolv = MIN(ecutsolv, ecutrho)
   ENDIF
   !
+  ! ... modify mdiis3d_step
+  IF (mdiis3d_step < 0.0_DP) THEN
+    nsite = get_nuniq_in_solVs()
+    IF (nsite <= MDIIS_SWITCH) THEN
+      mdiis3d_step = MDIIS_STEP_DEF1
+    ELSE
+      mdiis3d_step = MDIIS_STEP_DEF2
+    END IF
+  END IF
+  !
   ! ... modify rism3d_planar_average
   IF (laue) THEN
     rism3d_planar_average = .TRUE.
@@ -88,13 +99,18 @@ SUBROUTINE iosys_3drism(laue, linit)
     END IF
   END IF
   !
-  ! ... modify mdiis3d_step
-  IF (mdiis3d_step < 0.0_DP) THEN
-    nsite = get_nuniq_in_solVs()
-    IF (nsite <= MDIIS_SWITCH) THEN
-      mdiis3d_step = MDIIS_STEP_DEF1
-    ELSE
-      mdiis3d_step = MDIIS_STEP_DEF2
+  ! ... modify laue_buffer_right, laue_buffer_left
+  IF (laue) THEN
+    IF (laue_expand_right > 0.0_DP .AND. laue_expand_left > 0.0_DP) THEN
+      ! NOP
+    ELSE IF (laue_expand_right > 0.0_DP) THEN
+      IF (laue_buffer_right < 0.0_DP) THEN
+        laue_buffer_right = BUFFER_DEF
+      END IF
+    ELSE IF (laue_expand_left > 0.0_DP) THEN
+      IF (laue_buffer_left < 0.0_DP) THEN
+        laue_buffer_left = BUFFER_DEF
+      END IF
     END IF
   END IF
   !
@@ -145,11 +161,11 @@ SUBROUTINE iosys_3drism(laue, linit)
     starting_l = starting_l / alat
   END IF
   !
-  IF (buffer_r /= 0.0_DP) THEN
+  IF (buffer_r > 0.0_DP) THEN
     buffer_r = buffer_r / alat
   END IF
   !
-  IF (buffer_l /= 0.0_DP) THEN
+  IF (buffer_l > 0.0_DP) THEN
     buffer_l = buffer_l / alat
   END IF
   !
