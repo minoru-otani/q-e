@@ -436,7 +436,7 @@ CONTAINS
          ! read field 2 (atom X coordinate or Wyckoff position symbol)
          !
          CALL get_field(2, field_str, input_line)
-         !     
+         !
          ! Check if position ia is expressed in wyckoff positions
          !
          idx = LEN_TRIM(field_str)
@@ -471,7 +471,7 @@ CONTAINS
             !
          ELSE
             !
-            ! no wyckoff positions 
+            ! no wyckoff positions
             !
             IF ( nfield /= 4 .and. nfield /= 7 ) &
             CALL errore( 'read_cards', 'wrong number of columns ' // &
@@ -649,20 +649,20 @@ CONTAINS
    !   mesh_option == crystal_b  as crystal but the weights gives the
    !                             number of points between this point and
    !                             the next
-   !   mesh_option == tpiba_c    the code expects three k points 
+   !   mesh_option == tpiba_c    the code expects three k points
    !                             k_0, k_1, k_2 in tpiba units.
    !                             These points define a rectangle
    !                             in reciprocal space with vertices k_0, k_1,
    !                             k_2, k_1+k_2-k_0:  k_0 + \alpha (k_1-k_0)+
-   !                             \beta (k_2-k_0) with 0<\alpha,\beta < 1. 
-   !                             The code produces a uniform mesh n1 x n2 
-   !                             k points in this rectangle. n1 and n2 are 
+   !                             \beta (k_2-k_0) with 0<\alpha,\beta < 1.
+   !                             The code produces a uniform mesh n1 x n2
+   !                             k points in this rectangle. n1 and n2 are
    !                             the weights of k_1 and k_2. The weight of k_0
-   !                             is not used. Useful for contour plots of the 
+   !                             is not used. Useful for contour plots of the
    !                             bands.
    !   mesh_option == crystal_c  as tpiba_c but the k points are given
    !                             in crystal coordinates.
-   ! 
+   !
    !
    !   n       ( integer )  number of k points
    !   xk(:,i) ( real )     coordinates of i-th k point
@@ -738,7 +738,7 @@ CONTAINS
          !                           ! when init_startk is called in iosys
       ELSEIF ( ( k_points == 'tpiba' ) .or. ( k_points == 'crystal' ) ) THEN
          !
-         ! ... input k-points 
+         ! ... input k-points
          !
          CALL read_line( input_line, end_of_file = tend, error = terr )
          IF (tend) GOTO 10
@@ -775,7 +775,7 @@ CONTAINS
                   ELSEIF ((ICHAR(input_line(j:j)) < 123 .AND. &
                            ICHAR(input_line(j:j)) > 64))  THEN
 !
-!   This is a letter, not a space character. We read the next three 
+!   This is a letter, not a space character. We read the next three
 !   characters and save them in the letter array, save also which k point
 !   it is
 !
@@ -816,7 +816,7 @@ CONTAINS
             !
             CALL generate_k_along_lines(nkaux, xkaux, wkaux, xk, wk, nkstot)
             !
-            !  workaround: discard current wk (contains the length of k-path, 
+            !  workaround: discard current wk (contains the length of k-path,
             !  never used), replace with wk=1 so that band occupations (wg)
             !  are correctly written to file - needed by BerkeleyGW interface
             !
@@ -1899,8 +1899,8 @@ CONTAINS
    !
    ! SOLVENTS (mol/L)
    !   H2O  55.3   H2O.spc.MOL
-   !   Na+   0.1   Na.ion.MOL
-   !   Cl-   0.1   Cl.ion.MOL
+   !   Na+   0.1   Na.aq.MOL
+   !   Cl-   0.1   Cl.aq.MOL
    !
    ! Where:
    !
