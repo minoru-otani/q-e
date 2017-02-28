@@ -2240,11 +2240,7 @@ MODULE read_namelists_module
           IF( ionode ) THEN
              READ( unit_loc, rism, iostat = ios )
           END IF
-          CALL mp_bcast( ios, ionode_id, intra_image_comm )
-          IF( ios /= 0 ) THEN
-             CALL errore( ' read_namelists ', &
-                        & ' reading namelist rism ', ABS(ios) )
-          END IF
+          CALL check_namelist_read(ios, unit_loc, "rism")
           !
           CALL rism_bcast( )
           CALL rism_checkin( prog )
