@@ -125,7 +125,7 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
     usol_eV   = uscl(isolV) * RYTOEV
     usol_kJ   = uscl(isolV) * RY_TO_KJMOLm1
     usol_kcal = uscl(isolV) * RY_TO_KCALMOLm1
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     WRITE(stdout, 200) label1, label2, usol_eV, usol_kJ, usol_kcal
 #else
     WRITE(stdout, 200) label1, label2, usol_kcal
@@ -136,13 +136,13 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
     usol_eV   = usgf(isolV) * RYTOEV
     usol_kJ   = usgf(isolV) * RY_TO_KJMOLm1
     usol_kcal = usgf(isolV) * RY_TO_KCALMOLm1
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     WRITE(stdout, 200) label1, label2, usol_eV, usol_kJ, usol_kcal
 #else
     WRITE(stdout, 200) label1, label2, usol_kcal
 #endif
     !
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
 200 FORMAT(5X,A10,X,A10,X,E14.6,' eV',E14.6,' kJ/mol',E14.6,' kcal/mol')
 #else
 200 FORMAT(5X,A10,X,A10,X,E14.6,' kcal/mol')

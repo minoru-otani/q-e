@@ -207,7 +207,7 @@ CONTAINS
     IF (my_group_id == io_group_id) THEN
       !
       ALLOCATE(vpot(rismt%nr))
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
       !
       ! ... Vshort
       vpot = -rismt%vsr * RYTOEV  ! acting on electron
@@ -370,7 +370,7 @@ CONTAINS
   !
   SUBROUTINE put_solvent_h()
     IMPLICIT NONE
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     INTEGER                  :: nq
     INTEGER                  :: iq
@@ -422,7 +422,7 @@ CONTAINS
   !
   SUBROUTINE put_solvent_c()
     IMPLICIT NONE
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     INTEGER                  :: nq
     INTEGER                  :: iq
@@ -501,7 +501,7 @@ CONTAINS
   !
   SUBROUTINE put_solvent_u()
     IMPLICIT NONE
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     INTEGER                  :: nq
     INTEGER                  :: iq
@@ -719,7 +719,7 @@ CONTAINS
       !
       ALLOCATE(vpot(rismt%nr))
       ALLOCATE(vpol(rismt%ngxy * rismt%nrzl))
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
       !
       ! ... Vshort, R-space
       vpot = -rismt%vsr * RYTOEV  ! acting on electron
@@ -761,14 +761,14 @@ CONTAINS
       ! ... Rho, Laue-rep.
       tmpl = rismt%rhog / BOHR_RADIUS_ANGS
       CALL solvavg_put('Tot chg (e/A)', .TRUE.,  tmpl, rismt%nrzl, .TRUE.)
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
       CALL solvavg_put('G=2 chg (e/A)', .TRUE.,  tmpl, rismt%nrzl, .TRUE., 2)
 #endif
       !
       ! ... Vsolv, Laue-rep.
       tmpl = -rismt%vpot * RYTOEV  ! acting on electron
       CALL solvavg_put('Avg v_solvent (eV)',    .FALSE., tmpl, rismt%nrzl, .TRUE.)
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
       CALL solvavg_put('G=2 v_solvent (eV)',    .FALSE., tmpl, rismt%nrzl, .TRUE., 2)
 #endif
       !
@@ -780,7 +780,7 @@ CONTAINS
   !
   SUBROUTINE put_solvent_pbc()
     IMPLICIT NONE
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     INTEGER                  :: ir
     INTEGER                  :: ig
@@ -891,7 +891,7 @@ CONTAINS
     IF ((rismt%nrzl * rismt%ngxy) < 1) THEN
       RETURN
     END IF
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     IF (rismt%nr < 1) THEN
       RETURN
@@ -904,7 +904,7 @@ CONTAINS
       ALLOCATE(ggz(rismt%nrzs * rismt%ngxy, rismt%nsite))
     END IF
     ALLOCATE(rhol(rismt%nrzl * rismt%ngxy))
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     ALLOCATE(rhor(rismt%nr))
 #endif
     !
@@ -969,14 +969,14 @@ CONTAINS
       !
       IF (my_group_id == io_group_id) THEN
         CALL solvavg_put('Tot rho_'// TRIM(satom) //' (1/A)', .TRUE., rhol, rismt%nrzl, .TRUE.)
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
         CALL solvavg_put('G=2 rho_'// TRIM(satom) //' (1/A)', .TRUE., rhol, rismt%nrzl, .TRUE., 2)
 #endif
       END IF
       !
       CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
     END DO
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     ! ... Guv, R-space. (in unit-cell)
     DO iq = 1, nq
@@ -1009,7 +1009,7 @@ CONTAINS
       DEALLOCATE(ggz)
     END IF
     DEALLOCATE(rhol)
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     DEALLOCATE(rhor)
 #endif
     !
@@ -1017,7 +1017,7 @@ CONTAINS
   !
   SUBROUTINE put_solvent_h()
     IMPLICIT NONE
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     INTEGER                  :: nq
     INTEGER                  :: iq
@@ -1192,7 +1192,7 @@ CONTAINS
   !
   SUBROUTINE put_solvent_c()
     IMPLICIT NONE
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     INTEGER                  :: nq
     INTEGER                  :: iq
@@ -1318,7 +1318,7 @@ CONTAINS
   !
   SUBROUTINE put_solvent_u()
     IMPLICIT NONE
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     INTEGER                  :: nq
     INTEGER                  :: iq

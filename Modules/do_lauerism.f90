@@ -62,7 +62,7 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
   SAVE                     :: mdiist
   REAL(DP)                 :: csr_ (1, 1)
   REAL(DP)                 :: dcsr_(1, 1)
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
   CHARACTER(LEN=5)         :: str
 #endif
   !
@@ -117,7 +117,7 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
   END IF
   WRITE(stdout, '()')
   WRITE(stdout, '(5X,"convergence threshold    =",1PE10.3)') rmsconv
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
   !
   IF (iverbosity > 0) THEN
     CALL write_rism_type(rismt)
@@ -188,7 +188,7 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
       & iter, rmscurr, mdiist%nbox
       FLUSH(stdout)
     END IF
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     IF (iverbosity > 0) THEN
       CALL write_rism_type(rismt)
@@ -291,7 +291,7 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
     ierr = IERR_RISM_NOT_CONVERGED
     rismt%avail = .FALSE.
   END IF
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
   !
   IF (ierr == IERR_RISM_NULL) THEN
     IF (iverbosity > 0) THEN

@@ -64,7 +64,7 @@ SUBROUTINE print_corr_vv(rismt, label, ierr)
   ALLOCATE(zvv(rismt%nr, rismt%nsite))
   !
   ! ... write Gvv(r)
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
   filrism = TRIM(tmp_dir) // TRIM(prefix) // '.1drism_gvv' // TRIM(ADJUSTL(label))
 #else
   filrism = TRIM(tmp_dir) // TRIM(prefix) // '.1drism' // TRIM(ADJUSTL(label))
@@ -76,7 +76,7 @@ SUBROUTINE print_corr_vv(rismt, label, ierr)
   CALL write_zvv(iun, rismt%gr)
   CALL close_filrism(iun)
   !
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
   ! ... write Hvv(r)
   filrism = TRIM(tmp_dir) // TRIM(prefix) // '.1drism_hvv' // TRIM(ADJUSTL(label))
   CALL open_filrism(iun, TRIM(filrism))

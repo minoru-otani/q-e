@@ -446,7 +446,7 @@ CONTAINS
   !
   SUBROUTINE print_x21()
     IMPLICIT NONE
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     INTEGER                  :: ista
     INTEGER                  :: my_group_id
     INTEGER                  :: io_group_id

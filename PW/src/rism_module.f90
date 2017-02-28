@@ -135,7 +135,7 @@ CONTAINS
     ! ...
     IF (llaue) THEN
       !
-#ifdef __RISM_STRESS
+#if defined (__RISM_STRESS)
       ! ... Laue-RISM only supports 2Dxy
       IF (lmovecell) THEN
         IF (iforceh(3, 1) /= 0 .OR. iforceh(3, 2) /= 0 .OR. iforceh(3, 3) /= 0 .OR. &

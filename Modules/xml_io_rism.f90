@@ -26,7 +26,7 @@ MODULE xml_io_rism
   PRIVATE
   !
   ! ... define constants
-#ifdef __1DRISM_BINARY
+#if defined (__1DRISM_BINARY)
   LOGICAL :: l1drism_binary = .TRUE.
 #else
   LOGICAL :: l1drism_binary = .FALSE.

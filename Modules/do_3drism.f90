@@ -101,7 +101,7 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
   END IF
   WRITE(stdout, '()')
   WRITE(stdout, '(5X,"convergence threshold    =",1PE10.3)') rmsconv
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
   !
   IF (iverbosity > 0) THEN
     CALL write_rism_type(rismt)
@@ -160,7 +160,7 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
       & iter, rmscurr, mdiist%nbox
       FLUSH(stdout)
     END IF
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     IF (iverbosity > 0) THEN
       CALL write_rism_type(rismt)
@@ -251,7 +251,7 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
     ierr = IERR_RISM_NOT_CONVERGED
     rismt%avail = .FALSE.
   END IF
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
   !
   IF (iverbosity > 0) THEN
     CALL write_rism_type(rismt)

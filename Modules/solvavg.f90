@@ -29,7 +29,7 @@ MODULE solvavg
   ! ... define constants
   INTEGER, PARAMETER :: LEN_LABEL    = 20
   !
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
   INTEGER, PARAMETER :: MAX_NUM_DATA = 256
 #else
   INTEGER, PARAMETER :: MAX_NUM_DATA = 64
@@ -533,7 +533,7 @@ CONTAINS
     REAL(DP)                 :: dz
     REAL(DP)                 :: z0
     REAL(DP)                 :: c
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     INTEGER                  :: ilabel
     INTEGER                  :: nlabel
 #endif
@@ -574,7 +574,7 @@ CONTAINS
     END IF
     !
     ! ... write labels
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     WRITE(iun, '("#__z_(A) ")', advance='no')
 #else
     WRITE(iun, '("#  z (A) ")', advance='no')
@@ -582,7 +582,7 @@ CONTAINS
     !
     DO idata = 1, ndata
       label1 = label(idata)
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
       nlabel = LEN_TRIM(label1)
       DO ilabel = 1, nlabel
         IF (label1(ilabel:ilabel) == ' ') THEN

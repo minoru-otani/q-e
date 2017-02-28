@@ -120,7 +120,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     WRITE(stdout, '(5X,"1D-RISM Calculation")')
   END IF
   WRITE(stdout, '()')
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
   !
   IF (iverbosity > 0) THEN
     CALL write_rism_type(rismt)
@@ -195,7 +195,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
       & iter, rmscurr, mdiist%nbox, rismt%temp
       FLUSH(stdout)
     END IF
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
     !
     IF (iverbosity > 0) THEN
       CALL write_rism_type(rismt)
@@ -282,7 +282,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     ! ... restore Cs
     IF (rismt%in_intra) THEN
       IF (gmax > 0.0_DP) THEN
-#ifndef __RISM_SMOOTH_CSVV
+#if !defined (__RISM_SMOOTH_CSVV)
         IF (rismt%mp_task%ivec_start == 1) THEN
           rismt%csr(2:rismt%nr, :) = csr_(2:rismt%nr, :)
         ELSE
@@ -314,7 +314,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     rismt%avail = .FALSE.
     rismt%temp  = temporg
   END IF
-#ifdef __DEBUG_RISM
+#if defined (__DEBUG_RISM)
   !
   IF (iverbosity > 0) THEN
     CALL write_rism_type(rismt)
