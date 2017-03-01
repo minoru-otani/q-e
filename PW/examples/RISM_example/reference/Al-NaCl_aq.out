@@ -1,5 +1,5 @@
 
-     Program PWSCF v.6.0 starts on  9Feb2017 at 23:19:35 
+     Program PWSCF v.6.1 starts on  1Mar2017 at  1:38:27 
 
      This program is part of the open-source Quantum ESPRESSO suite
      for quantum simulation of materials; please cite
@@ -8,10 +8,10 @@
      in publications or presentations arising from this work. More details at
      http://www.quantum-espresso.org/quote
 
-     Parallel version (MPI & OpenMP), running on       6 processor cores
-     Number of MPI processes:                 6
+     Parallel version (MPI & OpenMP), running on       4 processor cores
+     Number of MPI processes:                 4
      Threads/MPI process:                     1
-     R & G space division:  proc/nbgrp/npool/nimage =       6
+     R & G space division:  proc/nbgrp/npool/nimage =       4
      Waiting for input...
      Reading input from standard input
 
@@ -83,7 +83,7 @@
      Gaussian width of bonds =       0.4000  bohr
      size of MDIIS           =           20
      step of MDIIS           =       0.5000
-     number of processes     =            6
+     number of processes     =            4
 
 
      1D-RISM Calculation
@@ -92,96 +92,95 @@
      iter. #   101  RMS(g-h-1)= 3.179E-04  nbox=  2  T= 1600.00K
      iter. #   201  RMS(g-h-1)= 1.229E-05  nbox= 10  T= 1066.67K
      iter. #   301  RMS(g-h-1)= 5.001E-06  nbox= 15  T=  711.11K
-     iter. #   401  RMS(g-h-1)= 1.191E-06  nbox=  2  T=  711.11K
-     iter. #   501  RMS(g-h-1)= 1.094E-06  nbox= 20  T=  474.07K
-     iter. #   601  RMS(g-h-1)= 3.832E-06  nbox= 20  T=  316.05K
-     iter. #   701  RMS(g-h-1)= 1.312E-05  nbox=  8  T=  300.00K
-     iter. #   801  RMS(g-h-1)= 5.572E-07  nbox= 20  T=  300.00K
-     iter. #   901  RMS(g-h-1)= 3.114E-07  nbox= 20  T=  300.00K
-     iter. #  1001  RMS(g-h-1)= 2.341E-07  nbox= 20  T=  300.00K
-     iter. #  1101  RMS(g-h-1)= 1.830E-07  nbox= 20  T=  300.00K
-     iter. #  1201  RMS(g-h-1)= 1.538E-07  nbox= 20  T=  300.00K
-     iter. #  1301  RMS(g-h-1)= 1.280E-07  nbox= 20  T=  300.00K
-     iter. #  1401  RMS(g-h-1)= 1.131E-07  nbox= 20  T=  300.00K
-     iter. #  1501  RMS(g-h-1)= 1.010E-07  nbox= 20  T=  300.00K
-     iter. #  1601  RMS(g-h-1)= 8.331E-08  nbox= 20  T=  300.00K
-     iter. #  1701  RMS(g-h-1)= 7.268E-08  nbox= 20  T=  300.00K
-     iter. #  1801  RMS(g-h-1)= 7.002E-08  nbox= 20  T=  300.00K
-     iter. #  1901  RMS(g-h-1)= 6.487E-08  nbox= 20  T=  300.00K
-     iter. #  2001  RMS(g-h-1)= 5.934E-08  nbox= 20  T=  300.00K
-     iter. #  2101  RMS(g-h-1)= 5.514E-08  nbox= 20  T=  300.00K
-     iter. #  2201  RMS(g-h-1)= 4.988E-08  nbox= 20  T=  300.00K
-     iter. #  2301  RMS(g-h-1)= 4.433E-08  nbox= 20  T=  300.00K
-     iter. #  2401  RMS(g-h-1)= 4.223E-08  nbox= 20  T=  300.00K
-     iter. #  2501  RMS(g-h-1)= 3.938E-08  nbox= 20  T=  300.00K
-     iter. #  2601  RMS(g-h-1)= 3.721E-08  nbox= 20  T=  300.00K
-     iter. #  2701  RMS(g-h-1)= 3.532E-08  nbox= 20  T=  300.00K
-     iter. #  2801  RMS(g-h-1)= 3.446E-08  nbox= 20  T=  300.00K
-     iter. #  2901  RMS(g-h-1)= 3.322E-08  nbox= 20  T=  300.00K
-     iter. #  3001  RMS(g-h-1)= 3.192E-08  nbox= 20  T=  300.00K
-     iter. #  3101  RMS(g-h-1)= 2.961E-08  nbox= 20  T=  300.00K
-     iter. #  3201  RMS(g-h-1)= 2.685E-08  nbox= 20  T=  300.00K
-     iter. #  3301  RMS(g-h-1)= 2.535E-08  nbox= 20  T=  300.00K
-     iter. #  3401  RMS(g-h-1)= 2.438E-08  nbox= 20  T=  300.00K
-     iter. #  3501  RMS(g-h-1)= 2.376E-08  nbox= 20  T=  300.00K
-     iter. #  3601  RMS(g-h-1)= 2.331E-08  nbox= 20  T=  300.00K
+     iter. #   401  RMS(g-h-1)= 1.168E-06  nbox=  2  T=  711.11K
+     iter. #   501  RMS(g-h-1)= 1.100E-06  nbox= 20  T=  474.07K
+     iter. #   601  RMS(g-h-1)= 3.850E-06  nbox= 20  T=  316.05K
+     iter. #   701  RMS(g-h-1)= 5.858E-06  nbox= 12  T=  300.00K
+     iter. #   801  RMS(g-h-1)= 5.605E-07  nbox= 20  T=  300.00K
+     iter. #   901  RMS(g-h-1)= 3.119E-07  nbox= 20  T=  300.00K
+     iter. #  1001  RMS(g-h-1)= 2.227E-07  nbox= 20  T=  300.00K
+     iter. #  1101  RMS(g-h-1)= 1.738E-07  nbox= 20  T=  300.00K
+     iter. #  1201  RMS(g-h-1)= 1.478E-07  nbox= 20  T=  300.00K
+     iter. #  1301  RMS(g-h-1)= 1.237E-07  nbox= 20  T=  300.00K
+     iter. #  1401  RMS(g-h-1)= 1.104E-07  nbox= 20  T=  300.00K
+     iter. #  1501  RMS(g-h-1)= 9.603E-08  nbox= 20  T=  300.00K
+     iter. #  1601  RMS(g-h-1)= 7.979E-08  nbox= 20  T=  300.00K
+     iter. #  1701  RMS(g-h-1)= 7.239E-08  nbox= 20  T=  300.00K
+     iter. #  1801  RMS(g-h-1)= 6.929E-08  nbox= 20  T=  300.00K
+     iter. #  1901  RMS(g-h-1)= 6.506E-08  nbox= 20  T=  300.00K
+     iter. #  2001  RMS(g-h-1)= 5.884E-08  nbox= 20  T=  300.00K
+     iter. #  2101  RMS(g-h-1)= 5.412E-08  nbox= 20  T=  300.00K
+     iter. #  2201  RMS(g-h-1)= 4.860E-08  nbox= 20  T=  300.00K
+     iter. #  2301  RMS(g-h-1)= 4.464E-08  nbox= 20  T=  300.00K
+     iter. #  2401  RMS(g-h-1)= 4.201E-08  nbox= 20  T=  300.00K
+     iter. #  2501  RMS(g-h-1)= 3.942E-08  nbox= 20  T=  300.00K
+     iter. #  2601  RMS(g-h-1)= 3.795E-08  nbox= 20  T=  300.00K
+     iter. #  2701  RMS(g-h-1)= 3.541E-08  nbox= 20  T=  300.00K
+     iter. #  2801  RMS(g-h-1)= 3.430E-08  nbox= 20  T=  300.00K
+     iter. #  2901  RMS(g-h-1)= 3.349E-08  nbox= 20  T=  300.00K
+     iter. #  3001  RMS(g-h-1)= 3.175E-08  nbox= 20  T=  300.00K
+     iter. #  3101  RMS(g-h-1)= 2.939E-08  nbox= 20  T=  300.00K
+     iter. #  3201  RMS(g-h-1)= 2.693E-08  nbox= 20  T=  300.00K
+     iter. #  3301  RMS(g-h-1)= 2.556E-08  nbox= 20  T=  300.00K
+     iter. #  3401  RMS(g-h-1)= 2.463E-08  nbox= 20  T=  300.00K
+     iter. #  3501  RMS(g-h-1)= 2.393E-08  nbox= 20  T=  300.00K
+     iter. #  3601  RMS(g-h-1)= 2.333E-08  nbox= 20  T=  300.00K
      iter. #  3701  RMS(g-h-1)= 2.283E-08  nbox= 20  T=  300.00K
-     iter. #  3801  RMS(g-h-1)= 2.254E-08  nbox= 20  T=  300.00K
-     iter. #  3901  RMS(g-h-1)= 2.172E-08  nbox= 20  T=  300.00K
-     iter. #  4001  RMS(g-h-1)= 2.086E-08  nbox= 20  T=  300.00K
-     iter. #  4101  RMS(g-h-1)= 2.000E-08  nbox= 20  T=  300.00K
-     iter. #  4201  RMS(g-h-1)= 1.938E-08  nbox= 20  T=  300.00K
-     iter. #  4301  RMS(g-h-1)= 1.843E-08  nbox= 20  T=  300.00K
-     iter. #  4401  RMS(g-h-1)= 1.727E-08  nbox= 20  T=  300.00K
-     iter. #  4501  RMS(g-h-1)= 1.667E-08  nbox= 20  T=  300.00K
-     iter. #  4601  RMS(g-h-1)= 1.642E-08  nbox= 20  T=  300.00K
-     iter. #  4701  RMS(g-h-1)= 1.609E-08  nbox= 20  T=  300.00K
-     iter. #  4801  RMS(g-h-1)= 1.594E-08  nbox= 20  T=  300.00K
-     iter. #  4901  RMS(g-h-1)= 1.582E-08  nbox= 20  T=  300.00K
-     iter. #  5001  RMS(g-h-1)= 1.566E-08  nbox= 20  T=  300.00K
-     iter. #  5101  RMS(g-h-1)= 1.530E-08  nbox= 20  T=  300.00K
-     iter. #  5201  RMS(g-h-1)= 1.463E-08  nbox= 20  T=  300.00K
-     iter. #  5301  RMS(g-h-1)= 1.437E-08  nbox= 20  T=  300.00K
-     iter. #  5401  RMS(g-h-1)= 1.398E-08  nbox= 20  T=  300.00K
-     iter. #  5501  RMS(g-h-1)= 1.450E-08  nbox= 20  T=  300.00K
-     iter. #  5601  RMS(g-h-1)= 1.337E-08  nbox= 20  T=  300.00K
-     iter. #  5701  RMS(g-h-1)= 1.294E-08  nbox= 20  T=  300.00K
-     iter. #  5801  RMS(g-h-1)= 1.275E-08  nbox= 20  T=  300.00K
-     iter. #  5901  RMS(g-h-1)= 1.249E-08  nbox= 20  T=  300.00K
-     iter. #  6001  RMS(g-h-1)= 1.241E-08  nbox= 20  T=  300.00K
-     iter. #  6101  RMS(g-h-1)= 1.228E-08  nbox= 20  T=  300.00K
-     iter. #  6201  RMS(g-h-1)= 1.191E-08  nbox= 20  T=  300.00K
-     iter. #  6301  RMS(g-h-1)= 1.165E-08  nbox= 20  T=  300.00K
-     iter. #  6401  RMS(g-h-1)= 1.148E-08  nbox= 20  T=  300.00K
-     iter. #  6501  RMS(g-h-1)= 1.117E-08  nbox= 20  T=  300.00K
-     iter. #  6601  RMS(g-h-1)= 1.093E-08  nbox= 20  T=  300.00K
-     iter. #  6701  RMS(g-h-1)= 1.070E-08  nbox= 20  T=  300.00K
-     iter. #  6801  RMS(g-h-1)= 1.047E-08  nbox= 20  T=  300.00K
-     iter. #  6901  RMS(g-h-1)= 1.020E-08  nbox= 20  T=  300.00K
-     iter. #  6998  RMS(g-h-1)= 9.998E-09  nbox= 20  T=  300.00K
+     iter. #  3801  RMS(g-h-1)= 2.229E-08  nbox= 20  T=  300.00K
+     iter. #  3901  RMS(g-h-1)= 2.158E-08  nbox= 20  T=  300.00K
+     iter. #  4001  RMS(g-h-1)= 2.102E-08  nbox= 20  T=  300.00K
+     iter. #  4101  RMS(g-h-1)= 2.021E-08  nbox= 20  T=  300.00K
+     iter. #  4201  RMS(g-h-1)= 1.946E-08  nbox= 20  T=  300.00K
+     iter. #  4301  RMS(g-h-1)= 1.829E-08  nbox= 20  T=  300.00K
+     iter. #  4401  RMS(g-h-1)= 1.784E-08  nbox= 20  T=  300.00K
+     iter. #  4501  RMS(g-h-1)= 1.723E-08  nbox= 20  T=  300.00K
+     iter. #  4601  RMS(g-h-1)= 1.671E-08  nbox= 20  T=  300.00K
+     iter. #  4701  RMS(g-h-1)= 1.650E-08  nbox= 20  T=  300.00K
+     iter. #  4801  RMS(g-h-1)= 1.619E-08  nbox= 20  T=  300.00K
+     iter. #  4901  RMS(g-h-1)= 1.590E-08  nbox= 20  T=  300.00K
+     iter. #  5001  RMS(g-h-1)= 1.554E-08  nbox= 20  T=  300.00K
+     iter. #  5101  RMS(g-h-1)= 1.506E-08  nbox= 20  T=  300.00K
+     iter. #  5201  RMS(g-h-1)= 1.465E-08  nbox= 20  T=  300.00K
+     iter. #  5301  RMS(g-h-1)= 1.444E-08  nbox= 20  T=  300.00K
+     iter. #  5401  RMS(g-h-1)= 1.417E-08  nbox= 20  T=  300.00K
+     iter. #  5501  RMS(g-h-1)= 1.519E-08  nbox= 11  T=  300.00K
+     iter. #  5601  RMS(g-h-1)= 1.371E-08  nbox= 20  T=  300.00K
+     iter. #  5701  RMS(g-h-1)= 1.346E-08  nbox= 20  T=  300.00K
+     iter. #  5801  RMS(g-h-1)= 1.335E-08  nbox= 20  T=  300.00K
+     iter. #  5901  RMS(g-h-1)= 1.265E-08  nbox= 20  T=  300.00K
+     iter. #  6001  RMS(g-h-1)= 1.242E-08  nbox= 20  T=  300.00K
+     iter. #  6101  RMS(g-h-1)= 1.215E-08  nbox= 20  T=  300.00K
+     iter. #  6201  RMS(g-h-1)= 1.182E-08  nbox= 20  T=  300.00K
+     iter. #  6301  RMS(g-h-1)= 1.154E-08  nbox= 20  T=  300.00K
+     iter. #  6401  RMS(g-h-1)= 1.137E-08  nbox= 20  T=  300.00K
+     iter. #  6501  RMS(g-h-1)= 1.122E-08  nbox= 20  T=  300.00K
+     iter. #  6601  RMS(g-h-1)= 1.096E-08  nbox= 20  T=  300.00K
+     iter. #  6701  RMS(g-h-1)= 1.065E-08  nbox= 20  T=  300.00K
+     iter. #  6801  RMS(g-h-1)= 1.037E-08  nbox= 20  T=  300.00K
+     iter. #  6892  RMS(g-h-1)= 9.992E-09  nbox= 20  T=  300.00K
 
      End of 1D-RISM calculation
 
 
-     convergence has been achieved in  6998 iterations
+     convergence has been achieved in  6892 iterations
 
 
      Chemical potential of solvation
 
-     H2O        H2O        Closure      0.755730E+01 kcal/mol
-                           GaussFluct   0.441148E+01 kcal/mol
+     H2O        H2O        Closure      0.755718E+01 kcal/mol
+                           GaussFluct   0.441134E+01 kcal/mol
 
-                Na+        Closure     -0.140210E+01 kcal/mol
-                           GaussFluct  -0.158540E+01 kcal/mol
+                Na+        Closure     -0.140207E+01 kcal/mol
+                           GaussFluct  -0.158537E+01 kcal/mol
 
-                Cl-        Closure     -0.246830E+00 kcal/mol
-                           GaussFluct  -0.472329E+00 kcal/mol
+                Cl-        Closure     -0.246933E+00 kcal/mol
+                           GaussFluct  -0.472428E+00 kcal/mol
 
-                Total      Closure      0.590837E+01 kcal/mol
-                           GaussFluct   0.235375E+01 kcal/mol
+                Total      Closure      0.590818E+01 kcal/mol
+                           GaussFluct   0.235354E+01 kcal/mol
 
-     Na+        H2O        Closure     -0.155653E+02 kcal/mol
-                           GaussFluct  -0.176001E+02 kcal/mol
+     Na+        H2O        Closure     -0.155649E+02 kcal/mol
+                           GaussFluct  -0.175998E+02 kcal/mol
 
                 Na+        Closure      0.109759E+06 kcal/mol
                            GaussFluct   0.109759E+06 kcal/mol
@@ -189,11 +188,11 @@
                 Cl-        Closure     -0.109823E+06 kcal/mol
                            GaussFluct  -0.109823E+06 kcal/mol
 
-                Total      Closure     -0.795586E+02 kcal/mol
-                           GaussFluct  -0.818130E+02 kcal/mol
+                Total      Closure     -0.795583E+02 kcal/mol
+                           GaussFluct  -0.818127E+02 kcal/mol
 
-     Cl-        H2O        Closure     -0.274015E+01 kcal/mol
-                           GaussFluct  -0.524351E+01 kcal/mol
+     Cl-        H2O        Closure     -0.274130E+01 kcal/mol
+                           GaussFluct  -0.524460E+01 kcal/mol
 
                 Na+        Closure     -0.109823E+06 kcal/mol
                            GaussFluct  -0.109823E+06 kcal/mol
@@ -201,15 +200,15 @@
                 Cl-        Closure      0.109762E+06 kcal/mol
                            GaussFluct   0.109762E+06 kcal/mol
 
-                Total      Closure     -0.633132E+02 kcal/mol
-                           GaussFluct  -0.660949E+02 kcal/mol
+                Total      Closure     -0.633137E+02 kcal/mol
+                           GaussFluct  -0.660954E+02 kcal/mol
 
 
      Parallelization info
      --------------------
      sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
-     Min          74      33     10                10866     3225     576
-     Max          76      34     11                10878     3260     601
+     Min         112      49     15                16305     4831     869
+     Max         113      50     16                16313     4864     886
      Sum         451     199     61                65239    19411    3501
 
 
@@ -285,9 +284,9 @@
 
      Smooth grid:    19411 G-vectors     FFT dimensions: (  18,  18, 150)
 
-     Estimated max dynamical RAM per process >       6.50Mb
+     Estimated max dynamical RAM per process >       9.74MB
 
-     Estimated total allocated dynamical RAM >      39.03Mb
+     Estimated total allocated dynamical RAM >      38.95MB
 
      Solute:
        # atom     E (kcal/mol)  S (angs)
@@ -307,16 +306,17 @@
      convergence threshold   =      1.0E-04
      size of MDIIS           =           10
      step of MDIIS           =       0.8000
-     solvent cutoff          =     144.0000  Ry
-     Custom grid:    33515 G-vectors     FFT dimensions: (  24,  24, 180)
+     solvent cutoff          =     100.0000  Ry
+     Custom grid:    19411 G-vectors     FFT dimensions: (  18,  18, 150)
 
      Boundary Conditions        : Vacuum-Slab-Solvent
      unit-cell (in bohr)        : [ -22.676714  22.676714]
      expand-cell (in bohr)      : [ -22.676714  74.077264]
      solvent of right (in bohr) : [   0.000000  74.077264]
+     buffer  of right (in bohr) : [  -3.930630   0.000000]
      reference of potential     : right-hand side
      #grids to fit at edges of unit-cell =    4
-     Laue grid:      295 Gxy-vectors     FFT dimensions: (  24,  24, 384)
+     Laue grid:      199 Gxy-vectors     FFT dimensions: (  18,  18, 320)
 
 
      Initial potential from superposition of free atoms
@@ -328,592 +328,1037 @@
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 3.244E+01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 2.672E+00  nbox= 10
-     iter. #    21  RMS(g-h-1)= 1.018E+00  nbox= 10
-     iter. #    31  RMS(g-h-1)= 6.370E-01  nbox= 10
-     iter. #    41  RMS(g-h-1)= 2.285E-01  nbox= 10
-     iter. #    51  RMS(g-h-1)= 1.624E-01  nbox= 10
-     iter. #    61  RMS(g-h-1)= 1.717E-01  nbox= 10
-     iter. #    71  RMS(g-h-1)= 1.009E-01  nbox= 10
-     iter. #    81  RMS(g-h-1)= 9.403E-02  nbox= 10
-     iter. #    91  RMS(g-h-1)= 8.983E-02  nbox=  5
-     iter. #   101  RMS(g-h-1)= 9.009E-02  nbox= 10
-     iter. #   111  RMS(g-h-1)= 8.115E-02  nbox=  9
-     iter. #   121  RMS(g-h-1)= 6.881E-02  nbox=  3
-     iter. #   131  RMS(g-h-1)= 6.732E-02  nbox= 10
-     iter. #   141  RMS(g-h-1)= 5.005E-02  nbox=  6
-     iter. #   151  RMS(g-h-1)= 4.862E-02  nbox= 10
-     iter. #   161  RMS(g-h-1)= 4.659E-02  nbox=  9
-     iter. #   171  RMS(g-h-1)= 3.601E-02  nbox=  5
-     iter. #   181  RMS(g-h-1)= 2.811E-02  nbox= 10
-     iter. #   191  RMS(g-h-1)= 2.399E-02  nbox= 10
-     iter. #   201  RMS(g-h-1)= 2.093E-02  nbox= 10
-     iter. #   211  RMS(g-h-1)= 9.862E-03  nbox= 10
+     iter. #     1  RMS(g-h-1)= 2.006E+01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 1.604E+00  nbox= 10
+     iter. #    21  RMS(g-h-1)= 6.806E-01  nbox= 10
+     iter. #    31  RMS(g-h-1)= 2.118E-01  nbox= 10
+     iter. #    41  RMS(g-h-1)= 7.850E-02  nbox= 10
+     iter. #    51  RMS(g-h-1)= 5.290E-02  nbox= 10
+     iter. #    61  RMS(g-h-1)= 5.259E-02  nbox= 10
+     iter. #    71  RMS(g-h-1)= 5.325E-02  nbox=  9
+     iter. #    81  RMS(g-h-1)= 4.415E-02  nbox= 10
+     iter. #    91  RMS(g-h-1)= 3.505E-02  nbox= 10
+     iter. #   101  RMS(g-h-1)= 3.450E-02  nbox=  3
+     iter. #   111  RMS(g-h-1)= 3.399E-02  nbox= 10
+     iter. #   121  RMS(g-h-1)= 3.440E-02  nbox=  7
+     iter. #   131  RMS(g-h-1)= 3.427E-02  nbox= 10
+     iter. #   141  RMS(g-h-1)= 3.379E-02  nbox= 10
+     iter. #   151  RMS(g-h-1)= 3.329E-02  nbox=  5
+     iter. #   161  RMS(g-h-1)= 3.238E-02  nbox= 10
+     iter. #   171  RMS(g-h-1)= 3.109E-02  nbox=  9
+     iter. #   181  RMS(g-h-1)= 3.018E-02  nbox=  3
+     iter. #   191  RMS(g-h-1)= 3.007E-02  nbox= 10
+     iter. #   201  RMS(g-h-1)= 2.941E-02  nbox=  7
+     iter. #   211  RMS(g-h-1)= 2.808E-02  nbox= 10
+     iter. #   221  RMS(g-h-1)= 2.685E-02  nbox= 10
+     iter. #   231  RMS(g-h-1)= 2.181E-02  nbox= 10
+     iter. #   241  RMS(g-h-1)= 1.628E-02  nbox= 10
+     iter. #   251  RMS(g-h-1)= 1.420E-02  nbox= 10
+     iter. #   261  RMS(g-h-1)= 1.118E-02  nbox= 10
+     iter. #   271  RMS(g-h-1)= 1.071E-02  nbox=  5
+     iter. #   276  RMS(g-h-1)= 9.471E-03  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in   211 iterations
+     convergence has been achieved in   276 iterations
 
 
-     solvent charge   -0.07890, renormalised to   -0.10000
+     solvent charge   -0.12112, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O          0.028575 e
-     Na+          0.095571 e
-     Cl-         -0.203030 e
-     Total       -0.078883 e
+     H2O         -0.013903 e
+     Na+          0.099391 e
+     Cl-         -0.206442 e
+     Total       -0.120954 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.853014E+01 kcal/mol
-     Na+        GaussFluct  -0.475202E+03 kcal/mol
-     Cl-        GaussFluct   0.486801E+03 kcal/mol
-     Total      GaussFluct   0.201295E+02 kcal/mol
+     H2O        GaussFluct   0.725894E+01 kcal/mol
+     Na+        GaussFluct  -0.477235E+03 kcal/mol
+     Cl-        GaussFluct   0.488033E+03 kcal/mol
+     Total      GaussFluct   0.180567E+02 kcal/mol
 
      Starting wfc are   12 randomized atomic wfcs
 
-     total cpu time spent up to now is       23.6 secs
+     total cpu time spent up to now is       34.3 secs
 
-     per-process dynamical memory:    23.6 Mb
+     per-process dynamical memory:    20.4 Mb
 
      Self-consistent Calculation
 
      iteration #  1     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  1.00E-02,  avg # of iterations =  9.0
+     c_bands:  1 eigenvalues not converged
+     ethr =  1.00E-02,  avg # of iterations =  9.3
 
-     negative rho (up, down):  1.053E-08 0.000E+00
+     negative rho (up, down):  1.574E-08 0.000E+00
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 1.227E+01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 7.730E-01  nbox= 10
-     iter. #    21  RMS(g-h-1)= 2.901E-01  nbox= 10
-     iter. #    31  RMS(g-h-1)= 1.854E-01  nbox= 10
-     iter. #    41  RMS(g-h-1)= 8.239E-02  nbox= 10
-     iter. #    51  RMS(g-h-1)= 5.826E-02  nbox= 10
-     iter. #    61  RMS(g-h-1)= 5.501E-02  nbox=  4
-     iter. #    71  RMS(g-h-1)= 5.414E-02  nbox= 10
-     iter. #    81  RMS(g-h-1)= 5.381E-02  nbox=  8
-     iter. #    91  RMS(g-h-1)= 5.206E-02  nbox=  2
-     iter. #   101  RMS(g-h-1)= 5.175E-02  nbox= 10
-     iter. #   111  RMS(g-h-1)= 5.143E-02  nbox=  6
-     iter. #   121  RMS(g-h-1)= 5.164E-02  nbox= 10
-     iter. #   131  RMS(g-h-1)= 5.022E-02  nbox= 10
-     iter. #   141  RMS(g-h-1)= 4.798E-02  nbox=  4
-     iter. #   151  RMS(g-h-1)= 6.148E-02  nbox= 10
-     iter. #   161  RMS(g-h-1)= 4.509E-02  nbox=  8
-     iter. #   171  RMS(g-h-1)= 4.405E-02  nbox= 10
-     iter. #   181  RMS(g-h-1)= 4.372E-02  nbox= 10
-     iter. #   191  RMS(g-h-1)= 4.816E-02  nbox=  5
-     iter. #   201  RMS(g-h-1)= 3.897E-02  nbox=  3
-     iter. #   211  RMS(g-h-1)= 3.723E-02  nbox= 10
-     iter. #   221  RMS(g-h-1)= 3.316E-02  nbox=  5
-     iter. #   231  RMS(g-h-1)= 3.211E-02  nbox= 10
-     iter. #   241  RMS(g-h-1)= 3.037E-02  nbox=  9
-     iter. #   251  RMS(g-h-1)= 2.692E-02  nbox=  3
-     iter. #   261  RMS(g-h-1)= 1.509E-02  nbox= 10
-     iter. #   268  RMS(g-h-1)= 9.576E-03  nbox= 10
+     iter. #     1  RMS(g-h-1)= 6.413E+00  nbox=  0
+     iter. #    11  RMS(g-h-1)= 4.864E-01  nbox= 10
+     iter. #    21  RMS(g-h-1)= 1.790E-01  nbox= 10
+     iter. #    31  RMS(g-h-1)= 1.234E-01  nbox= 10
+     iter. #    41  RMS(g-h-1)= 1.143E-01  nbox= 10
+     iter. #    51  RMS(g-h-1)= 9.812E-02  nbox=  7
+     iter. #    61  RMS(g-h-1)= 9.410E-02  nbox= 10
+     iter. #    71  RMS(g-h-1)= 6.188E-02  nbox= 10
+     iter. #    81  RMS(g-h-1)= 5.626E-02  nbox= 10
+     iter. #    91  RMS(g-h-1)= 5.720E-02  nbox=  7
+     iter. #   101  RMS(g-h-1)= 5.516E-02  nbox= 10
+     iter. #   111  RMS(g-h-1)= 5.574E-02  nbox= 10
+     iter. #   121  RMS(g-h-1)= 5.451E-02  nbox=  5
+     iter. #   131  RMS(g-h-1)= 5.696E-02  nbox= 10
+     iter. #   141  RMS(g-h-1)= 4.860E-02  nbox=  9
+     iter. #   151  RMS(g-h-1)= 3.843E-02  nbox= 10
+     iter. #   161  RMS(g-h-1)= 3.822E-02  nbox= 10
+     iter. #   171  RMS(g-h-1)= 3.822E-02  nbox=  5
+     iter. #   181  RMS(g-h-1)= 3.791E-02  nbox= 10
+     iter. #   191  RMS(g-h-1)= 3.694E-02  nbox=  9
+     iter. #   201  RMS(g-h-1)= 3.526E-02  nbox=  3
+     iter. #   211  RMS(g-h-1)= 3.514E-02  nbox= 10
+     iter. #   221  RMS(g-h-1)= 3.251E-02  nbox=  7
+     iter. #   231  RMS(g-h-1)= 3.441E-02  nbox= 10
+     iter. #   241  RMS(g-h-1)= 3.092E-02  nbox= 10
+     iter. #   251  RMS(g-h-1)= 2.955E-02  nbox=  4
+     iter. #   261  RMS(g-h-1)= 3.378E-02  nbox= 10
+     iter. #   271  RMS(g-h-1)= 2.543E-02  nbox=  8
+     iter. #   281  RMS(g-h-1)= 2.453E-02  nbox= 10
+     iter. #   291  RMS(g-h-1)= 2.419E-02  nbox= 10
+     iter. #   301  RMS(g-h-1)= 2.310E-02  nbox=  5
+     iter. #   311  RMS(g-h-1)= 2.345E-02  nbox= 10
+     iter. #   321  RMS(g-h-1)= 2.254E-02  nbox=  8
+     iter. #   331  RMS(g-h-1)= 2.160E-02  nbox=  2
+     iter. #   341  RMS(g-h-1)= 2.107E-02  nbox= 10
+     iter. #   351  RMS(g-h-1)= 2.997E-02  nbox= 10
+     iter. #   361  RMS(g-h-1)= 1.578E-02  nbox= 10
+     iter. #   370  RMS(g-h-1)= 9.263E-03  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in   268 iterations
+     convergence has been achieved in   370 iterations
 
 
-     solvent charge   -0.10198, renormalised to   -0.10000
+     solvent charge   -0.13121, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.013078 e
-     Na+          0.100521 e
-     Cl-         -0.189394 e
-     Total       -0.101952 e
+     H2O         -0.041216 e
+     Na+          0.104243 e
+     Cl-         -0.194204 e
+     Total       -0.131177 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.768026E+01 kcal/mol
-     Na+        GaussFluct  -0.239088E+03 kcal/mol
-     Cl-        GaussFluct   0.234655E+03 kcal/mol
-     Total      GaussFluct   0.324734E+01 kcal/mol
+     H2O        GaussFluct   0.577341E+01 kcal/mol
+     Na+        GaussFluct  -0.239924E+03 kcal/mol
+     Cl-        GaussFluct   0.235484E+03 kcal/mol
+     Total      GaussFluct   0.133333E+01 kcal/mol
 
 
-     total cpu time spent up to now is       31.1 secs
+     total cpu time spent up to now is       46.0 secs
 
-     total energy              =     -11.09710805 Ry
-     Harris-Foulkes estimate   =     -12.81112053 Ry
-     estimated scf accuracy    <       3.49175813 Ry
+     total energy              =     -11.10312975 Ry
+     Harris-Foulkes estimate   =     -12.81659227 Ry
+     estimated scf accuracy    <       3.49105258 Ry
 
      iteration #  2     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  1.00E-02,  avg # of iterations =  7.7
+     ethr =  1.00E-02,  avg # of iterations =  6.3
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 8.590E+00  nbox=  0
-     iter. #    11  RMS(g-h-1)= 3.463E-01  nbox= 10
-     iter. #    21  RMS(g-h-1)= 1.714E-01  nbox= 10
-     iter. #    31  RMS(g-h-1)= 7.580E-02  nbox= 10
-     iter. #    41  RMS(g-h-1)= 3.671E-02  nbox= 10
-     iter. #    51  RMS(g-h-1)= 2.511E-02  nbox= 10
-     iter. #    61  RMS(g-h-1)= 2.460E-02  nbox=  2
-     iter. #    71  RMS(g-h-1)= 2.477E-02  nbox= 10
-     iter. #    81  RMS(g-h-1)= 2.456E-02  nbox=  6
-     iter. #    91  RMS(g-h-1)= 2.439E-02  nbox= 10
-     iter. #   101  RMS(g-h-1)= 2.430E-02  nbox= 10
-     iter. #   111  RMS(g-h-1)= 2.405E-02  nbox=  4
-     iter. #   121  RMS(g-h-1)= 2.112E-02  nbox= 10
-     iter. #   131  RMS(g-h-1)= 1.655E-02  nbox=  8
-     iter. #   141  RMS(g-h-1)= 1.991E-02  nbox= 10
-     iter. #   151  RMS(g-h-1)= 1.088E-02  nbox= 10
-     iter. #   152  RMS(g-h-1)= 9.697E-03  nbox= 10
+     iter. #     1  RMS(g-h-1)= 5.054E+00  nbox=  0
+     iter. #    11  RMS(g-h-1)= 4.881E-01  nbox= 10
+     iter. #    21  RMS(g-h-1)= 1.510E-01  nbox= 10
+     iter. #    31  RMS(g-h-1)= 1.197E-01  nbox= 10
+     iter. #    41  RMS(g-h-1)= 1.128E-01  nbox= 10
+     iter. #    51  RMS(g-h-1)= 9.102E-02  nbox=  7
+     iter. #    61  RMS(g-h-1)= 8.879E-02  nbox= 10
+     iter. #    71  RMS(g-h-1)= 8.687E-02  nbox= 10
+     iter. #    81  RMS(g-h-1)= 8.850E-02  nbox=  5
+     iter. #    91  RMS(g-h-1)= 8.809E-02  nbox= 10
+     iter. #   101  RMS(g-h-1)= 1.022E-01  nbox=  9
+     iter. #   111  RMS(g-h-1)= 7.237E-02  nbox=  3
+     iter. #   121  RMS(g-h-1)= 6.088E-02  nbox= 10
+     iter. #   131  RMS(g-h-1)= 5.990E-02  nbox= 10
+     iter. #   141  RMS(g-h-1)= 6.440E-02  nbox= 10
+     iter. #   151  RMS(g-h-1)= 5.073E-02  nbox=  4
+     iter. #   161  RMS(g-h-1)= 5.298E-02  nbox= 10
+     iter. #   171  RMS(g-h-1)= 2.895E-02  nbox= 10
+     iter. #   181  RMS(g-h-1)= 2.438E-02  nbox= 10
+     iter. #   191  RMS(g-h-1)= 2.228E-02  nbox=  5
+     iter. #   201  RMS(g-h-1)= 2.101E-02  nbox= 10
+     iter. #   211  RMS(g-h-1)= 2.109E-02  nbox=  9
+     iter. #   221  RMS(g-h-1)= 2.009E-02  nbox=  3
+     iter. #   231  RMS(g-h-1)= 1.949E-02  nbox= 10
+     iter. #   241  RMS(g-h-1)= 1.926E-02  nbox=  7
+     iter. #   251  RMS(g-h-1)= 1.903E-02  nbox= 10
+     iter. #   261  RMS(g-h-1)= 1.867E-02  nbox=  9
+     iter. #   271  RMS(g-h-1)= 1.774E-02  nbox=  3
+     iter. #   281  RMS(g-h-1)= 1.657E-02  nbox= 10
+     iter. #   291  RMS(g-h-1)= 1.574E-02  nbox=  5
+     iter. #   301  RMS(g-h-1)= 1.552E-02  nbox= 10
+     iter. #   311  RMS(g-h-1)= 1.540E-02  nbox=  9
+     iter. #   321  RMS(g-h-1)= 1.429E-02  nbox=  3
+     iter. #   331  RMS(g-h-1)= 1.416E-02  nbox= 10
+     iter. #   341  RMS(g-h-1)= 1.086E-02  nbox=  5
+     iter. #   345  RMS(g-h-1)= 9.888E-03  nbox=  9
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in   152 iterations
+     convergence has been achieved in   345 iterations
 
 
-     solvent charge   -0.08598, renormalised to   -0.10000
+     solvent charge   -0.08337, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O          0.014854 e
-     Na+          0.096676 e
-     Cl-         -0.197534 e
-     Total       -0.086004 e
+     H2O          0.022962 e
+     Na+          0.096276 e
+     Cl-         -0.202633 e
+     Total       -0.083395 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.863752E+01 kcal/mol
-     Na+        GaussFluct  -0.408022E+03 kcal/mol
-     Cl-        GaussFluct   0.414491E+03 kcal/mol
-     Total      GaussFluct   0.151066E+02 kcal/mol
+     H2O        GaussFluct   0.824636E+01 kcal/mol
+     Na+        GaussFluct  -0.404898E+03 kcal/mol
+     Cl-        GaussFluct   0.411298E+03 kcal/mol
+     Total      GaussFluct   0.146468E+02 kcal/mol
 
 
-     total cpu time spent up to now is       35.1 secs
+     total cpu time spent up to now is       57.3 secs
 
-     total energy              =     -11.03254255 Ry
-     Harris-Foulkes estimate   =     -14.07466439 Ry
-     estimated scf accuracy    <      21.76144179 Ry
+     total energy              =     -11.08035315 Ry
+     Harris-Foulkes estimate   =     -14.06773042 Ry
+     estimated scf accuracy    <      21.38807638 Ry
 
      iteration #  3     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  1.00E-02,  avg # of iterations =  4.0
+     ethr =  1.00E-02,  avg # of iterations =  3.7
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 4.694E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 2.440E-02  nbox=  9
-     iter. #    16  RMS(g-h-1)= 9.288E-03  nbox= 10
+     iter. #     1  RMS(g-h-1)= 5.101E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 1.279E-02  nbox= 10
+     iter. #    14  RMS(g-h-1)= 9.794E-03  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in    16 iterations
+     convergence has been achieved in    14 iterations
 
 
-     solvent charge   -0.07916, renormalised to   -0.10000
+     solvent charge   -0.07884, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O          0.032252 e
-     Na+          0.095847 e
-     Cl-         -0.207280 e
-     Total       -0.079182 e
+     H2O          0.019989 e
+     Na+          0.096029 e
+     Cl-         -0.194888 e
+     Total       -0.078870 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.881051E+01 kcal/mol
-     Na+        GaussFluct  -0.406002E+03 kcal/mol
-     Cl-        GaussFluct   0.412656E+03 kcal/mol
-     Total      GaussFluct   0.154647E+02 kcal/mol
+     H2O        GaussFluct   0.894463E+01 kcal/mol
+     Na+        GaussFluct  -0.402915E+03 kcal/mol
+     Cl-        GaussFluct   0.408896E+03 kcal/mol
+     Total      GaussFluct   0.149249E+02 kcal/mol
 
 
-     total cpu time spent up to now is       35.6 secs
+     total cpu time spent up to now is       58.0 secs
 
-     total energy              =     -12.42853937 Ry
-     Harris-Foulkes estimate   =     -12.40719782 Ry
-     estimated scf accuracy    <       0.35340151 Ry
+     total energy              =     -12.42550367 Ry
+     Harris-Foulkes estimate   =     -12.40837093 Ry
+     estimated scf accuracy    <       0.33567444 Ry
 
      iteration #  4     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
+     ethr =  3.77E-03,  avg # of iterations =  2.3
 
-     negative rho (up, down):  5.051E-07 0.000E+00
+     negative rho (up, down):  7.870E-07 0.000E+00
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 3.312E+00  nbox=  0
-     iter. #    11  RMS(g-h-1)= 8.130E-02  nbox=  9
-     iter. #    21  RMS(g-h-1)= 1.490E-02  nbox= 10
-     iter. #    31  RMS(g-h-1)= 1.105E-02  nbox= 10
-     iter. #    41  RMS(g-h-1)= 9.834E-03  nbox=  4
+     iter. #     1  RMS(g-h-1)= 4.385E+00  nbox=  0
+     iter. #    11  RMS(g-h-1)= 1.150E-01  nbox= 10
+     iter. #    21  RMS(g-h-1)= 3.900E-02  nbox= 10
+     iter. #    31  RMS(g-h-1)= 3.552E-02  nbox= 10
+     iter. #    41  RMS(g-h-1)= 3.360E-02  nbox=  6
+     iter. #    51  RMS(g-h-1)= 3.026E-02  nbox=  6
+     iter. #    61  RMS(g-h-1)= 1.129E-02  nbox= 10
+     iter. #    69  RMS(g-h-1)= 9.490E-03  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in    41 iterations
+     convergence has been achieved in    69 iterations
 
 
-     solvent charge   -0.12319, renormalised to   -0.10000
+     solvent charge   -0.11783, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.036729 e
-     Na+          0.104962 e
-     Cl-         -0.191276 e
-     Total       -0.123043 e
+     H2O         -0.010126 e
+     Na+          0.100871 e
+     Cl-         -0.208381 e
+     Total       -0.117636 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.724849E+01 kcal/mol
-     Na+        GaussFluct  -0.425079E+03 kcal/mol
-     Cl-        GaussFluct   0.431356E+03 kcal/mol
-     Total      GaussFluct   0.135248E+02 kcal/mol
+     H2O        GaussFluct   0.766375E+01 kcal/mol
+     Na+        GaussFluct  -0.421235E+03 kcal/mol
+     Cl-        GaussFluct   0.428312E+03 kcal/mol
+     Total      GaussFluct   0.147415E+02 kcal/mol
 
 
-     total cpu time spent up to now is       36.9 secs
+     total cpu time spent up to now is       60.5 secs
 
-     total energy              =     -12.31168505 Ry
-     Harris-Foulkes estimate   =     -12.44294667 Ry
-     estimated scf accuracy    <       0.41168803 Ry
+     total energy              =     -12.31187118 Ry
+     Harris-Foulkes estimate   =     -12.43388689 Ry
+     estimated scf accuracy    <       0.38280866 Ry
 
      iteration #  5     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  3.7
+     ethr =  3.77E-03,  avg # of iterations =  7.0
 
-     negative rho (up, down):  5.603E-07 0.000E+00
+     negative rho (up, down):  7.426E-07 0.000E+00
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 1.837E-02  nbox=  0
-     iter. #     4  RMS(g-h-1)= 9.880E-03  nbox=  3
+     iter. #     1  RMS(g-h-1)= 1.079E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 8.478E-03  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in     4 iterations
+     convergence has been achieved in    11 iterations
 
 
-     solvent charge   -0.12363, renormalised to   -0.10000
+     solvent charge   -0.11603, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.036609 e
-     Na+          0.104796 e
-     Cl-         -0.191666 e
-     Total       -0.123480 e
+     H2O         -0.009598 e
+     Na+          0.100676 e
+     Cl-         -0.206915 e
+     Total       -0.115837 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.724225E+01 kcal/mol
-     Na+        GaussFluct  -0.426383E+03 kcal/mol
-     Cl-        GaussFluct   0.432891E+03 kcal/mol
-     Total      GaussFluct   0.137509E+02 kcal/mol
+     H2O        GaussFluct   0.787380E+01 kcal/mol
+     Na+        GaussFluct  -0.420086E+03 kcal/mol
+     Cl-        GaussFluct   0.427010E+03 kcal/mol
+     Total      GaussFluct   0.147978E+02 kcal/mol
 
 
-     total cpu time spent up to now is       37.3 secs
+     total cpu time spent up to now is       61.1 secs
 
-     total energy              =     -12.43291846 Ry
-     Harris-Foulkes estimate   =     -12.42835230 Ry
-     estimated scf accuracy    <       0.47539324 Ry
+     total energy              =     -12.42307238 Ry
+     Harris-Foulkes estimate   =     -12.42700751 Ry
+     estimated scf accuracy    <       0.51525555 Ry
 
      iteration #  6     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
+     ethr =  3.77E-03,  avg # of iterations =  1.0
 
-     negative rho (up, down):  8.854E-07 0.000E+00
+     negative rho (up, down):  1.020E-06 0.000E+00
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 6.801E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.287E-02  nbox= 10
-     iter. #    18  RMS(g-h-1)= 9.895E-03  nbox= 10
+     iter. #     1  RMS(g-h-1)= 1.213E+00  nbox=  0
+     iter. #    11  RMS(g-h-1)= 3.381E-02  nbox= 10
+     iter. #    21  RMS(g-h-1)= 1.279E-02  nbox= 10
+     iter. #    26  RMS(g-h-1)= 9.172E-03  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in    18 iterations
+     convergence has been achieved in    26 iterations
 
 
-     solvent charge   -0.12670, renormalised to   -0.10000
+     solvent charge   -0.11723, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.025849 e
-     Na+          0.102971 e
-     Cl-         -0.203668 e
-     Total       -0.126546 e
+     H2O         -0.025711 e
+     Na+          0.102806 e
+     Cl-         -0.194128 e
+     Total       -0.117033 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.788691E+01 kcal/mol
-     Na+        GaussFluct  -0.433742E+03 kcal/mol
-     Cl-        GaussFluct   0.441278E+03 kcal/mol
-     Total      GaussFluct   0.154226E+02 kcal/mol
+     H2O        GaussFluct   0.885140E+01 kcal/mol
+     Na+        GaussFluct  -0.409872E+03 kcal/mol
+     Cl-        GaussFluct   0.415652E+03 kcal/mol
+     Total      GaussFluct   0.146311E+02 kcal/mol
 
 
-     total cpu time spent up to now is       38.2 secs
+     total cpu time spent up to now is       62.1 secs
 
-     total energy              =     -12.44417107 Ry
-     Harris-Foulkes estimate   =     -12.43152301 Ry
-     estimated scf accuracy    <       0.56309095 Ry
+     total energy              =     -12.39160926 Ry
+     Harris-Foulkes estimate   =     -12.42587563 Ry
+     estimated scf accuracy    <       0.48698968 Ry
 
      iteration #  7     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
+     ethr =  3.77E-03,  avg # of iterations =  1.0
 
-     negative rho (up, down):  1.590E-04 0.000E+00
+     negative rho (up, down):  3.590E-05 0.000E+00
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 4.505E+00  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.138E-01  nbox=  9
-     iter. #    21  RMS(g-h-1)= 3.604E-02  nbox= 10
-     iter. #    31  RMS(g-h-1)= 2.999E-02  nbox= 10
-     iter. #    41  RMS(g-h-1)= 2.708E-02  nbox=  4
-     iter. #    51  RMS(g-h-1)= 2.631E-02  nbox= 10
-     iter. #    61  RMS(g-h-1)= 2.529E-02  nbox=  8
-     iter. #    71  RMS(g-h-1)= 1.156E-02  nbox= 10
-     iter. #    73  RMS(g-h-1)= 9.625E-03  nbox= 10
+     iter. #     1  RMS(g-h-1)= 3.760E+00  nbox=  0
+     iter. #    11  RMS(g-h-1)= 7.903E-02  nbox=  9
+     iter. #    21  RMS(g-h-1)= 3.106E-02  nbox= 10
+     iter. #    31  RMS(g-h-1)= 1.240E-02  nbox= 10
+     iter. #    36  RMS(g-h-1)= 9.616E-03  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in    73 iterations
+     convergence has been achieved in    36 iterations
 
 
-     solvent charge   -0.10960, renormalised to   -0.10000
+     solvent charge   -0.12600, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.017183 e
-     Na+          0.104041 e
-     Cl-         -0.196429 e
-     Total       -0.109571 e
+     H2O         -0.026980 e
+     Na+          0.104187 e
+     Cl-         -0.203094 e
+     Total       -0.125886 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.835462E+01 kcal/mol
-     Na+        GaussFluct  -0.440250E+03 kcal/mol
-     Cl-        GaussFluct   0.447740E+03 kcal/mol
-     Total      GaussFluct   0.158442E+02 kcal/mol
+     H2O        GaussFluct   0.781208E+01 kcal/mol
+     Na+        GaussFluct  -0.397171E+03 kcal/mol
+     Cl-        GaussFluct   0.402274E+03 kcal/mol
+     Total      GaussFluct   0.129152E+02 kcal/mol
 
 
-     total cpu time spent up to now is       40.7 secs
+     total cpu time spent up to now is       63.5 secs
 
-     total energy              =     -12.45681769 Ry
-     Harris-Foulkes estimate   =     -12.44745034 Ry
-     estimated scf accuracy    <       0.83032121 Ry
+     total energy              =     -12.37359405 Ry
+     Harris-Foulkes estimate   =     -12.40475262 Ry
+     estimated scf accuracy    <       0.16194383 Ry
 
      iteration #  8     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  8.0
+     ethr =  1.82E-03,  avg # of iterations =  1.0
 
-     negative rho (up, down):  2.955E-05 0.000E+00
+     negative rho (up, down):  4.506E-05 0.000E+00
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 8.588E-02  nbox=  0
-     iter. #     6  RMS(g-h-1)= 9.433E-03  nbox=  4
+     iter. #     1  RMS(g-h-1)= 1.165E+00  nbox=  0
+     iter. #    11  RMS(g-h-1)= 1.663E-02  nbox=  9
+     iter. #    21  RMS(g-h-1)= 1.432E-02  nbox= 10
+     iter. #    31  RMS(g-h-1)= 1.363E-02  nbox=  4
+     iter. #    41  RMS(g-h-1)= 1.274E-02  nbox= 10
+     iter. #    51  RMS(g-h-1)= 1.253E-02  nbox=  8
+     iter. #    61  RMS(g-h-1)= 1.299E-02  nbox=  2
+     iter. #    71  RMS(g-h-1)= 1.163E-02  nbox= 10
+     iter. #    81  RMS(g-h-1)= 1.120E-02  nbox=  6
+     iter. #    91  RMS(g-h-1)= 1.053E-02  nbox= 10
+     iter. #   101  RMS(g-h-1)= 1.050E-02  nbox= 10
+     iter. #   111  RMS(g-h-1)= 1.049E-02  nbox=  4
+     iter. #   121  RMS(g-h-1)= 1.051E-02  nbox= 10
+     iter. #   123  RMS(g-h-1)= 9.956E-03  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in     6 iterations
+     convergence has been achieved in   123 iterations
 
 
-     solvent charge   -0.10879, renormalised to   -0.10000
+     solvent charge   -0.13279, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.015762 e
-     Na+          0.104149 e
-     Cl-         -0.197150 e
-     Total       -0.108763 e
+     H2O         -0.029163 e
+     Na+          0.105243 e
+     Cl-         -0.208761 e
+     Total       -0.132681 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.837679E+01 kcal/mol
-     Na+        GaussFluct  -0.437398E+03 kcal/mol
-     Cl-        GaussFluct   0.444681E+03 kcal/mol
-     Total      GaussFluct   0.156599E+02 kcal/mol
+     H2O        GaussFluct   0.705131E+01 kcal/mol
+     Na+        GaussFluct  -0.395413E+03 kcal/mol
+     Cl-        GaussFluct   0.400269E+03 kcal/mol
+     Total      GaussFluct   0.119076E+02 kcal/mol
 
 
-     total cpu time spent up to now is       41.0 secs
+     total cpu time spent up to now is       67.5 secs
 
-     total energy              =     -12.56478765 Ry
-     Harris-Foulkes estimate   =     -12.57526367 Ry
-     estimated scf accuracy    <       3.23225909 Ry
+     total energy              =     -12.38181807 Ry
+     Harris-Foulkes estimate   =     -12.39122045 Ry
+     estimated scf accuracy    <       0.03705460 Ry
 
      iteration #  9     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
+     ethr =  4.16E-04,  avg # of iterations =  5.7
 
-     negative rho (up, down):  3.745E-05 0.000E+00
+     negative rho (up, down):  1.933E-05 0.000E+00
 
      Laue-RISM Calculation
 
-     convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 1.432E-02  nbox=  0
-     iter. #     2  RMS(g-h-1)= 9.241E-03  nbox=  1
+     convergence threshold    = 3.511E-03
+     iter. #     1  RMS(g-h-1)= 7.975E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 1.143E-02  nbox=  9
+     iter. #    21  RMS(g-h-1)= 7.500E-03  nbox= 10
+     iter. #    31  RMS(g-h-1)= 7.342E-03  nbox=  3
+     iter. #    41  RMS(g-h-1)= 5.791E-03  nbox= 10
+     iter. #    51  RMS(g-h-1)= 5.501E-03  nbox= 10
+     iter. #    61  RMS(g-h-1)= 5.341E-03  nbox=  6
+     iter. #    71  RMS(g-h-1)= 5.315E-03  nbox= 10
+     iter. #    81  RMS(g-h-1)= 5.319E-03  nbox= 10
+     iter. #    91  RMS(g-h-1)= 5.294E-03  nbox=  4
+     iter. #   101  RMS(g-h-1)= 4.625E-03  nbox= 10
+     iter. #   111  RMS(g-h-1)= 4.308E-03  nbox=  8
+     iter. #   121  RMS(g-h-1)= 4.228E-03  nbox=  2
+     iter. #   131  RMS(g-h-1)= 4.230E-03  nbox= 10
+     iter. #   141  RMS(g-h-1)= 4.199E-03  nbox=  6
+     iter. #   150  RMS(g-h-1)= 3.329E-03  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in     2 iterations
+     convergence has been achieved in   150 iterations
 
 
-     solvent charge   -0.10861, renormalised to   -0.10000
+     solvent charge   -0.10963, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.015372 e
-     Na+          0.104073 e
-     Cl-         -0.197278 e
-     Total       -0.108577 e
+     H2O         -0.012450 e
+     Na+          0.102504 e
+     Cl-         -0.199650 e
+     Total       -0.109596 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.835451E+01 kcal/mol
-     Na+        GaussFluct  -0.436698E+03 kcal/mol
-     Cl-        GaussFluct   0.443932E+03 kcal/mol
-     Total      GaussFluct   0.155883E+02 kcal/mol
+     H2O        GaussFluct   0.863773E+01 kcal/mol
+     Na+        GaussFluct  -0.397564E+03 kcal/mol
+     Cl-        GaussFluct   0.402659E+03 kcal/mol
+     Total      GaussFluct   0.137331E+02 kcal/mol
 
 
-     total cpu time spent up to now is       41.3 secs
+     total cpu time spent up to now is       72.7 secs
 
-     total energy              =     -12.56765004 Ry
-     Harris-Foulkes estimate   =     -12.56956363 Ry
-     estimated scf accuracy    <       3.12063415 Ry
+     total energy              =     -12.38174266 Ry
+     Harris-Foulkes estimate   =     -12.37973319 Ry
+     estimated scf accuracy    <       0.01442227 Ry
 
      iteration # 10     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
+     ethr =  1.62E-04,  avg # of iterations =  7.7
 
-     negative rho (up, down):  2.506E-03 0.000E+00
+     negative rho (up, down):  1.100E-05 0.000E+00
 
      Laue-RISM Calculation
 
-     convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 6.222E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.354E-02  nbox= 10
-     iter. #    14  RMS(g-h-1)= 9.501E-03  nbox= 10
+     convergence threshold    = 1.769E-03
+     iter. #     1  RMS(g-h-1)= 4.399E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 1.121E-02  nbox= 10
+     iter. #    21  RMS(g-h-1)= 7.047E-03  nbox= 10
+     iter. #    31  RMS(g-h-1)= 7.047E-03  nbox=  4
+     iter. #    41  RMS(g-h-1)= 5.938E-03  nbox= 10
+     iter. #    51  RMS(g-h-1)= 4.008E-03  nbox= 10
+     iter. #    61  RMS(g-h-1)= 3.949E-03  nbox= 10
+     iter. #    71  RMS(g-h-1)= 3.933E-03  nbox=  9
+     iter. #    81  RMS(g-h-1)= 3.654E-03  nbox=  3
+     iter. #    91  RMS(g-h-1)= 3.497E-03  nbox= 10
+     iter. #   101  RMS(g-h-1)= 3.570E-03  nbox=  7
+     iter. #   111  RMS(g-h-1)= 3.531E-03  nbox= 10
+     iter. #   121  RMS(g-h-1)= 3.527E-03  nbox= 10
+     iter. #   131  RMS(g-h-1)= 3.503E-03  nbox=  5
+     iter. #   141  RMS(g-h-1)= 3.375E-03  nbox= 10
+     iter. #   151  RMS(g-h-1)= 3.360E-03  nbox=  9
+     iter. #   161  RMS(g-h-1)= 3.362E-03  nbox=  3
+     iter. #   171  RMS(g-h-1)= 3.295E-03  nbox= 10
+     iter. #   181  RMS(g-h-1)= 3.396E-03  nbox=  7
+     iter. #   191  RMS(g-h-1)= 3.388E-03  nbox= 10
+     iter. #   201  RMS(g-h-1)= 3.419E-03  nbox= 10
+     iter. #   211  RMS(g-h-1)= 3.444E-03  nbox=  5
+     iter. #   221  RMS(g-h-1)= 3.420E-03  nbox= 10
+     iter. #   231  RMS(g-h-1)= 3.352E-03  nbox=  8
+     iter. #   241  RMS(g-h-1)= 3.202E-03  nbox=  2
+     iter. #   251  RMS(g-h-1)= 3.418E-03  nbox= 10
+     iter. #   261  RMS(g-h-1)= 3.297E-03  nbox=  6
+     iter. #   271  RMS(g-h-1)= 3.268E-03  nbox= 10
+     iter. #   281  RMS(g-h-1)= 3.255E-03  nbox= 10
+     iter. #   291  RMS(g-h-1)= 2.739E-03  nbox= 10
+     iter. #   301  RMS(g-h-1)= 1.877E-03  nbox= 10
+     iter. #   311  RMS(g-h-1)= 1.777E-03  nbox=  2
+     iter. #   313  RMS(g-h-1)= 1.743E-03  nbox=  4
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in    14 iterations
+     convergence has been achieved in   313 iterations
 
 
-     solvent charge   -0.10898, renormalised to   -0.10000
+     solvent charge   -0.10017, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.001851 e
-     Na+          0.102041 e
-     Cl-         -0.209202 e
-     Total       -0.109013 e
+     H2O         -0.001809 e
+     Na+          0.101303 e
+     Cl-         -0.199698 e
+     Total       -0.100204 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.886069E+01 kcal/mol
-     Na+        GaussFluct  -0.428587E+03 kcal/mol
-     Cl-        GaussFluct   0.436230E+03 kcal/mol
-     Total      GaussFluct   0.165038E+02 kcal/mol
+     H2O        GaussFluct   0.889566E+01 kcal/mol
+     Na+        GaussFluct  -0.397600E+03 kcal/mol
+     Cl-        GaussFluct   0.402842E+03 kcal/mol
+     Total      GaussFluct   0.141379E+02 kcal/mol
 
 
-     total cpu time spent up to now is       41.9 secs
+     total cpu time spent up to now is       82.8 secs
 
-     total energy              =     -12.47571804 Ry
-     Harris-Foulkes estimate   =     -12.56734097 Ry
-     estimated scf accuracy    <       3.15328121 Ry
+     total energy              =     -12.38152824 Ry
+     Harris-Foulkes estimate   =     -12.38314963 Ry
+     estimated scf accuracy    <       0.00862734 Ry
 
      iteration # 11     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
+     ethr =  9.69E-05,  avg # of iterations =  2.0
 
-     negative rho (up, down):  2.742E-03 0.000E+00
+     negative rho (up, down):  1.361E-05 0.000E+00
 
      Laue-RISM Calculation
 
-     convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 1.733E+00  nbox=  0
-     iter. #    11  RMS(g-h-1)= 2.484E-02  nbox=  9
-     iter. #    21  RMS(g-h-1)= 1.128E-02  nbox= 10
-     iter. #    22  RMS(g-h-1)= 9.569E-03  nbox= 10
+     convergence threshold    = 1.000E-04
+     iter. #     1  RMS(g-h-1)= 2.990E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 6.347E-03  nbox=  9
+     iter. #    21  RMS(g-h-1)= 1.468E-03  nbox= 10
+     iter. #    31  RMS(g-h-1)= 1.040E-03  nbox= 10
+     iter. #    41  RMS(g-h-1)= 1.040E-03  nbox= 10
+     iter. #    51  RMS(g-h-1)= 1.001E-03  nbox=  9
+     iter. #    61  RMS(g-h-1)= 8.765E-04  nbox=  3
+     iter. #    71  RMS(g-h-1)= 8.028E-04  nbox= 10
+     iter. #    81  RMS(g-h-1)= 7.996E-04  nbox=  7
+     iter. #    91  RMS(g-h-1)= 7.543E-04  nbox= 10
+     iter. #   101  RMS(g-h-1)= 7.425E-04  nbox= 10
+     iter. #   111  RMS(g-h-1)= 6.793E-04  nbox=  5
+     iter. #   121  RMS(g-h-1)= 6.626E-04  nbox= 10
+     iter. #   131  RMS(g-h-1)= 3.774E-04  nbox=  9
+     iter. #   141  RMS(g-h-1)= 3.598E-04  nbox= 10
+     iter. #   151  RMS(g-h-1)= 3.595E-04  nbox=  7
+     iter. #   161  RMS(g-h-1)= 3.582E-04  nbox= 10
+     iter. #   171  RMS(g-h-1)= 3.582E-04  nbox= 10
+     iter. #   181  RMS(g-h-1)= 3.567E-04  nbox=  5
+     iter. #   191  RMS(g-h-1)= 3.430E-04  nbox= 10
+     iter. #   201  RMS(g-h-1)= 3.359E-04  nbox=  9
+     iter. #   211  RMS(g-h-1)= 2.909E-04  nbox=  3
+     iter. #   221  RMS(g-h-1)= 2.864E-04  nbox= 10
+     iter. #   231  RMS(g-h-1)= 2.867E-04  nbox=  7
+     iter. #   241  RMS(g-h-1)= 2.847E-04  nbox= 10
+     iter. #   251  RMS(g-h-1)= 2.819E-04  nbox= 10
+     iter. #   261  RMS(g-h-1)= 2.383E-04  nbox= 10
+     iter. #   271  RMS(g-h-1)= 2.365E-04  nbox= 10
+     iter. #   281  RMS(g-h-1)= 2.316E-04  nbox=  9
+     iter. #   291  RMS(g-h-1)= 2.172E-04  nbox=  3
+     iter. #   301  RMS(g-h-1)= 2.038E-04  nbox= 10
+     iter. #   311  RMS(g-h-1)= 1.697E-04  nbox=  7
+     iter. #   321  RMS(g-h-1)= 1.330E-04  nbox= 10
+     iter. #   331  RMS(g-h-1)= 1.341E-04  nbox=  2
+     iter. #   341  RMS(g-h-1)= 1.292E-04  nbox= 10
+     iter. #   351  RMS(g-h-1)= 1.285E-04  nbox=  6
+     iter. #   359  RMS(g-h-1)= 9.487E-05  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in    22 iterations
+     convergence has been achieved in   359 iterations
 
 
-     solvent charge   -0.11706, renormalised to   -0.10000
+     solvent charge   -0.09997, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.015341 e
-     Na+          0.104532 e
-     Cl-         -0.206230 e
-     Total       -0.117039 e
+     H2O          0.000270 e
+     Na+          0.101227 e
+     Cl-         -0.201505 e
+     Total       -0.100008 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.852797E+01 kcal/mol
-     Na+        GaussFluct  -0.432319E+03 kcal/mol
-     Cl-        GaussFluct   0.439786E+03 kcal/mol
-     Total      GaussFluct   0.159949E+02 kcal/mol
+     H2O        GaussFluct   0.884833E+01 kcal/mol
+     Na+        GaussFluct  -0.395078E+03 kcal/mol
+     Cl-        GaussFluct   0.400194E+03 kcal/mol
+     Total      GaussFluct   0.139645E+02 kcal/mol
 
 
-     total cpu time spent up to now is       42.7 secs
+     total cpu time spent up to now is       93.8 secs
 
-     total energy              =     -12.55251236 Ry
-     Harris-Foulkes estimate   =     -12.48812344 Ry
-     estimated scf accuracy    <       2.17753395 Ry
+     total energy              =     -12.38215694 Ry
+     Harris-Foulkes estimate   =     -12.38315685 Ry
+     estimated scf accuracy    <       0.00028399 Ry
 
      iteration # 12     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
+     c_bands:  1 eigenvalues not converged
+     ethr =  3.19E-06,  avg # of iterations = 13.0
 
-     negative rho (up, down):  5.930E-03 0.000E+00
+     negative rho (up, down):  1.463E-07 0.000E+00
 
      Laue-RISM Calculation
 
-     convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 1.045E+00  nbox=  0
-     iter. #    11  RMS(g-h-1)= 2.102E-02  nbox=  9
-     iter. #    21  RMS(g-h-1)= 1.200E-02  nbox= 10
-     iter. #    23  RMS(g-h-1)= 8.368E-03  nbox= 10
+     convergence threshold    = 5.659E-04
+     iter. #     1  RMS(g-h-1)= 5.977E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 9.441E-03  nbox=  9
+     iter. #    21  RMS(g-h-1)= 1.942E-03  nbox= 10
+     iter. #    31  RMS(g-h-1)= 1.098E-03  nbox= 10
+     iter. #    41  RMS(g-h-1)= 1.027E-03  nbox= 10
+     iter. #    51  RMS(g-h-1)= 9.960E-04  nbox= 10
+     iter. #    61  RMS(g-h-1)= 9.810E-04  nbox=  4
+     iter. #    71  RMS(g-h-1)= 6.054E-04  nbox= 10
+     iter. #    81  RMS(g-h-1)= 5.729E-04  nbox= 10
+     iter. #    91  RMS(g-h-1)= 5.728E-04  nbox=  5
+     iter. #   101  RMS(g-h-1)= 5.709E-04  nbox= 10
+     iter. #   111  RMS(g-h-1)= 5.687E-04  nbox=  9
+     iter. #   121  RMS(g-h-1)= 5.681E-04  nbox=  3
+     iter. #   123  RMS(g-h-1)= 5.652E-04  nbox=  5
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in    23 iterations
+     convergence has been achieved in   123 iterations
 
 
-     solvent charge   -0.10951, renormalised to   -0.10000
+     solvent charge   -0.09784, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.004164 e
-     Na+          0.103190 e
-     Cl-         -0.208524 e
-     Total       -0.109498 e
+     H2O          0.002816 e
+     Na+          0.100920 e
+     Cl-         -0.201613 e
+     Total       -0.097878 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.884460E+01 kcal/mol
-     Na+        GaussFluct  -0.418602E+03 kcal/mol
-     Cl-        GaussFluct   0.425327E+03 kcal/mol
-     Total      GaussFluct   0.155690E+02 kcal/mol
+     H2O        GaussFluct   0.888182E+01 kcal/mol
+     Na+        GaussFluct  -0.395305E+03 kcal/mol
+     Cl-        GaussFluct   0.400468E+03 kcal/mol
+     Total      GaussFluct   0.140441E+02 kcal/mol
 
 
-     total cpu time spent up to now is       43.7 secs
+     total cpu time spent up to now is       98.0 secs
 
-     total energy              =     -12.43401940 Ry
-     Harris-Foulkes estimate   =     -12.56288626 Ry
-     estimated scf accuracy    <       3.43324969 Ry
+     total energy              =     -12.38222357 Ry
+     Harris-Foulkes estimate   =     -12.38242958 Ry
+     estimated scf accuracy    <       0.00366923 Ry
 
      iteration # 13     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
-
-     negative rho (up, down):  4.208E-02 0.000E+00
+     ethr =  3.19E-06,  avg # of iterations =  4.3
 
      Laue-RISM Calculation
 
-     convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 2.744E+00  nbox=  0
-     iter. #    11  RMS(g-h-1)= 2.742E-02  nbox=  9
-     iter. #    21  RMS(g-h-1)= 1.109E-02  nbox= 10
-     iter. #    22  RMS(g-h-1)= 9.860E-03  nbox= 10
+     convergence threshold    = 1.000E-04
+     iter. #     1  RMS(g-h-1)= 1.480E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 1.340E-03  nbox=  9
+     iter. #    21  RMS(g-h-1)= 1.005E-03  nbox= 10
+     iter. #    31  RMS(g-h-1)= 6.954E-04  nbox= 10
+     iter. #    41  RMS(g-h-1)= 4.588E-04  nbox= 10
+     iter. #    51  RMS(g-h-1)= 3.591E-04  nbox= 10
+     iter. #    61  RMS(g-h-1)= 3.473E-04  nbox=  3
+     iter. #    71  RMS(g-h-1)= 3.456E-04  nbox= 10
+     iter. #    81  RMS(g-h-1)= 3.434E-04  nbox=  7
+     iter. #    91  RMS(g-h-1)= 3.424E-04  nbox= 10
+     iter. #   101  RMS(g-h-1)= 3.411E-04  nbox= 10
+     iter. #   111  RMS(g-h-1)= 3.401E-04  nbox=  5
+     iter. #   121  RMS(g-h-1)= 3.399E-04  nbox= 10
+     iter. #   131  RMS(g-h-1)= 3.407E-04  nbox=  9
+     iter. #   141  RMS(g-h-1)= 3.440E-04  nbox=  3
+     iter. #   151  RMS(g-h-1)= 3.246E-04  nbox= 10
+     iter. #   161  RMS(g-h-1)= 3.234E-04  nbox=  7
+     iter. #   171  RMS(g-h-1)= 2.353E-04  nbox= 10
+     iter. #   181  RMS(g-h-1)= 1.413E-04  nbox= 10
+     iter. #   191  RMS(g-h-1)= 1.307E-04  nbox= 10
+     iter. #   200  RMS(g-h-1)= 9.501E-05  nbox=  8
+
+     End of Laue-RISM calculation
+
+
+     convergence has been achieved in   200 iterations
+
+
+     solvent charge   -0.09995, renormalised to   -0.10000
+
+     Total charge of solvent (in expand-cell)
+     H2O          0.000292 e
+     Na+          0.101307 e
+     Cl-         -0.201588 e
+     Total       -0.099989 e
+
+     Chemical potential of solvation (in expand-cell)
+     H2O        GaussFluct   0.885534E+01 kcal/mol
+     Na+        GaussFluct  -0.396416E+03 kcal/mol
+     Cl-        GaussFluct   0.401617E+03 kcal/mol
+     Total      GaussFluct   0.140558E+02 kcal/mol
+
+
+     total cpu time spent up to now is      105.0 secs
+
+     total energy              =     -12.38267778 Ry
+     Harris-Foulkes estimate   =     -12.38232422 Ry
+     estimated scf accuracy    <       0.00077775 Ry
+
+     iteration # 14     ecut=    25.00 Ry     beta=0.20
+     Davidson diagonalization with overlap
+     ethr =  3.19E-06,  avg # of iterations =  1.0
+
+     negative rho (up, down):  3.108E-06 0.000E+00
+
+     Laue-RISM Calculation
+
+     convergence threshold    = 1.000E-04
+     iter. #     1  RMS(g-h-1)= 1.716E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 2.335E-03  nbox=  9
+     iter. #    21  RMS(g-h-1)= 8.846E-04  nbox= 10
+     iter. #    31  RMS(g-h-1)= 4.276E-04  nbox= 10
+     iter. #    41  RMS(g-h-1)= 3.072E-04  nbox= 10
+     iter. #    51  RMS(g-h-1)= 1.827E-04  nbox= 10
+     iter. #    56  RMS(g-h-1)= 9.821E-05  nbox= 10
+
+     End of Laue-RISM calculation
+
+
+     convergence has been achieved in    56 iterations
+
+
+     solvent charge   -0.10035, renormalised to   -0.10000
+
+     Total charge of solvent (in expand-cell)
+     H2O         -0.000269 e
+     Na+          0.101408 e
+     Cl-         -0.201524 e
+     Total       -0.100385 e
+
+     Chemical potential of solvation (in expand-cell)
+     H2O        GaussFluct   0.885784E+01 kcal/mol
+     Na+        GaussFluct  -0.396105E+03 kcal/mol
+     Cl-        GaussFluct   0.401273E+03 kcal/mol
+     Total      GaussFluct   0.140263E+02 kcal/mol
+
+
+     total cpu time spent up to now is      107.0 secs
+
+     total energy              =     -12.38271335 Ry
+     Harris-Foulkes estimate   =     -12.38284099 Ry
+     estimated scf accuracy    <       0.00014458 Ry
+
+     iteration # 15     ecut=    25.00 Ry     beta=0.20
+     Davidson diagonalization with overlap
+     ethr =  1.62E-06,  avg # of iterations =  1.0
+
+     negative rho (up, down):  4.586E-07 0.000E+00
+
+     Laue-RISM Calculation
+
+     convergence threshold    = 1.000E-04
+     iter. #     1  RMS(g-h-1)= 1.344E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 2.239E-03  nbox=  9
+     iter. #    21  RMS(g-h-1)= 4.983E-04  nbox= 10
+     iter. #    31  RMS(g-h-1)= 2.899E-04  nbox= 10
+     iter. #    41  RMS(g-h-1)= 2.001E-04  nbox= 10
+     iter. #    49  RMS(g-h-1)= 9.163E-05  nbox= 10
+
+     End of Laue-RISM calculation
+
+
+     convergence has been achieved in    49 iterations
+
+
+     solvent charge   -0.09992, renormalised to   -0.10000
+
+     Total charge of solvent (in expand-cell)
+     H2O          0.000200 e
+     Na+          0.101349 e
+     Cl-         -0.201504 e
+     Total       -0.099956 e
+
+     Chemical potential of solvation (in expand-cell)
+     H2O        GaussFluct   0.887281E+01 kcal/mol
+     Na+        GaussFluct  -0.396051E+03 kcal/mol
+     Cl-        GaussFluct   0.401222E+03 kcal/mol
+     Total      GaussFluct   0.140441E+02 kcal/mol
+
+
+     total cpu time spent up to now is      108.7 secs
+
+     total energy              =     -12.38263256 Ry
+     Harris-Foulkes estimate   =     -12.38267169 Ry
+     estimated scf accuracy    <       0.00010389 Ry
+
+     iteration # 16     ecut=    25.00 Ry     beta=0.20
+     Davidson diagonalization with overlap
+     ethr =  1.17E-06,  avg # of iterations =  1.0
+
+     negative rho (up, down):  3.150E-07 0.000E+00
+
+     Laue-RISM Calculation
+
+     convergence threshold    = 1.000E-04
+     iter. #     1  RMS(g-h-1)= 3.519E-02  nbox=  0
+     iter. #    11  RMS(g-h-1)= 6.714E-04  nbox=  9
+     iter. #    21  RMS(g-h-1)= 1.428E-04  nbox= 10
+     iter. #    31  RMS(g-h-1)= 1.049E-04  nbox= 10
+     iter. #    41  RMS(g-h-1)= 1.059E-04  nbox=  4
+     iter. #    51  RMS(g-h-1)= 1.027E-04  nbox= 10
+     iter. #    60  RMS(g-h-1)= 9.952E-05  nbox=  7
+
+     End of Laue-RISM calculation
+
+
+     convergence has been achieved in    60 iterations
+
+
+     solvent charge   -0.09968, renormalised to   -0.10000
+
+     Total charge of solvent (in expand-cell)
+     H2O          0.000499 e
+     Na+          0.101315 e
+     Cl-         -0.201530 e
+     Total       -0.099716 e
+
+     Chemical potential of solvation (in expand-cell)
+     H2O        GaussFluct   0.887233E+01 kcal/mol
+     Na+        GaussFluct  -0.396189E+03 kcal/mol
+     Cl-        GaussFluct   0.401373E+03 kcal/mol
+     Total      GaussFluct   0.140559E+02 kcal/mol
+
+
+     total cpu time spent up to now is      110.8 secs
+
+     total energy              =     -12.38265806 Ry
+     Harris-Foulkes estimate   =     -12.38259976 Ry
+     estimated scf accuracy    <       0.00004227 Ry
+
+     iteration # 17     ecut=    25.00 Ry     beta=0.20
+     Davidson diagonalization with overlap
+     ethr =  4.75E-07,  avg # of iterations =  1.0
+
+     negative rho (up, down):  7.422E-07 0.000E+00
+
+     Laue-RISM Calculation
+
+     convergence threshold    = 1.000E-04
+     iter. #     1  RMS(g-h-1)= 1.749E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 2.590E-03  nbox=  9
+     iter. #    21  RMS(g-h-1)= 7.504E-04  nbox= 10
+     iter. #    31  RMS(g-h-1)= 4.905E-04  nbox= 10
+     iter. #    41  RMS(g-h-1)= 4.655E-04  nbox= 10
+     iter. #    51  RMS(g-h-1)= 4.488E-04  nbox=  9
+     iter. #    61  RMS(g-h-1)= 2.888E-04  nbox= 10
+     iter. #    71  RMS(g-h-1)= 2.659E-04  nbox= 10
+     iter. #    81  RMS(g-h-1)= 2.662E-04  nbox=  6
+     iter. #    91  RMS(g-h-1)= 2.647E-04  nbox= 10
+     iter. #   101  RMS(g-h-1)= 2.643E-04  nbox= 10
+     iter. #   111  RMS(g-h-1)= 2.636E-04  nbox=  4
+     iter. #   121  RMS(g-h-1)= 2.602E-04  nbox= 10
+     iter. #   131  RMS(g-h-1)= 2.600E-04  nbox=  8
+     iter. #   141  RMS(g-h-1)= 2.574E-04  nbox=  2
+     iter. #   151  RMS(g-h-1)= 2.574E-04  nbox= 10
+     iter. #   161  RMS(g-h-1)= 2.525E-04  nbox=  6
+     iter. #   171  RMS(g-h-1)= 2.452E-04  nbox= 10
+     iter. #   181  RMS(g-h-1)= 2.451E-04  nbox= 10
+     iter. #   191  RMS(g-h-1)= 2.418E-04  nbox=  4
+     iter. #   201  RMS(g-h-1)= 2.420E-04  nbox= 10
+     iter. #   211  RMS(g-h-1)= 2.414E-04  nbox=  8
+     iter. #   221  RMS(g-h-1)= 2.361E-04  nbox=  2
+     iter. #   231  RMS(g-h-1)= 1.811E-04  nbox= 10
+     iter. #   241  RMS(g-h-1)= 1.216E-04  nbox= 10
+     iter. #   244  RMS(g-h-1)= 9.987E-05  nbox= 10
+
+     End of Laue-RISM calculation
+
+
+     convergence has been achieved in   244 iterations
+
+
+     solvent charge   -0.10009, renormalised to   -0.10000
+
+     Total charge of solvent (in expand-cell)
+     H2O          0.000098 e
+     Na+          0.101389 e
+     Cl-         -0.201611 e
+     Total       -0.100125 e
+
+     Chemical potential of solvation (in expand-cell)
+     H2O        GaussFluct   0.886157E+01 kcal/mol
+     Na+        GaussFluct  -0.396234E+03 kcal/mol
+     Cl-        GaussFluct   0.401416E+03 kcal/mol
+     Total      GaussFluct   0.140433E+02 kcal/mol
+
+
+     total cpu time spent up to now is      118.8 secs
+
+     total energy              =     -12.38270276 Ry
+     Harris-Foulkes estimate   =     -12.38269954 Ry
+     estimated scf accuracy    <       0.00001991 Ry
+
+     iteration # 18     ecut=    25.00 Ry     beta=0.20
+     Davidson diagonalization with overlap
+     ethr =  2.24E-07,  avg # of iterations =  3.7
+
+     negative rho (up, down):  1.335E-08 0.000E+00
+
+     Laue-RISM Calculation
+
+     convergence threshold    = 1.000E-04
+     iter. #     1  RMS(g-h-1)= 1.242E-01  nbox=  0
+     iter. #    11  RMS(g-h-1)= 1.832E-03  nbox=  9
+     iter. #    21  RMS(g-h-1)= 5.664E-04  nbox= 10
+     iter. #    31  RMS(g-h-1)= 3.648E-04  nbox= 10
+     iter. #    41  RMS(g-h-1)= 2.733E-04  nbox= 10
+     iter. #    51  RMS(g-h-1)= 2.544E-04  nbox= 10
+     iter. #    61  RMS(g-h-1)= 2.239E-04  nbox=  8
+     iter. #    71  RMS(g-h-1)= 1.940E-04  nbox= 10
+     iter. #    81  RMS(g-h-1)= 1.905E-04  nbox=  7
+     iter. #    91  RMS(g-h-1)= 1.779E-04  nbox= 10
+     iter. #   101  RMS(g-h-1)= 1.424E-04  nbox= 10
+     iter. #   111  RMS(g-h-1)= 1.269E-04  nbox= 10
+     iter. #   121  RMS(g-h-1)= 1.263E-04  nbox=  7
+     iter. #   131  RMS(g-h-1)= 1.231E-04  nbox= 10
+     iter. #   141  RMS(g-h-1)= 1.223E-04  nbox= 10
+     iter. #   151  RMS(g-h-1)= 1.224E-04  nbox=  5
+     iter. #   161  RMS(g-h-1)= 1.187E-04  nbox= 10
+     iter. #   171  RMS(g-h-1)= 1.161E-04  nbox=  9
+     iter. #   181  RMS(g-h-1)= 1.135E-04  nbox=  3
+     iter. #   191  RMS(g-h-1)= 1.087E-04  nbox= 10
+     iter. #   196  RMS(g-h-1)= 9.587E-05  nbox= 10
+
+     End of Laue-RISM calculation
+
+
+     convergence has been achieved in   196 iterations
+
+
+     solvent charge   -0.10046, renormalised to   -0.10000
+
+     Total charge of solvent (in expand-cell)
+     H2O         -0.000386 e
+     Na+          0.101427 e
+     Cl-         -0.201544 e
+     Total       -0.100502 e
+
+     Chemical potential of solvation (in expand-cell)
+     H2O        GaussFluct   0.885743E+01 kcal/mol
+     Na+        GaussFluct  -0.396246E+03 kcal/mol
+     Cl-        GaussFluct   0.401423E+03 kcal/mol
+     Total      GaussFluct   0.140344E+02 kcal/mol
+
+
+     total cpu time spent up to now is      125.2 secs
+
+     total energy              =     -12.38272321 Ry
+     Harris-Foulkes estimate   =     -12.38274574 Ry
+     estimated scf accuracy    <       0.00002463 Ry
+
+     iteration # 19     ecut=    25.00 Ry     beta=0.20
+     Davidson diagonalization with overlap
+     ethr =  2.24E-07,  avg # of iterations =  2.7
+
+     negative rho (up, down):  1.261E-07 0.000E+00
+
+     Laue-RISM Calculation
+
+     convergence threshold    = 1.000E-04
+     iter. #     1  RMS(g-h-1)= 1.303E-02  nbox=  0
+     iter. #    11  RMS(g-h-1)= 2.056E-04  nbox=  9
+     iter. #    21  RMS(g-h-1)= 1.003E-04  nbox= 10
+     iter. #    22  RMS(g-h-1)= 9.932E-05  nbox= 10
 
      End of Laue-RISM calculation
 
@@ -921,780 +1366,100 @@
      convergence has been achieved in    22 iterations
 
 
-     solvent charge   -0.08293, renormalised to   -0.10000
+     solvent charge   -0.10039, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O          0.014946 e
-     Na+          0.099007 e
-     Cl-         -0.196933 e
-     Total       -0.082980 e
+     H2O         -0.000346 e
+     Na+          0.101426 e
+     Cl-         -0.201509 e
+     Total       -0.100429 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.881934E+01 kcal/mol
-     Na+        GaussFluct  -0.431766E+03 kcal/mol
-     Cl-        GaussFluct   0.439157E+03 kcal/mol
-     Total      GaussFluct   0.162106E+02 kcal/mol
+     H2O        GaussFluct   0.886683E+01 kcal/mol
+     Na+        GaussFluct  -0.396224E+03 kcal/mol
+     Cl-        GaussFluct   0.401399E+03 kcal/mol
+     Total      GaussFluct   0.140417E+02 kcal/mol
 
 
-     total cpu time spent up to now is       44.7 secs
+     total cpu time spent up to now is      126.2 secs
 
-     total energy              =     -12.50029226 Ry
-     Harris-Foulkes estimate   =     -12.48348548 Ry
-     estimated scf accuracy    <       0.98035884 Ry
-
-     iteration # 14     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
-
-     negative rho (up, down):  1.770E-02 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 5.411E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.456E-02  nbox=  9
-     iter. #    17  RMS(g-h-1)= 9.753E-03  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    17 iterations
-
-
-     solvent charge   -0.08364, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.007153 e
-     Na+          0.100447 e
-     Cl-         -0.191292 e
-     Total       -0.083692 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.857802E+01 kcal/mol
-     Na+        GaussFluct  -0.364841E+03 kcal/mol
-     Cl-        GaussFluct   0.367919E+03 kcal/mol
-     Total      GaussFluct   0.116565E+02 kcal/mol
-
-
-     total cpu time spent up to now is       45.5 secs
-
-     total energy              =     -12.03778707 Ry
-     Harris-Foulkes estimate   =     -12.53136827 Ry
-     estimated scf accuracy    <       2.36952235 Ry
-
-     iteration # 15     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
-
-     negative rho (up, down):  1.631E-02 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 3.469E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.480E-02  nbox=  9
-     iter. #    14  RMS(g-h-1)= 9.652E-03  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    14 iterations
-
-
-     solvent charge   -0.08565, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.015603 e
-     Na+          0.099407 e
-     Cl-         -0.200715 e
-     Total       -0.085705 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.902259E+01 kcal/mol
-     Na+        GaussFluct  -0.371657E+03 kcal/mol
-     Cl-        GaussFluct   0.375372E+03 kcal/mol
-     Total      GaussFluct   0.127371E+02 kcal/mol
-
-
-     total cpu time spent up to now is       46.2 secs
-
-     total energy              =     -12.38849432 Ry
-     Harris-Foulkes estimate   =     -12.39893573 Ry
-     estimated scf accuracy    <       0.39228958 Ry
-
-     iteration # 16     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  3.97E-03,  avg # of iterations =  1.0
-
-     negative rho (up, down):  2.129E-02 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 5.824E-01  nbox=  0
-     iter. #     9  RMS(g-h-1)= 9.090E-03  nbox=  7
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in     9 iterations
-
-
-     solvent charge   -0.08413, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.012773 e
-     Na+          0.099310 e
-     Cl-         -0.196281 e
-     Total       -0.084198 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.886219E+01 kcal/mol
-     Na+        GaussFluct  -0.361012E+03 kcal/mol
-     Cl-        GaussFluct   0.363885E+03 kcal/mol
-     Total      GaussFluct   0.117346E+02 kcal/mol
-
-
-     total cpu time spent up to now is       46.7 secs
-
-     total energy              =     -12.39057510 Ry
-     Harris-Foulkes estimate   =     -12.39409676 Ry
-     estimated scf accuracy    <       0.18552315 Ry
-
-     iteration # 17     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  2.08E-03,  avg # of iterations =  1.0
-
-     negative rho (up, down):  2.491E-02 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 1.515E+00  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.956E-02  nbox=  9
-     iter. #    21  RMS(g-h-1)= 9.042E-03  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    21 iterations
-
-
-     solvent charge   -0.07550, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.026114 e
-     Na+          0.098620 e
-     Cl-         -0.200299 e
-     Total       -0.075564 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.905954E+01 kcal/mol
-     Na+        GaussFluct  -0.372882E+03 kcal/mol
-     Cl-        GaussFluct   0.376643E+03 kcal/mol
-     Total      GaussFluct   0.128197E+02 kcal/mol
-
-
-     total cpu time spent up to now is       47.6 secs
-
-     total energy              =     -12.36841426 Ry
-     Harris-Foulkes estimate   =     -12.38904616 Ry
-     estimated scf accuracy    <       0.26063647 Ry
-
-     iteration # 18     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  2.08E-03,  avg # of iterations =  1.0
-
-     negative rho (up, down):  1.962E-02 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 6.066E-03
-     iter. #     1  RMS(g-h-1)= 2.849E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 9.937E-03  nbox=  9
-     iter. #    21  RMS(g-h-1)= 7.153E-03  nbox= 10
-     iter. #    31  RMS(g-h-1)= 6.409E-03  nbox= 10
-     iter. #    41  RMS(g-h-1)= 6.387E-03  nbox=  7
-     iter. #    47  RMS(g-h-1)= 5.922E-03  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    47 iterations
-
-
-     solvent charge   -0.09059, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.017168 e
-     Na+          0.099001 e
-     Cl-         -0.206797 e
-     Total       -0.090627 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.917293E+01 kcal/mol
-     Na+        GaussFluct  -0.383753E+03 kcal/mol
-     Cl-        GaussFluct   0.388455E+03 kcal/mol
-     Total      GaussFluct   0.138749E+02 kcal/mol
-
-
-     total cpu time spent up to now is       49.0 secs
-
-     total energy              =     -12.37739049 Ry
-     Harris-Foulkes estimate   =     -12.37650814 Ry
-     estimated scf accuracy    <       0.02173614 Ry
-
-     iteration # 19     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  2.44E-04,  avg # of iterations =  5.7
-
-     negative rho (up, down):  1.520E-02 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 3.456E-03
-     iter. #     1  RMS(g-h-1)= 2.895E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 5.467E-03  nbox=  9
-     iter. #    21  RMS(g-h-1)= 3.661E-03  nbox= 10
-     iter. #    27  RMS(g-h-1)= 3.453E-03  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    27 iterations
-
-
-     solvent charge   -0.09335, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.012208 e
-     Na+          0.099949 e
-     Cl-         -0.205598 e
-     Total       -0.093441 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.910802E+01 kcal/mol
-     Na+        GaussFluct  -0.385316E+03 kcal/mol
-     Cl-        GaussFluct   0.390100E+03 kcal/mol
-     Total      GaussFluct   0.138928E+02 kcal/mol
-
-
-     total cpu time spent up to now is       50.0 secs
-
-     total energy              =     -12.37981217 Ry
-     Harris-Foulkes estimate   =     -12.38149295 Ry
-     estimated scf accuracy    <       0.01425274 Ry
+     total energy              =     -12.38270010 Ry
+     Harris-Foulkes estimate   =     -12.38270646 Ry
+     estimated scf accuracy    <       0.00000421 Ry
 
      iteration # 20     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  1.60E-04,  avg # of iterations =  1.0
-
-     negative rho (up, down):  1.310E-02 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.850E-03
-     iter. #     1  RMS(g-h-1)= 5.482E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 8.082E-03  nbox=  9
-     iter. #    21  RMS(g-h-1)= 2.791E-03  nbox= 10
-     iter. #    28  RMS(g-h-1)= 1.685E-03  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    28 iterations
-
-
-     solvent charge   -0.09800, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.003295 e
-     Na+          0.101725 e
-     Cl-         -0.203076 e
-     Total       -0.098055 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.895722E+01 kcal/mol
-     Na+        GaussFluct  -0.392194E+03 kcal/mol
-     Cl-        GaussFluct   0.397433E+03 kcal/mol
-     Total      GaussFluct   0.141966E+02 kcal/mol
-
-
-     total cpu time spent up to now is       51.2 secs
-
-     total energy              =     -12.38087907 Ry
-     Harris-Foulkes estimate   =     -12.37943661 Ry
-     estimated scf accuracy    <       0.00891921 Ry
-
-     iteration # 21     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  1.00E-04,  avg # of iterations =  3.0
-
-     negative rho (up, down):  1.486E-02 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 2.371E-03
-     iter. #     1  RMS(g-h-1)= 1.460E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 2.528E-03  nbox=  9
-     iter. #    12  RMS(g-h-1)= 2.354E-03  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    12 iterations
-
-
-     solvent charge   -0.10144, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.001260 e
-     Na+          0.102271 e
-     Cl-         -0.205024 e
-     Total       -0.101492 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.899118E+01 kcal/mol
-     Na+        GaussFluct  -0.396186E+03 kcal/mol
-     Cl-        GaussFluct   0.401752E+03 kcal/mol
-     Total      GaussFluct   0.145573E+02 kcal/mol
-
-
-     total cpu time spent up to now is       51.9 secs
-
-     total energy              =     -12.38144023 Ry
-     Harris-Foulkes estimate   =     -12.38009769 Ry
-     estimated scf accuracy    <       0.01074599 Ry
-
-     iteration # 22     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  1.00E-04,  avg # of iterations =  1.0
-
-     negative rho (up, down):  9.368E-03 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 8.775E-04
-     iter. #     1  RMS(g-h-1)= 1.099E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 3.304E-03  nbox=  9
-     iter. #    21  RMS(g-h-1)= 1.214E-03  nbox= 10
-     iter. #    28  RMS(g-h-1)= 8.257E-04  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    28 iterations
-
-
-     solvent charge   -0.09865, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.002533 e
-     Na+          0.101411 e
-     Cl-         -0.202651 e
-     Total       -0.098708 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.893956E+01 kcal/mol
-     Na+        GaussFluct  -0.398424E+03 kcal/mol
-     Cl-        GaussFluct   0.404033E+03 kcal/mol
-     Total      GaussFluct   0.145487E+02 kcal/mol
-
-
-     total cpu time spent up to now is       53.0 secs
-
-     total energy              =     -12.38136460 Ry
-     Harris-Foulkes estimate   =     -12.38162835 Ry
-     estimated scf accuracy    <       0.00509826 Ry
-
-     iteration # 23     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  5.73E-05,  avg # of iterations =  5.0
-
-     negative rho (up, down):  7.378E-03 0.000E+00
+     ethr =  4.73E-08,  avg # of iterations =  2.3
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-04
-     iter. #     1  RMS(g-h-1)= 1.377E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 2.071E-03  nbox=  9
-     iter. #    21  RMS(g-h-1)= 1.185E-03  nbox= 10
-     iter. #    31  RMS(g-h-1)= 9.215E-04  nbox= 10
-     iter. #    41  RMS(g-h-1)= 8.178E-04  nbox= 10
-     iter. #    51  RMS(g-h-1)= 8.195E-04  nbox=  4
-     iter. #    61  RMS(g-h-1)= 8.168E-04  nbox= 10
-     iter. #    71  RMS(g-h-1)= 8.152E-04  nbox=  8
-     iter. #    81  RMS(g-h-1)= 8.035E-04  nbox=  2
-     iter. #    91  RMS(g-h-1)= 6.729E-04  nbox= 10
-     iter. #   101  RMS(g-h-1)= 5.135E-04  nbox= 10
-     iter. #   111  RMS(g-h-1)= 3.216E-04  nbox= 10
-     iter. #   121  RMS(g-h-1)= 1.839E-04  nbox= 10
-     iter. #   131  RMS(g-h-1)= 1.311E-04  nbox= 10
-     iter. #   141  RMS(g-h-1)= 1.290E-04  nbox=  2
-     iter. #   148  RMS(g-h-1)= 8.625E-05  nbox=  9
+     iter. #     1  RMS(g-h-1)= 3.013E-02  nbox=  0
+     iter. #    11  RMS(g-h-1)= 6.902E-04  nbox=  9
+     iter. #    21  RMS(g-h-1)= 1.014E-04  nbox= 10
+     iter. #    22  RMS(g-h-1)= 8.516E-05  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in   148 iterations
+     convergence has been achieved in    22 iterations
 
 
-     solvent charge   -0.10016, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.000042 e
-     Na+          0.101660 e
-     Cl-         -0.201925 e
-     Total       -0.100223 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.886788E+01 kcal/mol
-     Na+        GaussFluct  -0.397188E+03 kcal/mol
-     Cl-        GaussFluct   0.402621E+03 kcal/mol
-     Total      GaussFluct   0.143007E+02 kcal/mol
-
-
-     total cpu time spent up to now is       58.2 secs
-
-     total energy              =     -12.38219203 Ry
-     Harris-Foulkes estimate   =     -12.38273119 Ry
-     estimated scf accuracy    <       0.00056181 Ry
-
-     iteration # 24     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  6.31E-06,  avg # of iterations =  5.7
-
-     negative rho (up, down):  2.180E-03 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-04
-     iter. #     1  RMS(g-h-1)= 8.782E-02  nbox=  0
-     iter. #    11  RMS(g-h-1)= 2.470E-03  nbox= 10
-     iter. #    21  RMS(g-h-1)= 1.071E-03  nbox= 10
-     iter. #    31  RMS(g-h-1)= 6.002E-04  nbox= 10
-     iter. #    41  RMS(g-h-1)= 5.605E-04  nbox= 10
-     iter. #    51  RMS(g-h-1)= 5.458E-04  nbox=  6
-     iter. #    61  RMS(g-h-1)= 5.411E-04  nbox= 10
-     iter. #    71  RMS(g-h-1)= 5.427E-04  nbox= 10
-     iter. #    81  RMS(g-h-1)= 5.394E-04  nbox=  4
-     iter. #    91  RMS(g-h-1)= 5.220E-04  nbox= 10
-     iter. #   101  RMS(g-h-1)= 4.337E-04  nbox=  8
-     iter. #   111  RMS(g-h-1)= 3.726E-04  nbox= 10
-     iter. #   121  RMS(g-h-1)= 1.651E-04  nbox= 10
-     iter. #   127  RMS(g-h-1)= 9.017E-05  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in   127 iterations
-
-
-     solvent charge   -0.10023, renormalised to   -0.10000
+     solvent charge   -0.10022, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.000033 e
-     Na+          0.101601 e
-     Cl-         -0.201832 e
-     Total       -0.100263 e
+     H2O         -0.000073 e
+     Na+          0.101392 e
+     Cl-         -0.201574 e
+     Total       -0.100256 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.884962E+01 kcal/mol
-     Na+        GaussFluct  -0.396313E+03 kcal/mol
-     Cl-        GaussFluct   0.401537E+03 kcal/mol
-     Total      GaussFluct   0.140734E+02 kcal/mol
+     H2O        GaussFluct   0.886620E+01 kcal/mol
+     Na+        GaussFluct  -0.396339E+03 kcal/mol
+     Cl-        GaussFluct   0.401527E+03 kcal/mol
+     Total      GaussFluct   0.140540E+02 kcal/mol
 
 
-     total cpu time spent up to now is       62.3 secs
-
-     total energy              =     -12.38258936 Ry
-     Harris-Foulkes estimate   =     -12.38302200 Ry
-     estimated scf accuracy    <       0.00049563 Ry
-
-     iteration # 25     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  5.57E-06,  avg # of iterations =  4.3
-
-     negative rho (up, down):  5.441E-05 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-04
-     iter. #     1  RMS(g-h-1)= 1.770E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 2.411E-03  nbox=  9
-     iter. #    21  RMS(g-h-1)= 6.211E-04  nbox= 10
-     iter. #    31  RMS(g-h-1)= 4.730E-04  nbox= 10
-     iter. #    41  RMS(g-h-1)= 4.768E-04  nbox=  3
-     iter. #    51  RMS(g-h-1)= 4.724E-04  nbox= 10
-     iter. #    61  RMS(g-h-1)= 4.678E-04  nbox=  7
-     iter. #    71  RMS(g-h-1)= 2.419E-04  nbox= 10
-     iter. #    81  RMS(g-h-1)= 1.530E-04  nbox= 10
-     iter. #    85  RMS(g-h-1)= 9.511E-05  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    85 iterations
-
-
-     solvent charge   -0.10027, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.000117 e
-     Na+          0.101635 e
-     Cl-         -0.201825 e
-     Total       -0.100307 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.884318E+01 kcal/mol
-     Na+        GaussFluct  -0.395424E+03 kcal/mol
-     Cl-        GaussFluct   0.400534E+03 kcal/mol
-     Total      GaussFluct   0.139533E+02 kcal/mol
-
-
-     total cpu time spent up to now is       65.1 secs
-
-     total energy              =     -12.38245651 Ry
-     Harris-Foulkes estimate   =     -12.38308417 Ry
-     estimated scf accuracy    <       0.00086327 Ry
-
-     iteration # 26     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  5.57E-06,  avg # of iterations =  3.3
-
-     negative rho (up, down):  1.718E-06 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-04
-     iter. #     1  RMS(g-h-1)= 3.542E-02  nbox=  0
-     iter. #    11  RMS(g-h-1)= 4.706E-04  nbox=  9
-     iter. #    21  RMS(g-h-1)= 1.165E-04  nbox= 10
-     iter. #    27  RMS(g-h-1)= 9.933E-05  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    27 iterations
-
-
-     solvent charge   -0.10040, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.000376 e
-     Na+          0.101669 e
-     Cl-         -0.201732 e
-     Total       -0.100439 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.883460E+01 kcal/mol
-     Na+        GaussFluct  -0.395742E+03 kcal/mol
-     Cl-        GaussFluct   0.400863E+03 kcal/mol
-     Total      GaussFluct   0.139558E+02 kcal/mol
-
-
-     total cpu time spent up to now is       66.2 secs
-
-     total energy              =     -12.38261845 Ry
-     Harris-Foulkes estimate   =     -12.38249390 Ry
-     estimated scf accuracy    <       0.00002536 Ry
-
-     iteration # 27     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  2.85E-07,  avg # of iterations =  6.3
-
-     negative rho (up, down):  2.681E-07 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-04
-     iter. #     1  RMS(g-h-1)= 2.357E-02  nbox=  0
-     iter. #    11  RMS(g-h-1)= 3.569E-04  nbox=  9
-     iter. #    21  RMS(g-h-1)= 9.432E-05  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    21 iterations
-
-
-     solvent charge   -0.10015, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.000038 e
-     Na+          0.101625 e
-     Cl-         -0.201778 e
-     Total       -0.100191 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.884168E+01 kcal/mol
-     Na+        GaussFluct  -0.395782E+03 kcal/mol
-     Cl-        GaussFluct   0.400910E+03 kcal/mol
-     Total      GaussFluct   0.139697E+02 kcal/mol
-
-
-     total cpu time spent up to now is       67.2 secs
-
-     total energy              =     -12.38261467 Ry
-     Harris-Foulkes estimate   =     -12.38259632 Ry
-     estimated scf accuracy    <       0.00001584 Ry
-
-     iteration # 28     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  1.78E-07,  avg # of iterations =  1.0
-
-     negative rho (up, down):  2.605E-05 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-04
-     iter. #     1  RMS(g-h-1)= 2.516E-02  nbox=  0
-     iter. #    11  RMS(g-h-1)= 3.863E-04  nbox=  9
-     iter. #    21  RMS(g-h-1)= 1.547E-04  nbox= 10
-     iter. #    31  RMS(g-h-1)= 1.041E-04  nbox= 10
-     iter. #    41  RMS(g-h-1)= 1.037E-04  nbox= 10
-     iter. #    48  RMS(g-h-1)= 9.973E-05  nbox=  2
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    48 iterations
-
-
-     solvent charge   -0.10001, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.000273 e
-     Na+          0.101578 e
-     Cl-         -0.201904 e
-     Total       -0.100053 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.884989E+01 kcal/mol
-     Na+        GaussFluct  -0.396300E+03 kcal/mol
-     Cl-        GaussFluct   0.401471E+03 kcal/mol
-     Total      GaussFluct   0.140205E+02 kcal/mol
-
-
-     total cpu time spent up to now is       68.5 secs
-
-     total energy              =     -12.38268053 Ry
-     Harris-Foulkes estimate   =     -12.38245323 Ry
-     estimated scf accuracy    <       0.00000622 Ry
-
-     iteration # 29     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  6.98E-08,  avg # of iterations =  4.3
-
-     negative rho (up, down):  8.071E-06 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-04
-     iter. #     1  RMS(g-h-1)= 1.115E-02  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.637E-04  nbox=  9
-     iter. #    17  RMS(g-h-1)= 9.198E-05  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    17 iterations
-
-
-     solvent charge   -0.10014, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.000174 e
-     Na+          0.101594 e
-     Cl-         -0.201948 e
-     Total       -0.100180 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.884837E+01 kcal/mol
-     Na+        GaussFluct  -0.396323E+03 kcal/mol
-     Cl-        GaussFluct   0.401496E+03 kcal/mol
-     Total      GaussFluct   0.140208E+02 kcal/mol
-
-
-     total cpu time spent up to now is       69.0 secs
-
-     total energy              =     -12.38269297 Ry
-     Harris-Foulkes estimate   =     -12.38268021 Ry
-     estimated scf accuracy    <       0.00000158 Ry
-
-     iteration # 30     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  1.78E-08,  avg # of iterations =  3.0
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-04
-     iter. #     1  RMS(g-h-1)= 2.352E-02  nbox=  0
-     iter. #    11  RMS(g-h-1)= 4.972E-04  nbox= 10
-     iter. #    21  RMS(g-h-1)= 2.555E-04  nbox= 10
-     iter. #    29  RMS(g-h-1)= 9.329E-05  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    29 iterations
-
-
-     solvent charge   -0.10024, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.000108 e
-     Na+          0.101626 e
-     Cl-         -0.201801 e
-     Total       -0.100283 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.884079E+01 kcal/mol
-     Na+        GaussFluct  -0.396144E+03 kcal/mol
-     Cl-        GaussFluct   0.401300E+03 kcal/mol
-     Total      GaussFluct   0.139972E+02 kcal/mol
-
-
-     total cpu time spent up to now is       70.0 secs
+     total cpu time spent up to now is      127.1 secs
 
      End of self-consistent calculation
 
           k = 0.0000 0.0000 0.0000 (  2491 PWs)   bands (ev):
 
-   -16.7591 -14.5635 -11.4681  -8.4007  -4.3690  -2.4854  -1.6607  -0.5512
+   -16.7438 -14.5475 -11.4533  -8.3864  -4.3551  -2.3678  -1.4839  -0.4387
 
           k = 0.0000-0.5774 0.0000 (  2408 PWs)   bands (ev):
 
-   -10.9649 -10.8616  -9.1000  -8.4156  -5.7520  -5.4963  -2.8330  -2.6822
+   -10.9496 -10.8461  -9.0839  -8.3996  -5.7372  -5.4816  -2.8187  -2.6674
 
           k = 0.5000-0.2887 0.0000 (  2408 PWs)   bands (ev):
 
-   -10.9663 -10.8603  -9.1007  -8.4143  -5.7510  -5.4964  -2.8382  -2.6781
+   -10.9511 -10.8448  -9.0846  -8.3983  -5.7362  -5.4818  -2.8238  -2.6637
 
-     the Fermi energy is    -5.7289 ev
+     the Fermi energy is    -5.7141 ev
 
-!    total energy              =     -12.38269544 Ry
-     Harris-Foulkes estimate   =     -12.38276858 Ry
-     estimated scf accuracy    <       0.00000088 Ry
+!    total energy              =     -12.38271610 Ry
+     Harris-Foulkes estimate   =     -12.38266168 Ry
+     estimated scf accuracy    <       0.00000078 Ry
 
      The total energy is the sum of the following terms:
 
-     one-electron contribution =     163.80363064 Ry
-     hartree contribution      =     -79.87434442 Ry
-     xc contribution           =      -4.74192195 Ry
+     one-electron contribution =     163.80880690 Ry
+     hartree contribution      =     -79.87984819 Ry
+     xc contribution           =      -4.74179571 Ry
      ewald contribution        =     -91.61035544 Ry
-     solvation energy (RISM)   =       0.04464172 Ry
-     smearing contrib. (-TS)   =      -0.00434599 Ry
+     solvation energy (RISM)   =       0.04482296 Ry
+     smearing contrib. (-TS)   =      -0.00434663 Ry
 
-     convergence has been achieved in  30 iterations
+     convergence has been achieved in  20 iterations
 
-     Forces acting on atoms (Ry/au):
+     Forces acting on atoms (cartesian axes, Ry/au):
 
-     atom    1 type  1   force =     0.00000000   -0.00005388   -0.00488574
-     atom    2 type  1   force =     0.00000000    0.00031332   -0.00350508
-     atom    3 type  1   force =     0.00000000   -0.00025944    0.00216141
+     atom    1 type  1   force =     0.00000000   -0.00005632   -0.00486806
+     atom    2 type  1   force =     0.00000000    0.00030452   -0.00339441
+     atom    3 type  1   force =     0.00000000   -0.00024820    0.00212392
 
-     Total force =     0.004118     Total SCF correction =     0.001047
+     Total force =     0.004004     Total SCF correction =     0.000806
      SCF correction compared to forces is large: reduce conv_thr to get better values
 
      BFGS Geometry Optimization
@@ -1702,654 +1467,177 @@
      number of scf cycles    =   1
      number of bfgs steps    =   0
 
-     energy   new            =     -12.3826954418 Ry
+     energy   new            =     -12.3827160990 Ry
 
-     new trust radius        =       0.0035050754 bohr
+     new trust radius        =       0.0033944059 bohr
      new conv_thr            =       0.0000010000 Ry
 
 
 ATOMIC_POSITIONS (angstrom)
 Al       0.000000000   0.000000000  -2.000000000    0   0   0
-Al       0.000000000   1.650000000   0.088145194    0   0   1
-Al       1.430000000   0.830000000   2.171143767    0   0   1
+Al       0.000000000   1.650000000   0.088203758    0   0   1
+Al       1.430000000   0.830000000   2.171123928    0   0   1
 
 
 
      Writing output data file Al-NaCl_aq.save
      NEW-OLD atomic charge density approx. for the potential
 
-     negative rho (up, down):  2.611E-08 0.000E+00
+     negative rho (up, down):  2.738E-08 0.000E+00
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-02
-     iter. #     1  RMS(g-h-1)= 4.277E-01  nbox=  0
-     iter. #     9  RMS(g-h-1)= 6.755E-03  nbox=  7
+     iter. #     1  RMS(g-h-1)= 5.313E-01  nbox=  0
+     iter. #     8  RMS(g-h-1)= 8.334E-03  nbox=  6
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in     9 iterations
+     convergence has been achieved in     8 iterations
 
 
-     solvent charge   -0.09728, renormalised to   -0.10000
+     solvent charge   -0.10014, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O          0.001977 e
-     Na+          0.101484 e
-     Cl-         -0.200782 e
-     Total       -0.097322 e
+     H2O          0.000160 e
+     Na+          0.101159 e
+     Cl-         -0.201493 e
+     Total       -0.100174 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.883145E+01 kcal/mol
-     Na+        GaussFluct  -0.396112E+03 kcal/mol
-     Cl-        GaussFluct   0.401327E+03 kcal/mol
-     Total      GaussFluct   0.140460E+02 kcal/mol
+     H2O        GaussFluct   0.862946E+01 kcal/mol
+     Na+        GaussFluct  -0.396379E+03 kcal/mol
+     Cl-        GaussFluct   0.401482E+03 kcal/mol
+     Total      GaussFluct   0.137327E+02 kcal/mol
 
 
-     total cpu time spent up to now is       73.4 secs
+     total cpu time spent up to now is      129.8 secs
 
-     per-process dynamical memory:    19.9 Mb
+     per-process dynamical memory:    20.7 Mb
 
      Self-consistent Calculation
 
      iteration #  1     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  1.00E-06,  avg # of iterations =  5.3
+     ethr =  1.00E-06,  avg # of iterations =  2.0
 
-     negative rho (up, down):  1.765E-08 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 1.000E-04
-     iter. #     1  RMS(g-h-1)= 1.163E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 3.055E-03  nbox= 10
-     iter. #    21  RMS(g-h-1)= 9.389E-04  nbox= 10
-     iter. #    31  RMS(g-h-1)= 5.865E-04  nbox= 10
-     iter. #    41  RMS(g-h-1)= 3.548E-04  nbox= 10
-     iter. #    51  RMS(g-h-1)= 2.923E-04  nbox= 10
-     iter. #    61  RMS(g-h-1)= 2.879E-04  nbox= 10
-     iter. #    71  RMS(g-h-1)= 2.853E-04  nbox=  8
-     iter. #    81  RMS(g-h-1)= 2.261E-04  nbox=  2
-     iter. #    91  RMS(g-h-1)= 2.128E-04  nbox= 10
-     iter. #   101  RMS(g-h-1)= 1.175E-04  nbox= 10
-     iter. #   107  RMS(g-h-1)= 9.972E-05  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in   107 iterations
-
-
-     solvent charge   -0.10028, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O          0.000006 e
-     Na+          0.101581 e
-     Cl-         -0.201902 e
-     Total       -0.100315 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.884890E+01 kcal/mol
-     Na+        GaussFluct  -0.398651E+03 kcal/mol
-     Cl-        GaussFluct   0.403980E+03 kcal/mol
-     Total      GaussFluct   0.141779E+02 kcal/mol
-
-
-     total cpu time spent up to now is       76.0 secs
-
-     total energy              =     -12.38305939 Ry
-     Harris-Foulkes estimate   =     -12.38217326 Ry
-     estimated scf accuracy    <       0.00035640 Ry
-
-     iteration #  2     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  4.00E-06,  avg # of iterations =  3.7
-
-     negative rho (up, down):  1.276E-08 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 2.086E-03
-     iter. #     1  RMS(g-h-1)= 9.379E-02  nbox=  0
-     iter. #    11  RMS(g-h-1)= 2.732E-03  nbox= 10
-     iter. #    14  RMS(g-h-1)= 2.039E-03  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    14 iterations
-
-
-     solvent charge   -0.09983, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.002514 e
-     Na+          0.101765 e
-     Cl-         -0.199121 e
-     Total       -0.099870 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.873988E+01 kcal/mol
-     Na+        GaussFluct  -0.396537E+03 kcal/mol
-     Cl-        GaussFluct   0.401631E+03 kcal/mol
-     Total      GaussFluct   0.138343E+02 kcal/mol
-
-
-     total cpu time spent up to now is       76.7 secs
-
-     total energy              =     -12.38300918 Ry
-     Harris-Foulkes estimate   =     -12.38472343 Ry
-     estimated scf accuracy    <       0.00976059 Ry
-
-     iteration #  3     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  4.00E-06,  avg # of iterations =  2.7
+     negative rho (up, down):  1.840E-08 0.000E+00
 
      Laue-RISM Calculation
 
      convergence threshold    = 1.000E-04
-     iter. #     1  RMS(g-h-1)= 2.097E-02  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.754E-03  nbox=  9
-     iter. #    21  RMS(g-h-1)= 6.881E-04  nbox= 10
-     iter. #    31  RMS(g-h-1)= 3.892E-04  nbox= 10
-     iter. #    41  RMS(g-h-1)= 3.417E-04  nbox= 10
-     iter. #    51  RMS(g-h-1)= 3.401E-04  nbox=  9
-     iter. #    61  RMS(g-h-1)= 3.378E-04  nbox=  3
-     iter. #    71  RMS(g-h-1)= 3.127E-04  nbox= 10
-     iter. #    81  RMS(g-h-1)= 3.066E-04  nbox=  7
-     iter. #    91  RMS(g-h-1)= 3.040E-04  nbox= 10
-     iter. #   101  RMS(g-h-1)= 2.915E-04  nbox= 10
-     iter. #   111  RMS(g-h-1)= 2.899E-04  nbox=  5
-     iter. #   121  RMS(g-h-1)= 2.913E-04  nbox= 10
-     iter. #   131  RMS(g-h-1)= 2.888E-04  nbox=  9
-     iter. #   141  RMS(g-h-1)= 2.900E-04  nbox=  3
-     iter. #   151  RMS(g-h-1)= 2.869E-04  nbox= 10
-     iter. #   161  RMS(g-h-1)= 2.852E-04  nbox=  7
-     iter. #   171  RMS(g-h-1)= 2.735E-04  nbox= 10
-     iter. #   181  RMS(g-h-1)= 2.618E-04  nbox= 10
-     iter. #   191  RMS(g-h-1)= 1.434E-04  nbox= 10
-     iter. #   199  RMS(g-h-1)= 8.990E-05  nbox= 10
+     iter. #     1  RMS(g-h-1)= 2.446E-02  nbox=  0
+     iter. #    11  RMS(g-h-1)= 3.425E-03  nbox= 10
+     iter. #    21  RMS(g-h-1)= 1.167E-03  nbox= 10
+     iter. #    31  RMS(g-h-1)= 6.614E-04  nbox= 10
+     iter. #    41  RMS(g-h-1)= 1.824E-04  nbox= 10
+     iter. #    51  RMS(g-h-1)= 1.531E-04  nbox= 10
+     iter. #    61  RMS(g-h-1)= 1.523E-04  nbox=  4
+     iter. #    71  RMS(g-h-1)= 1.493E-04  nbox= 10
+     iter. #    81  RMS(g-h-1)= 1.489E-04  nbox=  8
+     iter. #    91  RMS(g-h-1)= 1.457E-04  nbox=  2
+     iter. #   101  RMS(g-h-1)= 1.427E-04  nbox= 10
+     iter. #   111  RMS(g-h-1)= 1.393E-04  nbox=  6
+     iter. #   121  RMS(g-h-1)= 1.362E-04  nbox= 10
+     iter. #   131  RMS(g-h-1)= 1.369E-04  nbox= 10
+     iter. #   141  RMS(g-h-1)= 1.375E-04  nbox=  4
+     iter. #   151  RMS(g-h-1)= 1.358E-04  nbox= 10
+     iter. #   161  RMS(g-h-1)= 1.352E-04  nbox=  8
+     iter. #   171  RMS(g-h-1)= 1.231E-04  nbox=  2
+     iter. #   181  RMS(g-h-1)= 1.004E-04  nbox= 10
+     iter. #   182  RMS(g-h-1)= 8.829E-05  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in   199 iterations
+     convergence has been achieved in   182 iterations
 
 
-     solvent charge   -0.10034, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.000137 e
-     Na+          0.101606 e
-     Cl-         -0.201852 e
-     Total       -0.100384 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.884671E+01 kcal/mol
-     Na+        GaussFluct  -0.396522E+03 kcal/mol
-     Cl-        GaussFluct   0.401707E+03 kcal/mol
-     Total      GaussFluct   0.140319E+02 kcal/mol
-
-
-     total cpu time spent up to now is       82.5 secs
-
-     End of self-consistent calculation
-
-          k = 0.0000 0.0000 0.0000 (  2491 PWs)   bands (ev):
-
-   -16.7570 -14.5633 -11.4690  -8.4017  -4.3702  -2.3820  -1.4953  -0.4436
-
-          k = 0.0000-0.5774 0.0000 (  2408 PWs)   bands (ev):
-
-   -10.9624 -10.8595  -9.0996  -8.4156  -5.7530  -5.4969  -2.8337  -2.6827
-
-          k = 0.5000-0.2887 0.0000 (  2408 PWs)   bands (ev):
-
-   -10.9639 -10.8582  -9.1003  -8.4143  -5.7521  -5.4971  -2.8389  -2.6792
-
-     the Fermi energy is    -5.7299 ev
-
-!    total energy              =     -12.38278473 Ry
-     Harris-Foulkes estimate   =     -12.38277790 Ry
-     estimated scf accuracy    <       0.00000033 Ry
-
-     The total energy is the sum of the following terms:
-
-     one-electron contribution =     163.83866430 Ry
-     hartree contribution      =     -79.89063454 Ry
-     xc contribution           =      -4.74168827 Ry
-     ewald contribution        =     -91.62953497 Ry
-     solvation energy (RISM)   =       0.04475232 Ry
-     smearing contrib. (-TS)   =      -0.00434356 Ry
-
-     convergence has been achieved in   3 iterations
-
-     Forces acting on atoms (Ry/au):
-
-     atom    1 type  1   force =     0.00000000   -0.00005474   -0.00549270
-     atom    2 type  1   force =     0.00000000    0.00030634   -0.00190920
-     atom    3 type  1   force =     0.00000000   -0.00025160    0.00109833
-
-     Total force =     0.002203     Total SCF correction =     0.000319
-     SCF correction compared to forces is large: reduce conv_thr to get better values
-
-     number of scf cycles    =   2
-     number of bfgs steps    =   1
-
-     energy   old            =     -12.3826954418 Ry
-     energy   new            =     -12.3827847274 Ry
-
-     CASE: energy  _new < energy  _old
-
-     new trust radius        =       0.0038555830 bohr
-     new conv_thr            =       0.0000000100 Ry
-
-
-ATOMIC_POSITIONS (angstrom)
-Al       0.000000000   0.000000000  -2.000000000    0   0   0
-Al       0.000000000   1.650000000   0.086104907    0   0   1
-Al       1.430000000   0.830000000   2.172317597    0   0   1
-
-
-
-     Writing output data file Al-NaCl_aq.save
-     NEW-OLD atomic charge density approx. for the potential
-
-     negative rho (up, down):  1.980E-08 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 2.154E-03
-     iter. #     1  RMS(g-h-1)= 4.539E-01  nbox=  0
-     iter. #    11  RMS(g-h-1)= 3.704E-03  nbox=  9
-     iter. #    19  RMS(g-h-1)= 2.147E-03  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    19 iterations
-
-
-     solvent charge   -0.09939, renormalised to   -0.10000
+     solvent charge   -0.10042, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O          0.000150 e
-     Na+          0.101490 e
-     Cl-         -0.201067 e
-     Total       -0.099427 e
+     H2O         -0.000323 e
+     Na+          0.101407 e
+     Cl-         -0.201541 e
+     Total       -0.100458 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.880684E+01 kcal/mol
-     Na+        GaussFluct  -0.396541E+03 kcal/mol
-     Cl-        GaussFluct   0.401679E+03 kcal/mol
-     Total      GaussFluct   0.139444E+02 kcal/mol
+     H2O        GaussFluct   0.886462E+01 kcal/mol
+     Na+        GaussFluct  -0.395543E+03 kcal/mol
+     Cl-        GaussFluct   0.400676E+03 kcal/mol
+     Total      GaussFluct   0.139982E+02 kcal/mol
 
 
-     total cpu time spent up to now is       85.9 secs
+     total cpu time spent up to now is      135.9 secs
 
-     per-process dynamical memory:    19.9 Mb
-
-     Self-consistent Calculation
-
-     iteration #  1     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  1.00E-06,  avg # of iterations =  2.7
-
-     Threshold (ethr) on eigenvalues was too large:
-     Diagonalizing with lowered threshold
-
-     Davidson diagonalization with overlap
-     ethr =  1.84E-08,  avg # of iterations =  4.7
-
-     negative rho (up, down):  1.280E-08 0.000E+00
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 4.642E-06
-     iter. #     1  RMS(g-h-1)= 5.311E-03  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.077E-03  nbox= 10
-     iter. #    21  RMS(g-h-1)= 3.471E-04  nbox= 10
-     iter. #    31  RMS(g-h-1)= 1.732E-04  nbox= 10
-     iter. #    41  RMS(g-h-1)= 1.620E-04  nbox= 10
-     iter. #    51  RMS(g-h-1)= 1.455E-04  nbox= 10
-     iter. #    61  RMS(g-h-1)= 1.304E-04  nbox= 10
-     iter. #    71  RMS(g-h-1)= 1.278E-04  nbox= 10
-     iter. #    81  RMS(g-h-1)= 1.266E-04  nbox=  4
-     iter. #    91  RMS(g-h-1)= 7.760E-05  nbox= 10
-     iter. #   101  RMS(g-h-1)= 4.023E-05  nbox= 10
-     iter. #   111  RMS(g-h-1)= 2.150E-05  nbox= 10
-     iter. #   121  RMS(g-h-1)= 1.837E-05  nbox= 10
-     iter. #   131  RMS(g-h-1)= 1.662E-05  nbox=  6
-     iter. #   141  RMS(g-h-1)= 1.581E-05  nbox= 10
-     iter. #   151  RMS(g-h-1)= 1.526E-05  nbox= 10
-     iter. #   161  RMS(g-h-1)= 1.484E-05  nbox=  4
-     iter. #   171  RMS(g-h-1)= 1.454E-05  nbox= 10
-     iter. #   181  RMS(g-h-1)= 1.441E-05  nbox=  8
-     iter. #   191  RMS(g-h-1)= 1.393E-05  nbox=  2
-     iter. #   201  RMS(g-h-1)= 1.379E-05  nbox= 10
-     iter. #   211  RMS(g-h-1)= 1.378E-05  nbox=  6
-     iter. #   221  RMS(g-h-1)= 1.373E-05  nbox= 10
-     iter. #   231  RMS(g-h-1)= 1.347E-05  nbox= 10
-     iter. #   241  RMS(g-h-1)= 1.318E-05  nbox=  4
-     iter. #   251  RMS(g-h-1)= 1.249E-05  nbox= 10
-     iter. #   261  RMS(g-h-1)= 1.176E-05  nbox=  8
-     iter. #   271  RMS(g-h-1)= 1.104E-05  nbox=  2
-     iter. #   281  RMS(g-h-1)= 1.071E-05  nbox= 10
-     iter. #   291  RMS(g-h-1)= 1.040E-05  nbox=  6
-     iter. #   301  RMS(g-h-1)= 1.010E-05  nbox= 10
-     iter. #   311  RMS(g-h-1)= 9.967E-06  nbox= 10
-     iter. #   321  RMS(g-h-1)= 9.800E-06  nbox=  4
-     iter. #   331  RMS(g-h-1)= 9.391E-06  nbox= 10
-     iter. #   341  RMS(g-h-1)= 8.993E-06  nbox=  8
-     iter. #   351  RMS(g-h-1)= 8.787E-06  nbox=  2
-     iter. #   361  RMS(g-h-1)= 8.644E-06  nbox= 10
-     iter. #   371  RMS(g-h-1)= 8.470E-06  nbox=  6
-     iter. #   381  RMS(g-h-1)= 8.340E-06  nbox= 10
-     iter. #   391  RMS(g-h-1)= 8.152E-06  nbox= 10
-     iter. #   401  RMS(g-h-1)= 8.017E-06  nbox=  4
-     iter. #   411  RMS(g-h-1)= 7.814E-06  nbox= 10
-     iter. #   421  RMS(g-h-1)= 7.531E-06  nbox=  8
-     iter. #   431  RMS(g-h-1)= 7.083E-06  nbox=  2
-     iter. #   441  RMS(g-h-1)= 6.939E-06  nbox= 10
-     iter. #   451  RMS(g-h-1)= 6.796E-06  nbox=  6
-     iter. #   461  RMS(g-h-1)= 6.646E-06  nbox= 10
-     iter. #   471  RMS(g-h-1)= 6.535E-06  nbox= 10
-     iter. #   481  RMS(g-h-1)= 6.421E-06  nbox=  4
-     iter. #   491  RMS(g-h-1)= 6.300E-06  nbox= 10
-     iter. #   501  RMS(g-h-1)= 6.215E-06  nbox=  8
-     iter. #   511  RMS(g-h-1)= 6.180E-06  nbox=  2
-     iter. #   521  RMS(g-h-1)= 6.138E-06  nbox= 10
-     iter. #   531  RMS(g-h-1)= 6.097E-06  nbox=  6
-     iter. #   541  RMS(g-h-1)= 6.025E-06  nbox= 10
-     iter. #   551  RMS(g-h-1)= 5.947E-06  nbox= 10
-     iter. #   561  RMS(g-h-1)= 5.819E-06  nbox=  4
-     iter. #   571  RMS(g-h-1)= 5.625E-06  nbox= 10
-     iter. #   581  RMS(g-h-1)= 5.447E-06  nbox=  8
-     iter. #   591  RMS(g-h-1)= 5.303E-06  nbox=  2
-     iter. #   601  RMS(g-h-1)= 5.183E-06  nbox= 10
-     iter. #   611  RMS(g-h-1)= 4.973E-06  nbox=  6
-     iter. #   621  RMS(g-h-1)= 4.780E-06  nbox= 10
-     iter. #   631  RMS(g-h-1)= 4.702E-06  nbox= 10
-     iter. #   635  RMS(g-h-1)= 4.638E-06  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in   635 iterations
-
-
-     solvent charge   -0.10026, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.000089 e
-     Na+          0.101573 e
-     Cl-         -0.201788 e
-     Total       -0.100305 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.885029E+01 kcal/mol
-     Na+        GaussFluct  -0.396380E+03 kcal/mol
-     Cl-        GaussFluct   0.401558E+03 kcal/mol
-     Total      GaussFluct   0.140279E+02 kcal/mol
-
-
-     total cpu time spent up to now is      104.9 secs
-
-     total energy              =     -12.38277179 Ry
-     Harris-Foulkes estimate   =     -12.38283153 Ry
-     estimated scf accuracy    <       0.00000098 Ry
+     total energy              =     -12.38257543 Ry
+     Harris-Foulkes estimate   =     -12.38293413 Ry
+     estimated scf accuracy    <       0.00003560 Ry
 
      iteration #  2     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  1.10E-08,  avg # of iterations =  1.0
+     ethr =  4.00E-07,  avg # of iterations =  1.0
+
+     negative rho (up, down):  1.330E-08 0.000E+00
 
      Laue-RISM Calculation
 
-     convergence threshold    = 4.642E-06
-     iter. #     1  RMS(g-h-1)= 4.369E-03  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.256E-04  nbox= 10
-     iter. #    21  RMS(g-h-1)= 6.137E-05  nbox= 10
-     iter. #    31  RMS(g-h-1)= 2.024E-05  nbox= 10
-     iter. #    41  RMS(g-h-1)= 1.642E-05  nbox= 10
-     iter. #    51  RMS(g-h-1)= 1.512E-05  nbox=  4
-     iter. #    61  RMS(g-h-1)= 1.473E-05  nbox= 10
-     iter. #    71  RMS(g-h-1)= 1.459E-05  nbox=  8
-     iter. #    81  RMS(g-h-1)= 1.457E-05  nbox=  2
-     iter. #    91  RMS(g-h-1)= 1.440E-05  nbox= 10
-     iter. #   101  RMS(g-h-1)= 1.402E-05  nbox=  6
-     iter. #   111  RMS(g-h-1)= 1.382E-05  nbox= 10
-     iter. #   121  RMS(g-h-1)= 1.207E-05  nbox= 10
-     iter. #   131  RMS(g-h-1)= 8.757E-06  nbox= 10
-     iter. #   141  RMS(g-h-1)= 8.427E-06  nbox= 10
-     iter. #   151  RMS(g-h-1)= 7.457E-06  nbox=  9
-     iter. #   161  RMS(g-h-1)= 4.570E-06  nbox= 10
+     convergence threshold    = 1.000E-04
+     iter. #     1  RMS(g-h-1)= 2.079E-02  nbox=  0
+     iter. #    11  RMS(g-h-1)= 1.004E-03  nbox= 10
+     iter. #    21  RMS(g-h-1)= 4.930E-04  nbox= 10
+     iter. #    31  RMS(g-h-1)= 4.751E-04  nbox= 10
+     iter. #    41  RMS(g-h-1)= 4.533E-04  nbox= 10
+     iter. #    51  RMS(g-h-1)= 4.424E-04  nbox=  5
+     iter. #    61  RMS(g-h-1)= 4.228E-04  nbox= 10
+     iter. #    71  RMS(g-h-1)= 4.131E-04  nbox=  9
+     iter. #    81  RMS(g-h-1)= 4.006E-04  nbox=  3
+     iter. #    91  RMS(g-h-1)= 3.818E-04  nbox= 10
+     iter. #   101  RMS(g-h-1)= 2.208E-04  nbox= 10
+     iter. #   111  RMS(g-h-1)= 2.186E-04  nbox= 10
+     iter. #   121  RMS(g-h-1)= 1.075E-04  nbox= 10
+     iter. #   122  RMS(g-h-1)= 9.433E-05  nbox= 10
 
      End of Laue-RISM calculation
 
 
-     convergence has been achieved in   161 iterations
+     convergence has been achieved in   122 iterations
 
 
-     solvent charge   -0.10026, renormalised to   -0.10000
+     solvent charge   -0.10003, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.000087 e
-     Na+          0.101573 e
-     Cl-         -0.201788 e
-     Total       -0.100303 e
+     H2O          0.000119 e
+     Na+          0.101346 e
+     Cl-         -0.201532 e
+     Total       -0.100066 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.885034E+01 kcal/mol
-     Na+        GaussFluct  -0.396474E+03 kcal/mol
-     Cl-        GaussFluct   0.401658E+03 kcal/mol
-     Total      GaussFluct   0.140342E+02 kcal/mol
+     H2O        GaussFluct   0.887012E+01 kcal/mol
+     Na+        GaussFluct  -0.396179E+03 kcal/mol
+     Cl-        GaussFluct   0.401360E+03 kcal/mol
+     Total      GaussFluct   0.140506E+02 kcal/mol
 
 
-     total cpu time spent up to now is      110.4 secs
+     total cpu time spent up to now is      140.1 secs
 
-     total energy              =     -12.38279087 Ry
-     Harris-Foulkes estimate   =     -12.38275312 Ry
-     estimated scf accuracy    <       0.00002201 Ry
+     total energy              =     -12.38266225 Ry
+     Harris-Foulkes estimate   =     -12.38246376 Ry
+     estimated scf accuracy    <       0.00096603 Ry
 
      iteration #  3     ecut=    25.00 Ry     beta=0.20
      Davidson diagonalization with overlap
-     ethr =  1.10E-08,  avg # of iterations =  1.0
-
-     negative rho (up, down):  1.002E-08 0.000E+00
+     ethr =  4.00E-07,  avg # of iterations =  1.0
 
      Laue-RISM Calculation
 
-     convergence threshold    = 4.642E-06
-     iter. #     1  RMS(g-h-1)= 5.618E-03  nbox=  0
-     iter. #    11  RMS(g-h-1)= 7.641E-05  nbox=  9
-     iter. #    21  RMS(g-h-1)= 3.288E-05  nbox= 10
-     iter. #    31  RMS(g-h-1)= 2.430E-05  nbox= 10
-     iter. #    41  RMS(g-h-1)= 2.258E-05  nbox=  2
-     iter. #    51  RMS(g-h-1)= 2.241E-05  nbox= 10
-     iter. #    61  RMS(g-h-1)= 2.228E-05  nbox=  6
-     iter. #    71  RMS(g-h-1)= 2.086E-05  nbox= 10
-     iter. #    81  RMS(g-h-1)= 1.335E-05  nbox= 10
-     iter. #    91  RMS(g-h-1)= 7.129E-06  nbox= 10
-     iter. #   101  RMS(g-h-1)= 4.703E-06  nbox= 10
-     iter. #   102  RMS(g-h-1)= 4.620E-06  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in   102 iterations
-
-
-     solvent charge   -0.10026, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.000088 e
-     Na+          0.101579 e
-     Cl-         -0.201794 e
-     Total       -0.100303 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.885097E+01 kcal/mol
-     Na+        GaussFluct  -0.396424E+03 kcal/mol
-     Cl-        GaussFluct   0.401604E+03 kcal/mol
-     Total      GaussFluct   0.140311E+02 kcal/mol
-
-
-     total cpu time spent up to now is      113.6 secs
-
-     total energy              =     -12.38278176 Ry
-     Harris-Foulkes estimate   =     -12.38280152 Ry
-     estimated scf accuracy    <       0.00000017 Ry
-
-     iteration #  4     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  1.89E-09,  avg # of iterations =  4.3
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 4.642E-06
-     iter. #     1  RMS(g-h-1)= 9.386E-04  nbox=  0
-     iter. #    11  RMS(g-h-1)= 1.525E-05  nbox=  9
-     iter. #    21  RMS(g-h-1)= 6.375E-06  nbox= 10
-     iter. #    31  RMS(g-h-1)= 5.742E-06  nbox= 10
-     iter. #    41  RMS(g-h-1)= 5.391E-06  nbox=  5
-     iter. #    51  RMS(g-h-1)= 5.277E-06  nbox= 10
-     iter. #    61  RMS(g-h-1)= 5.288E-06  nbox=  9
-     iter. #    71  RMS(g-h-1)= 5.203E-06  nbox=  3
-     iter. #    77  RMS(g-h-1)= 4.485E-06  nbox=  9
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    77 iterations
-
-
-     solvent charge   -0.10026, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.000084 e
-     Na+          0.101578 e
-     Cl-         -0.201795 e
-     Total       -0.100301 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.885105E+01 kcal/mol
-     Na+        GaussFluct  -0.396430E+03 kcal/mol
-     Cl-        GaussFluct   0.401611E+03 kcal/mol
-     Total      GaussFluct   0.140318E+02 kcal/mol
-
-
-     total cpu time spent up to now is      116.3 secs
-
-     total energy              =     -12.38278250 Ry
-     Harris-Foulkes estimate   =     -12.38277969 Ry
-     estimated scf accuracy    <       0.00000004 Ry
-
-     iteration #  5     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  4.05E-10,  avg # of iterations =  3.3
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 4.642E-06
-     iter. #     1  RMS(g-h-1)= 3.155E-03  nbox=  0
-     iter. #    11  RMS(g-h-1)= 4.316E-05  nbox=  9
-     iter. #    21  RMS(g-h-1)= 1.228E-05  nbox= 10
-     iter. #    31  RMS(g-h-1)= 9.821E-06  nbox= 10
-     iter. #    41  RMS(g-h-1)= 9.715E-06  nbox=  3
-     iter. #    51  RMS(g-h-1)= 8.674E-06  nbox= 10
-     iter. #    61  RMS(g-h-1)= 6.072E-06  nbox= 10
-     iter. #    71  RMS(g-h-1)= 4.737E-06  nbox=  4
-     iter. #    75  RMS(g-h-1)= 4.632E-06  nbox=  8
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in    75 iterations
-
-
-     solvent charge   -0.10026, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.000085 e
-     Na+          0.101579 e
-     Cl-         -0.201794 e
-     Total       -0.100300 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.885106E+01 kcal/mol
-     Na+        GaussFluct  -0.396444E+03 kcal/mol
-     Cl-        GaussFluct   0.401626E+03 kcal/mol
-     Total      GaussFluct   0.140327E+02 kcal/mol
-
-
-     total cpu time spent up to now is      119.2 secs
-
-     total energy              =     -12.38278563 Ry
-     Harris-Foulkes estimate   =     -12.38277976 Ry
-     estimated scf accuracy    <       0.00000003 Ry
-
-     iteration #  6     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  2.93E-10,  avg # of iterations =  3.0
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 4.642E-06
-     iter. #     1  RMS(g-h-1)= 2.059E-03  nbox=  0
-     iter. #    11  RMS(g-h-1)= 3.110E-05  nbox=  9
-     iter. #    21  RMS(g-h-1)= 1.218E-05  nbox= 10
-     iter. #    31  RMS(g-h-1)= 9.030E-06  nbox= 10
-     iter. #    41  RMS(g-h-1)= 8.841E-06  nbox= 10
-     iter. #    51  RMS(g-h-1)= 8.813E-06  nbox=  6
-     iter. #    61  RMS(g-h-1)= 8.804E-06  nbox= 10
-     iter. #    71  RMS(g-h-1)= 8.935E-06  nbox= 10
-     iter. #    81  RMS(g-h-1)= 8.944E-06  nbox=  4
-     iter. #    91  RMS(g-h-1)= 8.312E-06  nbox= 10
-     iter. #   101  RMS(g-h-1)= 8.083E-06  nbox=  7
-     iter. #   111  RMS(g-h-1)= 7.451E-06  nbox= 10
-     iter. #   121  RMS(g-h-1)= 6.267E-06  nbox= 10
-     iter. #   131  RMS(g-h-1)= 4.381E-06  nbox= 10
-
-     End of Laue-RISM calculation
-
-
-     convergence has been achieved in   131 iterations
-
-
-     solvent charge   -0.10027, renormalised to   -0.10000
-
-     Total charge of solvent (in expand-cell)
-     H2O         -0.000092 e
-     Na+          0.101582 e
-     Cl-         -0.201798 e
-     Total       -0.100308 e
-
-     Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.885120E+01 kcal/mol
-     Na+        GaussFluct  -0.396424E+03 kcal/mol
-     Cl-        GaussFluct   0.401604E+03 kcal/mol
-     Total      GaussFluct   0.140313E+02 kcal/mol
-
-
-     total cpu time spent up to now is      123.7 secs
-
-     total energy              =     -12.38278201 Ry
-     Harris-Foulkes estimate   =     -12.38278993 Ry
-     estimated scf accuracy    <       0.00000001 Ry
-
-     iteration #  7     ecut=    25.00 Ry     beta=0.20
-     Davidson diagonalization with overlap
-     ethr =  1.45E-10,  avg # of iterations =  2.7
-
-     Laue-RISM Calculation
-
-     convergence threshold    = 4.642E-06
-     iter. #     1  RMS(g-h-1)= 1.842E-03  nbox=  0
-     iter. #    11  RMS(g-h-1)= 3.731E-05  nbox= 10
-     iter. #    21  RMS(g-h-1)= 1.500E-05  nbox= 10
-     iter. #    31  RMS(g-h-1)= 5.665E-06  nbox= 10
-     iter. #    37  RMS(g-h-1)= 4.628E-06  nbox= 10
+     convergence threshold    = 1.000E-04
+     iter. #     1  RMS(g-h-1)= 2.891E-02  nbox=  0
+     iter. #    11  RMS(g-h-1)= 4.633E-04  nbox=  9
+     iter. #    21  RMS(g-h-1)= 1.917E-04  nbox= 10
+     iter. #    31  RMS(g-h-1)= 1.122E-04  nbox= 10
+     iter. #    37  RMS(g-h-1)= 9.827E-05  nbox= 10
 
      End of Laue-RISM calculation
 
@@ -2357,139 +1645,138 @@ Al       1.430000000   0.830000000   2.172317597    0   0   1
      convergence has been achieved in    37 iterations
 
 
-     solvent charge   -0.10027, renormalised to   -0.10000
+     solvent charge   -0.10019, renormalised to   -0.10000
 
      Total charge of solvent (in expand-cell)
-     H2O         -0.000096 e
-     Na+          0.101583 e
-     Cl-         -0.201795 e
-     Total       -0.100309 e
+     H2O          0.000054 e
+     Na+          0.101369 e
+     Cl-         -0.201653 e
+     Total       -0.100230 e
 
      Chemical potential of solvation (in expand-cell)
-     H2O        GaussFluct   0.885108E+01 kcal/mol
-     Na+        GaussFluct  -0.396409E+03 kcal/mol
-     Cl-        GaussFluct   0.401588E+03 kcal/mol
-     Total      GaussFluct   0.140300E+02 kcal/mol
+     H2O        GaussFluct   0.886183E+01 kcal/mol
+     Na+        GaussFluct  -0.396095E+03 kcal/mol
+     Cl-        GaussFluct   0.401271E+03 kcal/mol
+     Total      GaussFluct   0.140383E+02 kcal/mol
 
 
-     total cpu time spent up to now is      124.7 secs
+     total cpu time spent up to now is      141.5 secs
 
      End of self-consistent calculation
 
           k = 0.0000 0.0000 0.0000 (  2491 PWs)   bands (ev):
 
-   -16.7497 -14.5570 -11.4647  -8.3975  -4.3664  -2.3762  -1.4894  -0.4382
+   -16.7504 -14.5572 -11.4625  -8.3951  -4.3631  -2.3718  -1.4835  -0.4380
 
           k = 0.0000-0.5774 0.0000 (  2408 PWs)   bands (ev):
 
-   -10.9550 -10.8522  -9.0931  -8.4094  -5.7487  -5.4924  -2.8294  -2.6792
+   -10.9558 -10.8531  -9.0935  -8.4094  -5.7466  -5.4905  -2.8273  -2.6763
 
           k = 0.5000-0.2887 0.0000 (  2408 PWs)   bands (ev):
 
-   -10.9565 -10.8509  -9.0938  -8.4081  -5.7478  -5.4926  -2.8345  -2.6752
+   -10.9573 -10.8518  -9.0942  -8.4082  -5.7457  -5.4906  -2.8324  -2.6725
 
-     the Fermi energy is    -5.7256 ev
+     the Fermi energy is    -5.7235 ev
 
-!    total energy              =     -12.38277994 Ry
-     Harris-Foulkes estimate   =     -12.38278613 Ry
-     estimated scf accuracy    <          3.4E-09 Ry
+!    total energy              =     -12.38270355 Ry
+     Harris-Foulkes estimate   =     -12.38274067 Ry
+     estimated scf accuracy    <       0.00000032 Ry
 
      The total energy is the sum of the following terms:
 
-     one-electron contribution =     163.87598327 Ry
-     hartree contribution      =     -79.90858602 Ry
-     xc contribution           =      -4.74135856 Ry
-     ewald contribution        =     -91.64922258 Ry
-     solvation energy (RISM)   =       0.04474645 Ry
-     smearing contrib. (-TS)   =      -0.00434248 Ry
+     one-electron contribution =     163.83895959 Ry
+     hartree contribution      =     -79.89120215 Ry
+     xc contribution           =      -4.74168851 Ry
+     ewald contribution        =     -91.62920232 Ry
+     solvation energy (RISM)   =       0.04477298 Ry
+     smearing contrib. (-TS)   =      -0.00434314 Ry
 
-     convergence has been achieved in   7 iterations
+     convergence has been achieved in   3 iterations
 
-     Forces acting on atoms (Ry/au):
+     Forces acting on atoms (cartesian axes, Ry/au):
 
-     atom    1 type  1   force =     0.00000000   -0.00005254   -0.00596249
-     atom    2 type  1   force =     0.00000000    0.00030677   -0.00048101
-     atom    3 type  1   force =     0.00000000   -0.00025423    0.00028156
+     atom    1 type  1   force =     0.00000000   -0.00005071   -0.00558098
+     atom    2 type  1   force =     0.00000000    0.00030792   -0.00163678
+     atom    3 type  1   force =     0.00000000   -0.00025721    0.00099566
 
-     Total force =     0.000557     Total SCF correction =     0.000079
-     SCF correction compared to forces is large: reduce conv_thr to get better values
+     Total force =     0.001916     Total SCF correction =     0.000064
 
-     bfgs converged in   3 scf cycles and   2 bfgs steps
-     (criteria: energy <  1.0E-04, force <  1.0E-03)
+     bfgs converged in   2 scf cycles and   1 bfgs steps
+     (criteria: energy <  1.0E-04 Ry, force <  2.0E-03 Ry/Bohr)
 
      End of BFGS Geometry Optimization
 
-     Final energy   =     -12.3827799402 Ry
+     Final energy   =     -12.3827035490 Ry
 Begin final coordinates
 
 ATOMIC_POSITIONS (angstrom)
 Al       0.000000000   0.000000000  -2.000000000    0   0   0
-Al       0.000000000   1.650000000   0.086104907    0   0   1
-Al       1.430000000   0.830000000   2.172317597    0   0   1
+Al       0.000000000   1.650000000   0.088203758    0   0   1
+Al       1.430000000   0.830000000   2.171123928    0   0   1
 End final coordinates
 
 
 
      Writing output data file Al-NaCl_aq.save
 
-     init_run     :      8.69s CPU      8.99s WALL (       1 calls)
-     electrons    :     90.24s CPU     94.26s WALL (       3 calls)
-     update_pot   :      0.35s CPU      0.35s WALL (       2 calls)
-     forces       :      3.95s CPU      3.94s WALL (       3 calls)
+     init_run     :     10.26s CPU     10.42s WALL (       1 calls)
+     electrons    :    100.76s CPU    104.43s WALL (       2 calls)
+     update_pot   :      0.20s CPU      0.20s WALL (       1 calls)
+     forces       :      2.58s CPU      2.58s WALL (       2 calls)
 
      Called by init_run:
-     wfcinit      :      0.01s CPU      0.01s WALL (       1 calls)
-     potinit      :      8.50s CPU      8.79s WALL (       1 calls)
+     wfcinit      :      0.05s CPU      0.05s WALL (       1 calls)
+     potinit      :      9.99s CPU     10.13s WALL (       1 calls)
 
      Called by electrons:
-     c_bands      :      1.42s CPU      1.48s WALL (      41 calls)
-     sum_band     :      0.37s CPU      0.38s WALL (      41 calls)
-     v_of_rho     :      1.17s CPU      1.18s WALL (      43 calls)
-     mix_rho      :      0.09s CPU      0.09s WALL (      41 calls)
+     c_bands      :      1.67s CPU      1.72s WALL (      23 calls)
+     sum_band     :      0.38s CPU      0.39s WALL (      23 calls)
+     v_of_rho     :      1.24s CPU      1.24s WALL (      25 calls)
+     mix_rho      :      0.09s CPU      0.09s WALL (      23 calls)
 
      Called by c_bands:
-     init_us_2    :      0.03s CPU      0.03s WALL (     258 calls)
-     cegterg      :      1.37s CPU      1.42s WALL (     123 calls)
+     init_us_2    :      0.04s CPU      0.04s WALL (     147 calls)
+     cegterg      :      1.62s CPU      1.66s WALL (      69 calls)
 
      Called by sum_band:
 
      Called by *egterg:
-     h_psi        :      1.14s CPU      1.19s WALL (     496 calls)
-     g_psi        :      0.00s CPU      0.01s WALL (     370 calls)
-     cdiaghg      :      0.06s CPU      0.06s WALL (     484 calls)
+     h_psi        :      1.39s CPU      1.42s WALL (     315 calls)
+     g_psi        :      0.00s CPU      0.01s WALL (     243 calls)
+     cdiaghg      :      0.06s CPU      0.06s WALL (     309 calls)
 
      Called by h_psi:
-     h_psi:pot    :      1.14s CPU      1.18s WALL (     496 calls)
-     h_psi:calbec :      0.07s CPU      0.07s WALL (     496 calls)
-     vloc_psi     :      1.02s CPU      1.07s WALL (     496 calls)
-     add_vuspsi   :      0.04s CPU      0.05s WALL (     496 calls)
+     h_psi:pot    :      1.38s CPU      1.42s WALL (     315 calls)
+     h_psi:calbec :      0.09s CPU      0.08s WALL (     315 calls)
+     vloc_psi     :      1.23s CPU      1.26s WALL (     315 calls)
+     add_vuspsi   :      0.07s CPU      0.07s WALL (     315 calls)
 
      General routines
-     calbec       :      0.08s CPU      0.08s WALL (     532 calls)
-     fft          :      0.46s CPU      0.48s WALL (     739 calls)
-     ffts         :      0.03s CPU      0.03s WALL (      84 calls)
-     fftw         :      1.15s CPU      1.15s WALL (    6136 calls)
-     fftc         :      0.04s CPU      0.04s WALL (      86 calls)
-     interpolate  :      0.07s CPU      0.08s WALL (      84 calls)
+     calbec       :      0.10s CPU      0.09s WALL (     339 calls)
+     fft          :      0.44s CPU      0.44s WALL (     428 calls)
+     ffts         :      0.02s CPU      0.02s WALL (      48 calls)
+     fftw         :      1.34s CPU      1.33s WALL (    3674 calls)
+     fftc         :      0.03s CPU      0.03s WALL (      50 calls)
+     interpolate  :      0.07s CPU      0.07s WALL (      48 calls)
      davcio       :      0.00s CPU      0.00s WALL (       3 calls)
 
      Parallel routines
-     fft_scatter  :      4.88s CPU      5.12s WALL (   32416 calls)
+     fft_scatter  :      3.57s CPU      4.24s WALL (   31637 calls)
 
      RISM routines
      1DRISM_pre   :      0.00s CPU      0.00s WALL (       1 calls)
-     1DRISM_run   :     14.57s CPU     14.61s WALL (       1 calls)
-     3DRISM_pre   :      1.83s CPU      1.83s WALL (       1 calls)
-     3DRISM_run   :     94.51s CPU     98.78s WALL (      43 calls)
-     3DRISM_ions  :      1.52s CPU      1.52s WALL (       2 calls)
-     3DRISM_for   :      3.68s CPU      3.68s WALL (       3 calls)
-     3DRISM_vsol  :      0.04s CPU      0.05s WALL (      43 calls)
-     3DRISM_esol  :      0.00s CPU      0.00s WALL (      43 calls)
+     1DRISM_run   :     23.26s CPU     23.72s WALL (       1 calls)
+     3DRISM_pre   :      1.03s CPU      1.05s WALL (       1 calls)
+     3DRISM_run   :    106.45s CPU    110.18s WALL (      25 calls)
+     3DRISM_ions  :      0.84s CPU      0.84s WALL (       1 calls)
+     3DRISM_for   :      2.33s CPU      2.32s WALL (       2 calls)
+     3DRISM_vsol  :      0.05s CPU      0.06s WALL (      25 calls)
+     3DRISM_esol  :      0.01s CPU      0.01s WALL (      25 calls)
 
-     PWSCF        :  2m 1.40s CPU     2m 5.89s WALL
+     PWSCF        :  2m18.65s CPU     2m23.01s WALL
 
 
-   This run was terminated on:  23:21:41   9Feb2017            
+   This run was terminated on:   1:40:50   1Mar2017            
 
 =------------------------------------------------------------------------------=
    JOB DONE.

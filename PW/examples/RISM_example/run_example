@@ -284,7 +284,8 @@ cat > Li-EtOH.in << EOF
     solute_lj(1) = 'uff'
     ! Laue-RISM
     laue_expand_right   = 50.00 ! bohr
-    laue_starting_right = -0.91 ! bohr
+    laue_starting_right = -3.24 ! bohr
+    laue_buffer_right   =  2.00 ! bohr
  /
 ATOMIC_SPECIES
 Li  -1.0  Li.pbe-n-van.UPF
@@ -332,11 +333,12 @@ $ECHO " done"
 # ESM-RISM calculation for charged Al(111) with NaCl(aq)/5.0M
 cat > Al-NaCl_aq.in << EOF
  &control
-    calculation = 'relax'
-    prefix      = 'Al-NaCl_aq'
-    pseudo_dir  = '$PSEUDO_DIR/'
-    outdir      = '$TMP_DIR/'
-    trism       = .true.
+    calculation   = 'relax'
+    prefix        = 'Al-NaCl_aq'
+    pseudo_dir    = '$PSEUDO_DIR/'
+    outdir        = '$TMP_DIR/'
+    trism         = .true.
+    forc_conv_thr = 2.0e-3
  /
  &system
     ibrav       = 4
@@ -365,7 +367,7 @@ cat > Al-NaCl_aq.in << EOF
     nsolv    = 3
     closure  = 'kh'
     tempv    = 300.0  ! Kelvin
-    ecutsolv = 144.0  ! Rydberg
+    ecutsolv = 100.0  ! Rydberg
     ! Lennard-Jones
     solute_lj(1) = 'uff'
     ! Laue-RISM
