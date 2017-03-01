@@ -2766,7 +2766,7 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
                 If positive value, set the ending position offset [in a.u.]
                 of the solvent region on right-hand side of the unit cell,
                 measured relative to the unit cell edge.
-                (the solvent region ends at z = + [L_z/2 + laue_expand_right].)
+                (the solvent region ends at z = + [L_z/2 + @ref laue_expand_right].)
                 This is only for Laue-RISM.
             }
         }
@@ -2777,7 +2777,7 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
                 If positive value, set the ending position offset [in a.u.]
                 of the solvent region on left-hand side of the unit cell,
                 measured relative to the unit cell edge.
-                (the solvent region ends at z = - [L_z/2 + laue_expand_left].)
+                (the solvent region ends at z = - [L_z/2 + @ref laue_expand_left].)
                 This is only for Laue-RISM.
             }
         }
@@ -2786,7 +2786,9 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
             default { 0.0 }
             info {
                 Set the starting position [in a.u.] of the solvent region
-                on right-hand side of the unit cell.
+                on right-hand side of the unit cell. Then the solvent region is
+                defined as [ @ref laue_starting_right , L_z/2 + @ref laue_expand_right ],
+                where distribution functions are finite.
                 This is only for Laue-RISM.
             }
         }
@@ -2795,7 +2797,37 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
             default { 0.0 }
             info {
                 Set the starting position [in a.u.] of the solvent region
-                on left-hand side of the unit cell.
+                on left-hand side of the unit cell. Then the solvent region is
+                defined as [ -L_z/2 - @ref laue_expand_left , @ref laue_starting_left ],
+                where distribution functions are finite.
+                This is only for Laue-RISM.
+            }
+        }
+
+        var laue_buffer_right -type REAL {
+            default {
+                8.0 if @ref laue_expand_right > 0.0;
+               -1.0 if @ref laue_expand_right <= 0.0
+            }
+            info {
+                If positive value, set the buffering length [in a.u.]
+                of the solvent region on right-hand side of the unit cell.
+                Then correlation functions are defined inside of
+                [ @ref laue_starting_right - @ref laue_buffer_right , L_z/2 + @ref laue_expand_right ].
+                This is only for Laue-RISM.
+            }
+        }
+
+        var laue_buffer_left -type REAL {
+            default {
+                8.0 if @ref laue_expand_left > 0.0;
+               -1.0 if @ref laue_expand_left <= 0.0
+            }
+            info {
+                If positive value, set the buffering length [in a.u.]
+                of the solvent region on left-hand side of the unit cell.
+                Then correlation functions are defined inside of
+                [ -L_z/2 - @ref laue_expand_left , @ref laue_starting_left + @ref laue_buffer_left ].
                 This is only for Laue-RISM.
             }
         }
