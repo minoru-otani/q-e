@@ -118,7 +118,7 @@ SUBROUTINE summary()
        &     'mixing beta               = ',0PF12.4,/,5X, &
        &     'number of iterations used = ',I12,2X,A,' mixing')
   !
-  call write_dft_name ( ) 
+  call write_dft_name ( )
   !
   IF ( lmd .OR. lbfgs ) &
      WRITE( stdout, '(5X,"nstep                     = ",I12,/)' ) nstep
@@ -213,14 +213,6 @@ SUBROUTINE summary()
      WRITE( stdout, '(/5x," cell mass =", f10.5, " AMU ")') cmass/amu_ry
   IF (calc.EQ.'nd' .OR. calc.EQ.'nm' ) &
      WRITE( stdout, '(/5x," cell mass =", f10.5, " AMU/(a.u.)^2 ")') cmass/amu_ry
-
-  IF (ANY(starting_charge(:) /= 0.D0)) THEN
-     WRITE( stdout, '(/5x,"Starting charge structure ", &
-          &      /5x,"atomic species   charge")')
-     DO nt = 1, ntyp
-        WRITE( stdout, '(5x,a6,9x,f6.3)') atm(nt), starting_charge(nt)
-     ENDDO
-  ENDIF
 
   IF (ANY(starting_charge(:) /= 0.D0)) THEN
      WRITE( stdout, '(/5x,"Starting charge structure ", &
@@ -396,11 +388,11 @@ SUBROUTINE summary()
   IF ( tq_smoothing ) WRITE( stdout, '(5x,"Augmentation charges are smoothed ")' )
 
   IF (tfixed_occ) THEN
-     WRITE( stdout, '(/,5X,"Occupations read from input ")' ) 
+     WRITE( stdout, '(/,5X,"Occupations read from input ")' )
      IF ( lsda ) THEN
-        WRITE(stdout, '(/,5X," Spin-up")' ) 
+        WRITE(stdout, '(/,5X," Spin-up")' )
         WRITE(stdout, '(/,(5X,8f9.4))') (f_inp(ibnd,1),ibnd=1,nbnd)
-        WRITE(stdout, '(/,5X," Spin-down")' ) 
+        WRITE(stdout, '(/,5X," Spin-down")' )
         WRITE(stdout, '(/,(5X,8f9.4))') (f_inp(ibnd,2),ibnd=1,nbnd)
      ELSE
         WRITE(stdout, '(/,(5X,8f9.4))') (f_inp(ibnd,1), ibnd=1,nbnd)
@@ -463,14 +455,14 @@ SUBROUTINE print_ps_info
      DO ib = 1, upf(nt)%nbeta
         IF (ib < 10 ) THEN
            WRITE( stdout, '(15x," l(",i1,") = ",i3)') ib, upf(nt)%lll(ib)
-        ELSE 
+        ELSE
            WRITE( stdout, '(14x," l(",i2,") = ",i3)') ib, upf(nt)%lll(ib)
         ENDIF
      END DO
 
      IF ( upf(nt)%tvanp ) THEN
         IF (upf(nt)%nqf==0) THEN
-           WRITE( stdout, '(5x,"Q(r) pseudized with 0 coefficients ",/)') 
+           WRITE( stdout, '(5x,"Q(r) pseudized with 0 coefficients ",/)')
         ELSE
            WRITE( stdout, '(5x,"Q(r) pseudized with ", &
            &          i2," coefficients,  rinner = ",3f8.3,/ &
@@ -488,7 +480,7 @@ SUBROUTINE print_vdw_info
   !
   USE io_global,       ONLY : stdout
   USE io_files,        ONLY : psfile
-  USE funct,           ONLY : get_inlc 
+  USE funct,           ONLY : get_inlc
   USE kernel_table,    ONLY : vdw_table_name, vdw_kernel_md5_cksum
 
   integer :: inlc
@@ -497,7 +489,7 @@ SUBROUTINE print_vdw_info
   if ( inlc > 0 ) then
      WRITE( stdout, '(/5x,"vdW kernel table read from file ",a)') TRIM (vdw_table_name)
      WRITE( stdout, '(5x,"MD5 check sum: ", a )') vdw_kernel_md5_cksum
-  endif 
+  endif
 
 END SUBROUTINE print_vdw_info
 !
@@ -506,7 +498,7 @@ SUBROUTINE print_symmetries ( iverbosity, noncolin, domag )
   !
   USE kinds,           ONLY : dp
   USE constants,       ONLY : eps6
-  USE io_global,       ONLY : stdout 
+  USE io_global,       ONLY : stdout
   USE symm_base,       ONLY : nsym, nsym_ns, nsym_na, invsym, s, sr, &
                               t_rev, ft, sname
   USE rap_point_group, ONLY : code_group, nclass, nelem, elem, &
@@ -536,7 +528,7 @@ SUBROUTINE print_symmetries ( iverbosity, noncolin, domag )
         IF ( nsym_ns > 0 ) THEN
            WRITE( stdout, '(/5x,i2," Sym. Ops., with inversion, found ", &
                     &  "(",i2," have fractional translation)")' ) nsym, nsym_ns
-        ELSE 
+        ELSE
            WRITE( stdout, '(/5x,i2," Sym. Ops., with inversion, found")' )&
                          nsym
         END IF
@@ -549,7 +541,7 @@ SUBROUTINE print_symmetries ( iverbosity, noncolin, domag )
         END IF
      ENDIF
   ENDIF
-  IF ( nsym_na > 0 ) THEN 
+  IF ( nsym_na > 0 ) THEN
       WRITE( stdout, '(10x,"(note: ",i2," additional sym.ops. were found ", &
                    &   "but ignored",/,10x," their fractional translations ",&
                    &   "are incommensurate with FFT grid)",/)') nsym_na
@@ -611,7 +603,7 @@ SUBROUTINE print_symmetries ( iverbosity, noncolin, domag )
      !
      ! ... Do not attempt calculation of classes if the lattice is provided
      ! ... in input as primitive vectors and not computed from parameters:
-     ! ... the resulting vectors may not be accurate enough for the algorithm 
+     ! ... the resulting vectors may not be accurate enough for the algorithm
      !
      IF ( ibrav == 0 ) RETURN
      !
