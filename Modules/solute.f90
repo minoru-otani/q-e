@@ -13,7 +13,8 @@ MODULE solute
   ! ... this module keeps data of solute.
   !
   USE constants,      ONLY : BOHR_RADIUS_ANGS
-  USE err_rism,       ONLY : stop_by_err_rism, IERR_RISM_NULL, IERR_RISM_LJ_OUT_OF_RANGE
+  USE err_rism,       ONLY : stop_by_err_rism, IERR_RISM_NULL, &
+                           & IERR_RISM_LJ_UNSUPPORTED, IERR_RISM_LJ_OUT_OF_RANGE
   USE ions_base,      ONLY : nat, atm, ityp
   USE kinds,          ONLY : DP
   USE molecule_const, ONLY : RY_TO_KCALMOLm1
@@ -186,71 +187,79 @@ CONTAINS
     CHARACTER(LEN=1), EXTERNAL :: capital
     INTEGER,          EXTERNAL :: atomic_number
     !
+    ! ... to upper case
     ffname_ = ADJUSTL(ffname)
     DO i = 1, LEN_TRIM(ffname_)
       ffname_(i:i) = capital(ffname_(i:i))
     END DO
     !
-    ! ffname -> eps_ (kcal/mol)
-    !        -> sig_ (angstrom)
-    SELECT CASE (TRIM(ffname_))
-    CASE ('NONE')
-      eps_  = 0.0_DP
-      sig_  = 0.0_DP
-      name_ = '???'
-      ierr  = IERR_RISM_NULL
-      !
-    CASE ('UFF')
-      atomn = atomic_number(trim(atm(is)))
-      CALL lj_uff(atomn, eps_, sig_, ierr)
-      name_ = 'UFF'
-      !
-    CASE ('CLAYFF')
-      atomn = atomic_number(trim(atm(is)))
-      CALL lj_clayff(atomn, eps_, sig_, ierr)
-      name_ = 'ClayFF'
-      !
-    CASE ('OPLS-AA')
-      atomn = atomic_number(trim(atm(is)))
-      CALL lj_oplsaa(atomn, eps_, sig_, ierr)
-      name_ = 'OPLS-AA'
-      !
-    CASE DEFAULT
-      CALL errore('set_solU_LJ_param', &
-                & 'incorrect force field name: ' // TRIM(ADJUSTL(ffname)), 1)
-      !
-    END SELECT
-    !
-    ! eps -> eps_ (kcal/mol)
-    ! sig -> sig_ (angstrom)
-    IF (ierr == IERR_RISM_NULL) THEN
-      IF (eps > 0.0_DP) THEN
-        eps_  = eps
-        name_ = 'given'
-      END IF
-      !
-      IF (sig > 0.0_DP) THEN
-        sig_  = sig
-        name_ = 'given'
-      END IF
-      !
-      IF (eps_ <= 0.0_DP .OR. sig_ <= 0.0_DP) THEN
-        ierr = IERR_RISM_LJ_OUT_OF_RANGE
-      END IF
-    END IF
-    !
-    IF (ierr /= IERR_RISM_NULL) THEN
-      CALL stop_by_err_rism('set_solU_LJ_param', ierr)
-    END IF
-    !
-    ! eps_ -> solU_ljeps (Ry)
-    ! sig_ -> solU_ljsig (bohr)
     DO ia = 1, nat
-      IF (ityp(ia) == is) THEN
-        solU_ljeps( ia) = eps_ / RY_TO_KCALMOLm1
-        solU_ljsig( ia) = sig_ / BOHR_RADIUS_ANGS
-        solU_ljname(ia) = name_
+      IF (ityp(ia) /= is) THEN
+        CYCLE
       END IF
+      !
+      ! ... ffname -> eps_ (kcal/mol)
+      ! ...        -> sig_ (angstrom)
+      SELECT CASE (TRIM(ffname_))
+      CASE ('NONE')
+        eps_  = 0.0_DP
+        sig_  = 0.0_DP
+        name_ = '???'
+        ierr  = IERR_RISM_NULL
+        !
+      CASE ('UFF')
+        atomn = atomic_number(trim(atm(is)))
+        CALL lj_uff(atomn, eps_, sig_, ierr)
+        name_ = 'UFF'
+        !
+      CASE ('CLAYFF')
+        atomn = atomic_number(trim(atm(is)))
+        CALL lj_clayff(atomn, eps_, sig_, ierr)
+        name_ = 'ClayFF'
+        !
+      CASE ('OPLS-AA')
+        atomn = atomic_number(trim(atm(is)))
+        CALL lj_oplsaa(atomn, eps_, sig_, ierr)
+        name_ = 'OPLS-AA'
+        !
+      CASE DEFAULT
+        eps_  = 0.0_DP
+        sig_  = 0.0_DP
+        name_ = '???'
+        ierr  = IERR_RISM_LJ_UNSUPPORTED
+        CALL infomsg('set_solU_LJ_param', 'incorrect force field name: ' // TRIM(ADJUSTL(ffname)))
+        !
+      END SELECT
+      !
+      ! ... eps -> eps_ (kcal/mol)
+      ! ... sig -> sig_ (angstrom)
+      IF (ierr == IERR_RISM_NULL) THEN
+        IF (eps > 0.0_DP) THEN
+          eps_  = eps
+          name_ = 'given'
+        END IF
+        !
+        IF (sig > 0.0_DP) THEN
+          sig_  = sig
+          name_ = 'given'
+        END IF
+        !
+        IF (eps_ <= 0.0_DP .OR. sig_ <= 0.0_DP) THEN
+          ierr = IERR_RISM_LJ_OUT_OF_RANGE
+        END IF
+      END IF
+      !
+      ! ... check status
+      IF (ierr /= IERR_RISM_NULL) THEN
+        CALL stop_by_err_rism('set_solU_LJ_param', ierr)
+      END IF
+      !
+      ! ... eps_ -> solU_ljeps (Ry)
+      ! ... sig_ -> solU_ljsig (bohr)
+      solU_ljeps( ia) = eps_ / RY_TO_KCALMOLm1
+      solU_ljsig( ia) = sig_ / BOHR_RADIUS_ANGS
+      solU_ljname(ia) = name_
+      !
     END DO
     !
   END SUBROUTINE set_solU_LJ_param
