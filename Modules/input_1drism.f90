@@ -73,9 +73,9 @@ SUBROUTINE iosys_1drism(laue)
   !
   ! ... check starting condition.
   IF (TRIM(restart_mode) == 'restart') THEN
-    IF (TRIM(starting1d) /= 'file') THEN
+    IF (TRIM(starting1d) /= 'file' .AND. TRIM(starting1d) /= 'fix') THEN
       CALL infomsg('input','WARNING: "starting1d" set to '//TRIM(starting1d)//' may spoil restart')
-      !starting1d = 'file'
+      starting1d = 'file'
     END IF
   END IF
   !
