@@ -77,28 +77,37 @@ SUBROUTINE lj_uff(atmn, eps, sig, ierr)
 END SUBROUTINE lj_uff
 !
 !--------------------------------------------------------------------------
-SUBROUTINE lj_clayff(atmn, eps, sig, ierr)
+SUBROUTINE lj_clayff(atmn, crdn, eps, sig, label, ierr)
   !--------------------------------------------------------------------------
   !
   ! ... get Lennard-Jones parameters of ClayFF.
   ! ... (R.T.Cygan et al., J. Phys. Chem. B 2004, 108, 1255-1266)
   !
   ! ... Variables:
-  ! ...   atmn: atomic number
-  ! ...   eps:  L.J. parameter epsilon (kcal/mol)
-  ! ...   sig:  L.J. parameter sigma   (angstrom)
+  ! ...   atmn:  atomic number
+  ! ...   crdn:  coordination number
+  ! ...   eps:   L.J. parameter epsilon (kcal/mol)
+  ! ...   sig:   L.J. parameter sigma   (angstrom)
+  ! ...   label: optional name of element
   !
   USE err_rism, ONLY : IERR_RISM_NULL, IERR_RISM_LJ_UNSUPPORTED
   USE kinds,    ONLY : DP
   !
   IMPLICIT NONE
   !
-  INTEGER,  INTENT(IN)  :: atmn
-  REAL(DP), INTENT(OUT) :: eps
-  REAL(DP), INTENT(OUT) :: sig
-  INTEGER,  INTENT(OUT) :: ierr
+  INTEGER,          INTENT(IN)  :: atmn
+  INTEGER,          INTENT(IN)  :: crdn
+  REAL(DP),         INTENT(OUT) :: eps
+  REAL(DP),         INTENT(OUT) :: sig
+  CHARACTER(LEN=5), INTENT(OUT) :: label
+  INTEGER,          INTENT(OUT) :: ierr
   !
   REAL(DP) :: r0
+  !
+  eps   = 0.0_DP
+  r0    = 0.0_DP
+  label = ''
+  ierr  = IERR_RISM_LJ_UNSUPPORTED
   !
   SELECT CASE(atmn)
   CASE( 1) ! H
@@ -112,41 +121,59 @@ SUBROUTINE lj_clayff(atmn, eps, sig, ierr)
     ierr = IERR_RISM_NULL
     !
   CASE(14) ! Si
-    eps  = 1.8405E-6_DP
-    r0   = 3.7064_DP
-    ierr = IERR_RISM_NULL
+    IF (3 <= crdn .AND. crdn <= 4) THEN ! tetrahedral
+      eps   = 1.8405E-6_DP
+      r0    = 3.7064_DP
+      label = ' [Td]'
+      ierr  = IERR_RISM_NULL
+    END IF
     !
   CASE(13) ! Al
-    eps  = 1.3298E-6_DP  ! octahedral
-    !eps  = 1.8405E-6_DP  ! tetrahedral
-    r0   = 4.7943_DP
-    ierr = IERR_RISM_NULL
+    IF (3 <= crdn .AND. crdn <= 4) THEN ! tetrahedral
+      eps   = 1.8405E-6_DP
+      r0    = 4.7943_DP
+      label = ' [Td]'
+      ierr  = IERR_RISM_NULL
+      !
+    ELSE IF (5 <= crdn .AND. crdn <= 6) THEN ! octahedral
+      eps   = 1.3298E-6_DP
+      r0    = 4.7943_DP
+      label = ' [Oh]'
+      ierr  = IERR_RISM_NULL
+      !
+    END IF
     !
   CASE(12) ! Mg
-    eps  = 9.0298E-7_DP
-    r0   = 5.9090_DP
-    ierr = IERR_RISM_NULL
+    IF (5 <= crdn .AND. crdn <= 6) THEN ! octahedral
+      eps   = 9.0298E-7_DP
+      r0    = 5.9090_DP
+      label = ' [Oh]'
+      ierr  = IERR_RISM_NULL
+    END IF
     !
   CASE(20) ! Ca
-    eps  = 5.0298E-6_DP
-    r0   = 6.2484_DP  ! octahedral
-    !r0   = 6.2428_DP  ! hydroxide
-    ierr = IERR_RISM_NULL
+    IF (5 <= crdn .AND. crdn <= 6) THEN ! octahedral
+      eps   = 5.0298E-6_DP
+      r0    = 6.2484_DP
+      label = ' [Oh]'
+      ierr  = IERR_RISM_NULL
+    END IF
     !
   CASE(26) ! Fe
-    eps  = 9.0298E-6_DP
-    r0   = 5.5070_DP
-    ierr = IERR_RISM_NULL
+    IF (5 <= crdn .AND. crdn <= 6) THEN ! octahedral
+      eps   = 9.0298E-6_DP
+      r0    = 5.5070_DP
+      label = ' [Oh]'
+      ierr  = IERR_RISM_NULL
+    END IF
     !
   CASE( 3) ! Li
-    eps  = 9.0298E-6_DP
-    r0   = 4.7257_DP
-    ierr = IERR_RISM_NULL
-    !
-  CASE DEFAULT
-    eps  = 0.0_DP
-    r0   = 0.0_DP
-    ierr = IERR_RISM_LJ_UNSUPPORTED
+    IF (5 <= crdn .AND. crdn <= 6) THEN ! octahedral
+      eps   = 9.0298E-6_DP
+      r0    = 4.7257_DP
+      label = ' [Oh]'
+      ierr  = IERR_RISM_NULL
+    END IF
     !
   END SELECT
   !
@@ -175,6 +202,10 @@ SUBROUTINE lj_oplsaa(atmn, eps, sig, ierr)
   REAL(DP), INTENT(OUT) :: eps
   REAL(DP), INTENT(OUT) :: sig
   INTEGER,  INTENT(OUT) :: ierr
+  !
+  eps  = 0.0_DP
+  sig  = 0.0_DP
+  ierr = IERR_RISM_LJ_UNSUPPORTED
   !
   SELECT CASE(atmn)
   CASE( 1) ! H
