@@ -55,7 +55,7 @@ SUBROUTINE iosys_3drism(laue, linit)
   INTEGER,  PARAMETER :: MDIIS_SWITCH    = 4
   REAL(DP), PARAMETER :: MDIIS_STEP_DEF1 = 0.8_DP
   REAL(DP), PARAMETER :: MDIIS_STEP_DEF2 = 0.3_DP
-  REAL(DP), PARAMETER :: BUFFER_DEF      = 4.0_DP
+  REAL(DP), PARAMETER :: BUFFER_DEF      = 8.0_DP
   !
   ! ... check starting condition.
   IF (TRIM(restart_mode) == 'restart') THEN

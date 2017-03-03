@@ -2806,7 +2806,7 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
 
         var laue_buffer_right -type REAL {
             default {
-                4.0 if @ref laue_expand_right > 0.0;
+                8.0 if @ref laue_expand_right > 0.0;
                -1.0 if @ref laue_expand_right <= 0.0
             }
             info {
@@ -2820,7 +2820,7 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
 
         var laue_buffer_left -type REAL {
             default {
-                4.0 if @ref laue_expand_left > 0.0;
+                8.0 if @ref laue_expand_left > 0.0;
                -1.0 if @ref laue_expand_left <= 0.0
             }
             info {
