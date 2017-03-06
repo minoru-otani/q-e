@@ -59,54 +59,69 @@ MODULE err_rism
 CONTAINS
   !
   !--------------------------------------------------------------------------
-  SUBROUTINE stop_by_err_rism(parent, ierr)
+  SUBROUTINE stop_by_err_rism(parent, ierr, stat)
     !--------------------------------------------------------------------------
     !
     IMPLICIT NONE
     !
-    CHARACTER(LEN=*), INTENT(IN) :: parent
-    INTEGER,          INTENT(IN) :: ierr
+    CHARACTER(LEN=*),  INTENT(IN) :: parent
+    INTEGER,           INTENT(IN) :: ierr
+    INTEGER, OPTIONAL, INTENT(IN) :: stat
+    !
+    INTEGER :: stat_
+    !
+    IF (PRESENT(stat)) THEN
+      stat_ = stat
+    ELSE
+      stat_ = 0
+    END IF
+    !
+    IF (stat_ == 0) THEN
+      stat_ = ierr
+    END IF
+    !
+    stat_ = MAX(ABS(stat_), 1)
     !
     SELECT CASE (ierr)
     CASE (IERR_RISM_INCORRECT_DATA_TYPE)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
-         & ' in RISM, incorrect data type ', MAX(ABS(ierr), 1))
+         & ' in RISM, incorrect data type ', stat_)
       !
     CASE (IERR_RISM_1DRISM_IS_NOT_AVAIL)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
-         & ' in RISM, data of 1D is not available ', MAX(ABS(ierr), 1))
+         & ' in RISM, data of 1D is not available ', stat_)
       !
     CASE (IERR_RISM_NOT_CONVERGED)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
-         & ' in RISM, iteration has not been converged ', MAX(ABS(ierr), 1))
+         & ' in RISM, iteration has not been converged ', stat_)
       !
     CASE (IERR_RISM_LJ_UNSUPPORTED)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
-         & ' in RISM, specified L.J.-parameters are not supported ', MAX(ABS(ierr), 1))
+         & ' in RISM, specified L.J.-parameters are not supported ', stat_)
       !
     CASE (IERR_RISM_LJ_OUT_OF_RANGE)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
-         & ' in RISM, specified L.J.-parameters are out of range ', MAX(ABS(ierr), 1))
+         & ' in RISM, specified L.J.-parameters are out of range ', stat_)
       !
     CASE (IERR_RISM_CANNOT_DGETRF)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
-         & ' in RISM, error at lapack::dgetrf ', MAX(ABS(ierr), 1))
+         & ' in RISM, error at lapack::dgetrf ', stat_)
       !
     CASE (IERR_RISM_CANNOT_DGETRS)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
-         & ' in RISM, error at lapack::dgetrs ', MAX(ABS(ierr), 1))
+         & ' in RISM, error at lapack::dgetrs ', stat_)
       !
     CASE (IERR_RISM_NONZERO_CHARGE)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
-         & ' in RISM, charge of solvent is not zero ', MAX(ABS(ierr), 1))
+         & ' in RISM, charge of solvent is not zero ', stat_)
       !
     CASE (IERR_RISM_FAIL_SMOOTH)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
-         & ' in RISM, fail to make potential smooth ', MAX(ABS(ierr), 1))
+         & ' in RISM, fail to make potential smooth ', stat_)
       !
     CASE (IERR_RISM_LARGE_LAUE_BOX)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
-         & ' in RISM, too large box of Laue-FFT than 1D-FFT ', MAX(ABS(ierr), 1))
+         & ' in RISM, too large box of Laue-FFT than 1D-FFT ', stat_)
       !
     END SELECT
     !

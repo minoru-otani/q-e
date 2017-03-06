@@ -275,7 +275,7 @@ CONTAINS
       !
       ! ... check status
       IF (ierr /= IERR_RISM_NULL) THEN
-        CALL stop_by_err_rism('set_solU_LJ_param', ierr)
+        CALL stop_by_err_rism('set_solU_LJ_param', ierr, stat=ia)
       END IF
       !
       ! ... eps_ -> solU_ljeps (Ry)
