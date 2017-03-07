@@ -253,7 +253,7 @@ MODULE input_parameters
 
         LOGICAL :: lecrpa = .FALSE.
           ! if true symmetry in scf run is neglected for RPA Ec calculation
-          ! 
+          !
 
         LOGICAL :: tqmmm = .FALSE.    ! QM/MM coupling. enabled if .true.
 
@@ -261,8 +261,8 @@ MODULE input_parameters
 
         CHARACTER(len=10) :: point_label_type='SC'
 
-        CHARACTER(len=80) :: memory = 'default' 
-          ! controls memory usage 
+        CHARACTER(len=80) :: memory = 'default'
+          ! controls memory usage
         CHARACTER(len=80) :: memory_allowed(3)
         DATA memory_allowed / 'small', 'default', 'large' /
           ! if memory = 'small' then QE tries to use (when implemented) algorithms using less memory,
@@ -285,7 +285,7 @@ MODULE input_parameters
           gdir, nppstr, wf_collect, lelfield, nberrycyc, refg,            &
           tefield2, saverho, tabps, lkpoint_dir, use_wannier, lecrpa,     &
           tqmmm, vdw_table_name, lorbm, memory, point_label_type,         &
-          lfcpopt, lfcpdyn, input_xml_schema_file, monopole                                        
+          lfcpopt, lfcpdyn, input_xml_schema_file, monopole
 !
 !=----------------------------------------------------------------------------=!
 !  SYSTEM Namelist Input Parameters
@@ -309,7 +309,7 @@ MODULE input_parameters
           ! Alternate definition of the cell - use either this or celldm
 
         REAL(DP) :: ref_alat = 0.0_DP
-          ! reference cell alat in a.u. (see REF_CELL_PARAMETERS card) 
+          ! reference cell alat in a.u. (see REF_CELL_PARAMETERS card)
 
         INTEGER :: nat = 0
           ! total number of atoms
@@ -376,7 +376,7 @@ MODULE input_parameters
         LOGICAL :: force_symmorphic = .false.
           ! if .true. disable fractionary translations (nonsymmorphic groups)
         LOGICAL :: use_all_frac = .false.
-          ! if .true. enable usage of all fractionary translations, 
+          ! if .true. enable usage of all fractionary translations,
           ! disabling check if they are commensurate with FFT grid
 
         REAL(DP) :: ecfixed = 0.0_DP, qcutz = 0.0_DP, q2sigma = 0.0_DP
@@ -412,7 +412,7 @@ MODULE input_parameters
         REAL(DP) :: alpha_pen(10) = 0.0_DP
 
           ! next group of variables PWSCF ONLY
-          ! 
+          !
           !
         REAL(DP) :: exx_fraction = -1.0_DP      ! if negative, use defaults
         REAL(DP) :: screening_parameter = -1.0_DP
@@ -513,7 +513,7 @@ MODULE input_parameters
           ! if .TRUE., TS-vdW correction for isolated system
           ! if .FALSE., TS-vdW correction for periodic system
         REAL(DP) :: ts_vdw_econv_thr = 1.0E-6_DP
-          ! convergence criterion for TS-vdW energy for periodic system 
+          ! convergence criterion for TS-vdW energy for periodic system
           !
 
         LOGICAL :: xdm = .FALSE.
@@ -567,18 +567,18 @@ MODULE input_parameters
           ! space group number for coordinates given in crystallographic form
           !
         LOGICAL :: uniqueb=.FALSE.
-          ! if .TRUE. for monoclinic lattice choose the b unique primitive 
+          ! if .TRUE. for monoclinic lattice choose the b unique primitive
           ! vectors
           !
-        INTEGER :: origin_choice = 1 
+        INTEGER :: origin_choice = 1
           ! for space groups that have more than one origin choice, choose
           ! the origin (can be 1 or 2)
           !
         LOGICAL :: rhombohedral = .TRUE.
           !
-          ! if .TRUE. for rhombohedral space groups give the coordinates 
+          ! if .TRUE. for rhombohedral space groups give the coordinates
           ! in rhombohedral axes. If .FALSE. in hexagonal axes, that are
-          ! converted internally in rhombohedral axes.  
+          ! converted internally in rhombohedral axes.
           !
 
 
@@ -903,7 +903,7 @@ MODULE input_parameters
 
         REAL(DP) :: efield_cart(3)
           ! electric field vector in cartesian system of reference
-        
+
        CHARACTER(len=80) :: efield_phase='none'
           ! for Berry's phase electric field selection of string phases
 
@@ -982,12 +982,12 @@ MODULE input_parameters
           ! set how ions should be moved
         CHARACTER(len=80) :: ion_dynamics_allowed(9)
         DATA ion_dynamics_allowed / 'none', 'sd', 'cg', 'langevin', &
-                                    'damp', 'verlet', 'bfgs', 'beeman',& 
+                                    'damp', 'verlet', 'bfgs', 'beeman',&
                                     'langevin-smc' /
 
         REAL(DP) :: ion_radius(nsx) = 0.5_DP
           ! pseudo-atomic radius of the i-th atomic species (CP only)
-          ! for Ewald summation: typical values range between 0.5 and 2.0 
+          ! for Ewald summation: typical values range between 0.5 and 2.0
        INTEGER :: iesr = 1
           ! perform Ewald summation on iesr*iesr*iesr cells - CP only
 
@@ -1126,12 +1126,15 @@ MODULE input_parameters
         REAL(DP)  :: w_1 = 0.5E-1_DP
         REAL(DP)  :: w_2 = 0.5_DP
 
+        LOGICAL :: sr1_bfgs = .true.
+        LOGICAL :: init_schlegel = .true.
+
         LOGICAL :: l_mplathe=.false. !if true apply Muller Plathe strategy
         INTEGER :: n_muller=0!number of intermediate sub-cells
         INTEGER :: np_muller=1!period for velocity exchange
         LOGICAL :: l_exit_muller=.false.!if true do muller exchange after last MD step
 
-        
+
         !
         NAMELIST / ions / ion_dynamics, iesr, ion_radius, ion_damping,         &
                           ion_positions, ion_velocities, ion_temperature,      &
@@ -1140,8 +1143,8 @@ MODULE input_parameters
                           refold_pos, upscale, delta_t, pot_extrapolation,     &
                           wfc_extrapolation, nraise, remove_rigid_rot,         &
                           trust_radius_max, trust_radius_min,                  &
-                          trust_radius_ini, w_1, w_2, bfgs_ndim,l_mplathe,     &
-                          n_muller,np_muller,l_exit_muller
+                          trust_radius_ini, w_1, w_2, bfgs_ndim, sr1_bfgs,     &
+                          init_schlegel, l_mplathe, n_muller,np_muller,l_exit_muller
 
 
 !=----------------------------------------------------------------------------=!
@@ -1313,7 +1316,7 @@ MODULE input_parameters
                                efx1, efy1, efz1, wfsd, wfdt,exx_neigh,exx_poisson_eps,&
                                exx_dis_cutoff,exx_ps_rcut_self, exx_me_rcut_self,   &
                                exx_ps_rcut_pair, exx_me_rcut_pair, vnbsp,&
-                               maxwfdt, wf_q, wf_friction, nit, nsd, nsteps,  & 
+                               maxwfdt, wf_q, wf_friction, nit, nsd, nsteps,  &
                                tolw, adapt, calwf, nwf, wffort, writev
 !===============================================================================
 !  END manual

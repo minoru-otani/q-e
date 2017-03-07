@@ -12,21 +12,21 @@ MODULE bfgs_module
    ! ... Ionic relaxation through the Newton-Raphson optimization scheme
    ! ... based on the Broyden-Fletcher-Goldfarb-Shanno algorithm for the
    ! ... estimate of the inverse Hessian matrix.
-   ! ... The ionic relaxation is performed converting cartesian (and cell) 
+   ! ... The ionic relaxation is performed converting cartesian (and cell)
    ! ... positions into internal coordinates.
-   ! ... The algorithm uses a "trust radius" line search based on Wolfe 
+   ! ... The algorithm uses a "trust radius" line search based on Wolfe
    ! ... conditions. Steps are rejected until the first Wolfe condition
    ! ... (sufficient energy decrease) is satisfied. Updated step length
-   ! ... is estimated from quadratic interpolation. 
-   ! ... When the step is accepted inverse hessian is updated according to 
+   ! ... is estimated from quadratic interpolation.
+   ! ... When the step is accepted inverse hessian is updated according to
    ! ... BFGS scheme and a new search direction is obtained from NR or GDIIS
-   ! ... method. The corresponding step length is limited by trust_radius_max 
-   ! ... and can't be larger than the previous step multiplied by a certain 
+   ! ... method. The corresponding step length is limited by trust_radius_max
+   ! ... and can't be larger than the previous step multiplied by a certain
    ! ... factor determined by Wolfe and other convergence conditions.
    !
-   ! ... Originally written ( 5/12/2003 ) and maintained ( 2003-2007 ) by 
+   ! ... Originally written ( 5/12/2003 ) and maintained ( 2003-2007 ) by
    ! ... Carlo Sbraccia
-   ! ... Modified for variable-cell-shape relaxation ( 2007-2008 ) by 
+   ! ... Modified for variable-cell-shape relaxation ( 2007-2008 ) by
    ! ...   Javier Antonio Montoya, Lorenzo Paulatto and Stefano de Gironcoli
    ! ... Re-analyzed by Stefano de Gironcoli ( 2010 )
    !
@@ -56,13 +56,14 @@ MODULE bfgs_module
    !
    ! ... public methods
    !
-   PUBLIC :: bfgs, terminate_bfgs, bfgs_get_n_iter 
+   PUBLIC :: bfgs, terminate_bfgs, bfgs_get_n_iter
    !
    ! ... public variables
    !
    PUBLIC :: bfgs_ndim,        &
              trust_radius_ini, trust_radius_min, trust_radius_max, &
-             w_1,              w_2
+             w_1,              w_2, &
+             sr1_bfgs,         init_schlegel
    !
    ! ... global module variables
    !
@@ -118,6 +119,10 @@ MODULE bfgs_module
    REAL(DP)  ::          &! parameters for Wolfe conditions
       w_1,               &! 1st Wolfe condition: sufficient energy decrease
       w_2                 ! 2nd Wolfe condition: sufficient gradient decrease
+
+   LOGICAL :: &
+      sr1_bfgs,          &! if .TRUE., SR1-BFGS formula of hessian is used
+      init_schlegel       ! if .TRUE., Schlegel's initial guess hessian is used
    !
 CONTAINS
    !
@@ -197,7 +202,7 @@ CONTAINS
       !
       call invmat(3, h, hinv, omega)
       ! volume is defined to be positive even for left-handed vector triplet
-      omega = abs(omega) 
+      omega = abs(omega)
       !
       hinv_block = 0.d0
       FORALL ( k=0:nat-1, i=1:3, j=1:3 ) hinv_block(i+3*k,j+3*k) = hinv(i,j)
@@ -235,7 +240,7 @@ CONTAINS
       IF( lmovecell) THEN
           cell_error = MAXVAL( ABS( MATMUL ( TRANSPOSE ( RESHAPE( grad(n-8:n), (/ 3, 3 /) ) ),&
                                              TRANSPOSE(h) ) ) ) / omega
-          conv_bfgs = conv_bfgs .AND. ( cell_error < cell_thr ) 
+          conv_bfgs = conv_bfgs .AND. ( cell_error < cell_thr )
 #undef DEBUG
 #ifdef DEBUG
            write (*,'(3f15.10)') TRANSPOSE ( RESHAPE( grad(n-8:n), (/ 3, 3 /) ) )
@@ -314,13 +319,13 @@ CONTAINS
                    FMT = '(/,5X,"trust_radius < trust_radius_min")' )
             WRITE( UNIT = stdout, FMT = '(/,5X,"resetting bfgs history",/)' )
             !
-            ! ... if tr_min_hit=1 the history has already been reset at the 
+            ! ... if tr_min_hit=1 the history has already been reset at the
             ! ... previous step : something is going wrong
             !
             IF ( tr_min_hit == 1 ) THEN
                CALL infomsg( 'bfgs', &
                             'history already reset at previous step: stopping' )
-               tr_min_hit = 2 
+               tr_min_hit = 2
             ELSE
                tr_min_hit = 1
             END IF
@@ -550,8 +555,8 @@ CONTAINS
    !------------------------------------------------------------------------
    SUBROUTINE reset_bfgs( n )
       !------------------------------------------------------------------------
-      ! ... inv_hess in re-initialized to the initial guess 
-      ! ... defined as the inverse metric 
+      ! ... inv_hess in re-initialized to the initial guess
+      ! ... defined as the inverse metric
       !
       INTEGER, INTENT(IN) :: n
       !
@@ -604,7 +609,7 @@ CONTAINS
          !
          CLOSE( UNIT = iunbfgs )
          !
-         step_old = ( pos(:) - pos_p(:) ) 
+         step_old = ( pos(:) - pos_p(:) )
          trust_radius_old = scnorm( step_old )
          step_old = step_old / trust_radius_old
          !
@@ -814,8 +819,8 @@ CONTAINS
       !
       ! The instruction below replaces the original instruction:
       !    ltest = ltest .AND. ( nr_step_length_old > trust_radius_old )
-      ! which gives a random result if trust_radius was set equal to 
-      ! nr_step_length at previous step. I am not sure what the best 
+      ! which gives a random result if trust_radius was set equal to
+      ! nr_step_length at previous step. I am not sure what the best
       ! action should be in that case, though (PG)
       !
       ltest = ltest .AND. ( nr_step_length_old > trust_radius_old + eps8 )
@@ -833,13 +838,13 @@ CONTAINS
          !
          ! ... the history is reset
          !
-         ! ... if tr_min_hit the history has already been reset at the 
+         ! ... if tr_min_hit the history has already been reset at the
          ! ... previous step : something is going wrong
          !
          IF ( tr_min_hit == 1 ) THEN
             CALL infomsg( 'bfgs', &
                           'history already reset at previous step: stopping' )
-            tr_min_hit = 2 
+            tr_min_hit = 2
          ELSE
             tr_min_hit = 1
          END IF
@@ -863,7 +868,7 @@ CONTAINS
       !
    END SUBROUTINE compute_trust_radius
    !
-   !----------------------------------------------------------------------- 
+   !-----------------------------------------------------------------------
    REAL(DP) FUNCTION scnorm1( vect )
       !-----------------------------------------------------------------------
       IMPLICIT NONE
@@ -873,7 +878,7 @@ CONTAINS
       !
    END FUNCTION scnorm1
    !
-   !----------------------------------------------------------------------- 
+   !-----------------------------------------------------------------------
    REAL(DP) FUNCTION scnorm( vect )
       !-----------------------------------------------------------------------
       IMPLICIT NONE
@@ -942,16 +947,16 @@ CONTAINS
    END SUBROUTINE terminate_bfgs
    !
    FUNCTION bfgs_get_n_iter (what)  RESULT(n_iter)
-   !  
+   !
    IMPLICIT NONE
    INTEGER                         :: n_iter
    CHARACTER(10),INTENT(IN)        :: what
-   SELECT CASE (TRIM(what)) 
-      CASE ('bfgs_iter') 
+   SELECT CASE (TRIM(what))
+      CASE ('bfgs_iter')
            n_iter = bfgs_iter
-      CASE ( 'scf_iter') 
+      CASE ( 'scf_iter')
            n_iter = scf_iter
-      CASE default 
+      CASE default
            n_iter = -1
    END SELECT
    END FUNCTION bfgs_get_n_iter

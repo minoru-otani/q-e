@@ -15,7 +15,7 @@ MODULE read_xml_fields_module
   !
   USE io_global, ONLY : xmlinputunit => qestdin
   USE kinds,     ONLY : DP
-  USE input_parameters 
+  USE input_parameters
   !
   !
   IMPLICIT NONE
@@ -42,7 +42,7 @@ CONTAINS
   !----------------------------------------------------------!
   SUBROUTINE read_xml_fields ()
     !
-    !  
+    !
     USE iotk_module, ONLY : iotk_scan_begin, iotk_scan_end, iotk_scan_attr, iotk_attlenx
     USE iotk_unit_interf, ONLY : iotk_rewind
     !
@@ -180,85 +180,85 @@ CONTAINS
     SELECT CASE (name(1:len_trim(name)))
        !
        !
-    CASE ( 'abivol' ) 
+    CASE ( 'abivol' )
        CALL iotk_scan_dat_inside( xmlinputunit, abivol, ierr = ierr )
        !
-    CASE ( 'adapt' ) 
+    CASE ( 'adapt' )
        CALL iotk_scan_dat_inside( xmlinputunit, adapt, ierr = ierr )
        !
-    CASE ( 'ampre' ) 
+    CASE ( 'ampre' )
        CALL iotk_scan_dat_inside( xmlinputunit, ampre, ierr = ierr )
        !
-    CASE ( 'assume_isolated' ) 
+    CASE ( 'assume_isolated' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        assume_isolated = clean_str(tmpstr)
        !
-    CASE ( 'bfgs_ndim' ) 
+    CASE ( 'bfgs_ndim' )
        CALL iotk_scan_dat_inside( xmlinputunit, bfgs_ndim, ierr = ierr )
        !
-    CASE ( 'calwf' ) 
+    CASE ( 'calwf' )
        CALL iotk_scan_dat_inside( xmlinputunit, calwf, ierr = ierr )
        !
-    CASE ( 'cell_damping' ) 
+    CASE ( 'cell_damping' )
        CALL iotk_scan_dat_inside( xmlinputunit, cell_damping, ierr = ierr )
        !
-    CASE ( 'cell_dofree' ) 
+    CASE ( 'cell_dofree' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        cell_dofree = clean_str(tmpstr)
        !
-    CASE ( 'cell_dynamics' ) 
+    CASE ( 'cell_dynamics' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        cell_dynamics = clean_str(tmpstr)
        !
-    CASE ( 'cell_factor' ) 
+    CASE ( 'cell_factor' )
        CALL iotk_scan_dat_inside( xmlinputunit, cell_factor, ierr = ierr )
        !
-    CASE ( 'cell_parameters' ) 
+    CASE ( 'cell_parameters' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        cell_parameters = clean_str(tmpstr)
        !
-    CASE ( 'cell_temperature' ) 
+    CASE ( 'cell_temperature' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        cell_temperature = clean_str(tmpstr)
        !
-    CASE ( 'cell_velocities' ) 
+    CASE ( 'cell_velocities' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        cell_velocities = clean_str(tmpstr)
        !
-    CASE ( 'constrained_magnetization' ) 
+    CASE ( 'constrained_magnetization' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        constrained_magnetization = clean_str(tmpstr)
        !
-    CASE ( 'conv_thr' ) 
+    CASE ( 'conv_thr' )
        CALL iotk_scan_dat_inside( xmlinputunit, conv_thr, ierr = ierr )
        !
-    CASE ( 'correlation' ) 
+    CASE ( 'correlation' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        correlation = clean_str(tmpstr)
        !
-    CASE ( 'correlation_grad_corr' ) 
+    CASE ( 'correlation_grad_corr' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        correlation_grad_corr = clean_str(tmpstr)
        !
-    CASE ( 'degauss' ) 
+    CASE ( 'degauss' )
        CALL iotk_scan_dat_inside( xmlinputunit, degauss, ierr = ierr )
        !
-    CASE ( 'delta_t' ) 
+    CASE ( 'delta_t' )
        CALL iotk_scan_dat_inside( xmlinputunit, delta_t, ierr = ierr )
        !
-    CASE ( 'diago_cg_maxiter' ) 
+    CASE ( 'diago_cg_maxiter' )
        CALL iotk_scan_dat_inside( xmlinputunit, diago_cg_maxiter, ierr = ierr )
        !
-    CASE ( 'diago_david_ndim' ) 
+    CASE ( 'diago_david_ndim' )
        CALL iotk_scan_dat_inside( xmlinputunit, diago_david_ndim, ierr = ierr )
        !
-    CASE ( 'diago_full_acc' ) 
+    CASE ( 'diago_full_acc' )
        CALL iotk_scan_dat_inside( xmlinputunit, diago_full_acc, ierr = ierr )
        !
-    CASE ( 'diago_thr_init' ) 
+    CASE ( 'diago_thr_init' )
        CALL iotk_scan_dat_inside( xmlinputunit, diago_thr_init, ierr = ierr )
        !
-    CASE ( 'diagonalization' ) 
+    CASE ( 'diagonalization' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        diagonalization = clean_str(tmpstr)
        !
@@ -269,28 +269,28 @@ CONTAINS
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        disk_io = clean_str(tmpstr)
        !
-    CASE ( 'dthr' ) 
+    CASE ( 'dthr' )
        CALL iotk_scan_dat_inside( xmlinputunit, dthr, ierr = ierr )
        !
     CASE ( 'dt' )
        CALL iotk_scan_dat_inside( xmlinputunit, dt, ierr = ierr )
        !
-    CASE ( 'ecfixed' ) 
+    CASE ( 'ecfixed' )
        CALL iotk_scan_dat_inside( xmlinputunit, ecfixed, ierr = ierr )
        !
-    CASE ( 'ecutrho' ) 
+    CASE ( 'ecutrho' )
        CALL iotk_scan_dat_inside( xmlinputunit, ecutrho, ierr = ierr )
        !
-    CASE ( 'ecutwfc' ) 
+    CASE ( 'ecutwfc' )
        CALL iotk_scan_dat_inside( xmlinputunit, ecutwfc, ierr = ierr )
        !
-    CASE ( 'edir' ) 
+    CASE ( 'edir' )
        CALL iotk_scan_dat_inside( xmlinputunit, edir, ierr = ierr )
        !
-    CASE ( 'efield' ) 
+    CASE ( 'efield' )
        CALL iotk_scan_dat_inside( xmlinputunit, efield, ierr = ierr )
        !
-    CASE ( 'efield_cart' ) 
+    CASE ( 'efield_cart' )
        CALL iotk_scan_dat_inside( xmlinputunit, efield_cart, ierr = ierr )
        !
     CASE ( 'efield_phase' )
@@ -314,69 +314,69 @@ CONTAINS
     CASE ( 'efz1' )
        CALL iotk_scan_dat_inside( xmlinputunit, efz1, ierr = ierr )
        !
-    CASE ( 'electron_damping' ) 
+    CASE ( 'electron_damping' )
        CALL iotk_scan_dat_inside( xmlinputunit, electron_damping, ierr = ierr )
        !
-    CASE ( 'electron_dynamics' ) 
+    CASE ( 'electron_dynamics' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        electron_dynamics = clean_str(tmpstr)
        !
-    CASE ( 'electron_temperature' ) 
+    CASE ( 'electron_temperature' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        electron_temperature = clean_str(tmpstr)
        !
-    CASE ( 'electron_velocities' ) 
+    CASE ( 'electron_velocities' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        electron_velocities = clean_str(tmpstr)
        !
-    CASE ( 'eamp' ) 
+    CASE ( 'eamp' )
        CALL iotk_scan_dat_inside( xmlinputunit, eamp, ierr = ierr )
        !
-    CASE ( 'ekin_conv_thr' ) 
+    CASE ( 'ekin_conv_thr' )
        CALL iotk_scan_dat_inside( xmlinputunit, ekin_conv_thr, ierr = ierr )
        !
-    CASE ( 'ekincw' ) 
+    CASE ( 'ekincw' )
        CALL iotk_scan_dat_inside( xmlinputunit, ekincw, ierr = ierr )
        !
-    CASE ( 'electron_maxstep' ) 
+    CASE ( 'electron_maxstep' )
        CALL iotk_scan_dat_inside( xmlinputunit, electron_maxstep, ierr = ierr )
        !
-    CASE ( 'scf_must_converge' ) 
+    CASE ( 'scf_must_converge' )
        CALL iotk_scan_dat_inside( xmlinputunit, scf_must_converge, ierr = ierr )
        !
-    CASE ( 'emass' ) 
+    CASE ( 'emass' )
        CALL iotk_scan_dat_inside( xmlinputunit, emass, ierr = ierr )
        !
-    CASE ( 'emass_cutoff' ) 
+    CASE ( 'emass_cutoff' )
        CALL iotk_scan_dat_inside( xmlinputunit, emass_cutoff, ierr = ierr )
        !
-    CASE ( 'emaxpos' ) 
+    CASE ( 'emaxpos' )
        CALL iotk_scan_dat_inside( xmlinputunit, emaxpos, ierr = ierr )
        !
-    CASE ( 'eopreg' ) 
+    CASE ( 'eopreg' )
        CALL iotk_scan_dat_inside( xmlinputunit, eopreg, ierr = ierr )
        !
-    CASE ( 'epol' ) 
+    CASE ( 'epol' )
        CALL iotk_scan_dat_inside( xmlinputunit, epol, ierr = ierr )
        !
     CASE ( 'etot_conv_thr' )
        CALL iotk_scan_dat_inside( xmlinputunit, etot_conv_thr, ierr = ierr )
        !
-    CASE ( 'exchange' ) 
+    CASE ( 'exchange' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        exchange = clean_str(tmpstr)
        !
-    CASE ( 'exchange_grad_corr' ) 
+    CASE ( 'exchange_grad_corr' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        exchange_grad_corr = clean_str(tmpstr)
        !
-    CASE ( 'fixed_magnetization' ) 
+    CASE ( 'fixed_magnetization' )
        CALL iotk_scan_dat_inside( xmlinputunit, fixed_magnetization, ierr = ierr )
        !
-    CASE ( 'fnosee' ) 
+    CASE ( 'fnosee' )
        CALL iotk_scan_dat_inside( xmlinputunit, fnosee, ierr = ierr )
        !
-    CASE ( 'fnoseh' ) 
+    CASE ( 'fnoseh' )
        CALL iotk_scan_dat_inside( xmlinputunit, fnoseh, ierr = ierr )
        !
     CASE ( 'fnosep' )
@@ -385,7 +385,7 @@ CONTAINS
     CASE ( 'forc_conv_thr' )
        CALL iotk_scan_dat_inside( xmlinputunit, forc_conv_thr, ierr = ierr )
        !
-    CASE ( 'force_symmorphic' ) 
+    CASE ( 'force_symmorphic' )
        CALL iotk_scan_dat_inside( xmlinputunit, force_symmorphic, ierr = ierr )
        !
     CASE ( 'gdir' )
@@ -394,11 +394,14 @@ CONTAINS
     CASE ( 'grease' )
        CALL iotk_scan_dat_inside( xmlinputunit, grease, ierr = ierr )
        !
-    CASE ( 'greash' ) 
+    CASE ( 'greash' )
        CALL iotk_scan_dat_inside( xmlinputunit, greash, ierr = ierr )
        !
     CASE ( 'greasp' )
        CALL iotk_scan_dat_inside( xmlinputunit, greasp, ierr = ierr )
+       !
+    CASE ( 'init_schlegel' )
+       CALL iotk_scan_dat_inside( xmlinputunit, init_schlegel, ierr = ierr )
        !
     CASE ( 'iprint' )
        CALL iotk_scan_dat_inside( xmlinputunit, iprint, ierr = ierr )
@@ -406,18 +409,18 @@ CONTAINS
     CASE ( 'ion_damping' )
        CALL iotk_scan_dat_inside( xmlinputunit, ion_damping, ierr = ierr )
        !
-    CASE ( 'ion_dynamics' ) 
+    CASE ( 'ion_dynamics' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        ion_dynamics = clean_str(tmpstr)
        !
     CASE ( 'ion_nstepe' )
        CALL iotk_scan_dat_inside( xmlinputunit, ion_nstepe, ierr = ierr )
        !
-    CASE ( 'ion_positions' ) 
+    CASE ( 'ion_positions' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        ion_positions = clean_str(tmpstr)
        !
-    CASE ( 'ion_temperature' ) 
+    CASE ( 'ion_temperature' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        ion_temperature = clean_str(tmpstr)
        !
@@ -425,22 +428,22 @@ CONTAINS
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        ion_velocities = clean_str(tmpstr)
        !
-    CASE ( 'isave' ) 
+    CASE ( 'isave' )
        CALL iotk_scan_dat_inside( xmlinputunit, isave, ierr = ierr )
        !
     CASE ( 'la2F' )
        CALL iotk_scan_dat_inside( xmlinputunit, la2F, ierr = ierr )
        !
-    CASE ( 'lambda' ) 
+    CASE ( 'lambda' )
        CALL iotk_scan_dat_inside( xmlinputunit, lambda, ierr = ierr )
        !
-    CASE ( 'lambda_cold' ) 
+    CASE ( 'lambda_cold' )
        CALL iotk_scan_dat_inside( xmlinputunit, lambda_cold, ierr = ierr )
        !
     CASE ( 'lberry' )
        CALL iotk_scan_dat_inside( xmlinputunit, lberry, ierr = ierr )
        !
-    CASE ( 'lda_plus_u' ) 
+    CASE ( 'lda_plus_u' )
        CALL iotk_scan_dat_inside( xmlinputunit, lda_plus_u, ierr = ierr )
        !
     CASE ( 'lda_plus_u_kind' )
@@ -455,16 +458,16 @@ CONTAINS
     CASE ( 'lkpoint_dir' )
        CALL iotk_scan_dat_inside( xmlinputunit, lkpoint_dir, ierr = ierr )
        !
-    CASE ( 'london' ) 
+    CASE ( 'london' )
        CALL iotk_scan_dat_inside( xmlinputunit, london, ierr = ierr )
        !
-    CASE ( 'london_rcut' ) 
+    CASE ( 'london_rcut' )
        CALL iotk_scan_dat_inside( xmlinputunit, london_rcut, ierr = ierr )
        !
-    CASE ( 'london_s6' ) 
+    CASE ( 'london_s6' )
        CALL iotk_scan_dat_inside( xmlinputunit, london_s6, ierr = ierr )
        !
-    CASE ( 'lspinorb' ) 
+    CASE ( 'lspinorb' )
        CALL iotk_scan_dat_inside( xmlinputunit, lspinorb, ierr = ierr )
        !
     CASE ( 'lforcet' )
@@ -473,23 +476,23 @@ CONTAINS
     CASE ( 'max_seconds' )
        CALL iotk_scan_dat_inside( xmlinputunit, max_seconds, ierr = ierr )
        !
-    CASE ( 'maxiter' ) 
+    CASE ( 'maxiter' )
        CALL iotk_scan_dat_inside( xmlinputunit, maxiter, ierr = ierr )
        !
-    CASE ( 'maxwfdt' ) 
+    CASE ( 'maxwfdt' )
        CALL iotk_scan_dat_inside( xmlinputunit, maxwfdt, ierr = ierr )
        !
-    CASE ( 'mixing_beta' ) 
+    CASE ( 'mixing_beta' )
        CALL iotk_scan_dat_inside( xmlinputunit, mixing_beta, ierr = ierr )
        !
-    CASE ( 'mixing_fixed_ns' ) 
+    CASE ( 'mixing_fixed_ns' )
        CALL iotk_scan_dat_inside( xmlinputunit, mixing_fixed_ns, ierr = ierr )
        !
-    CASE ( 'mixing_mode' ) 
+    CASE ( 'mixing_mode' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        mixing_mode = clean_str(tmpstr)
        !
-    CASE ( 'mixing_ndim' ) 
+    CASE ( 'mixing_ndim' )
        CALL iotk_scan_dat_inside( xmlinputunit, mixing_ndim, ierr = ierr )
        !
        ! TB - start
@@ -515,22 +518,22 @@ CONTAINS
        CALL iotk_scan_dat_inside( xmlinputunit, block_height, ierr = ierr )
        ! TB - end
        !
-    CASE ( 'n_inner' ) 
+    CASE ( 'n_inner' )
        CALL iotk_scan_dat_inside( xmlinputunit, n_inner, ierr = ierr )
        !
     CASE ( 'nberrycyc' )
        CALL iotk_scan_dat_inside( xmlinputunit, nberrycyc, ierr = ierr )
        !
-    CASE ( 'nbnd' ) 
+    CASE ( 'nbnd' )
        CALL iotk_scan_dat_inside( xmlinputunit, nbnd, ierr = ierr )
        !
     CASE ( 'ndega' )
        CALL iotk_scan_dat_inside( xmlinputunit, ndega, ierr = ierr )
        !
-    CASE ( 'ndr' ) 
+    CASE ( 'ndr' )
        CALL iotk_scan_dat_inside( xmlinputunit, ndr, ierr = ierr )
        !
-    CASE ( 'ndw' ) 
+    CASE ( 'ndw' )
        CALL iotk_scan_dat_inside( xmlinputunit, ndw, ierr = ierr )
        !
     CASE ( 'nhpcl' )
@@ -539,86 +542,86 @@ CONTAINS
     CASE ( 'nhptyp' )
        CALL iotk_scan_dat_inside( xmlinputunit, nhptyp, ierr = ierr )
        !
-    CASE ( 'niter_cold_restart' ) 
+    CASE ( 'niter_cold_restart' )
        CALL iotk_scan_dat_inside( xmlinputunit, niter_cold_restart, ierr = ierr )
        !
-    CASE ( 'nit' ) 
+    CASE ( 'nit' )
        CALL iotk_scan_dat_inside( xmlinputunit, nit, ierr = ierr )
        !
-    CASE ( 'niter_cg_restart' ) 
+    CASE ( 'niter_cg_restart' )
        CALL iotk_scan_dat_inside( xmlinputunit, niter_cg_restart, ierr = ierr )
        !
-    CASE ( 'noinv' ) 
+    CASE ( 'noinv' )
        CALL iotk_scan_dat_inside( xmlinputunit, noinv, ierr = ierr )
        !
-    CASE ( 'noncolin' ) 
+    CASE ( 'noncolin' )
        CALL iotk_scan_dat_inside( xmlinputunit, noncolin, ierr = ierr )
        !
-    CASE ( 'nosym_evc' ) 
+    CASE ( 'nosym_evc' )
        CALL iotk_scan_dat_inside( xmlinputunit, nosym_evc, ierr = ierr )
        !
-    CASE ( 'nosym' ) 
+    CASE ( 'nosym' )
        CALL iotk_scan_dat_inside( xmlinputunit, nosym, ierr = ierr )
        !
     CASE ( 'nppstr' )
        CALL iotk_scan_dat_inside( xmlinputunit, nppstr, ierr = ierr )
        !
-    CASE ( 'nr1' ) 
+    CASE ( 'nr1' )
        CALL iotk_scan_dat_inside( xmlinputunit, nr1, ierr = ierr )
        !
-    CASE ( 'nr1b' ) 
+    CASE ( 'nr1b' )
        CALL iotk_scan_dat_inside( xmlinputunit, nr1b, ierr = ierr )
        !
-   CASE ( 'nr1s' ) 
+   CASE ( 'nr1s' )
        CALL iotk_scan_dat_inside( xmlinputunit, nr1s, ierr = ierr )
        !
-    CASE ( 'nr2' ) 
+    CASE ( 'nr2' )
        CALL iotk_scan_dat_inside( xmlinputunit, nr2, ierr = ierr )
        !
-    CASE ( 'nr2b' ) 
+    CASE ( 'nr2b' )
        CALL iotk_scan_dat_inside( xmlinputunit, nr2b, ierr = ierr )
        !
-    CASE ( 'nr2s' ) 
+    CASE ( 'nr2s' )
        CALL iotk_scan_dat_inside( xmlinputunit, nr2s, ierr = ierr )
        !
-    CASE ( 'nr3' ) 
+    CASE ( 'nr3' )
        CALL iotk_scan_dat_inside( xmlinputunit, nr3, ierr = ierr )
        !
-    CASE ( 'nr3b' ) 
+    CASE ( 'nr3b' )
        CALL iotk_scan_dat_inside( xmlinputunit, nr3b, ierr = ierr )
        !
-    CASE ( 'nr3s' ) 
+    CASE ( 'nr3s' )
        CALL iotk_scan_dat_inside( xmlinputunit, nr3s, ierr = ierr )
        !
-    CASE ( 'nraise' ) 
+    CASE ( 'nraise' )
        CALL iotk_scan_dat_inside( xmlinputunit, nraise, ierr = ierr )
        !
-    CASE ( 'nsd' ) 
+    CASE ( 'nsd' )
        CALL iotk_scan_dat_inside( xmlinputunit, nsd, ierr = ierr )
        !
-    CASE ( 'nspin' ) 
+    CASE ( 'nspin' )
        CALL iotk_scan_dat_inside( xmlinputunit, nspin, ierr = ierr )
        !
     CASE ( 'nstep' )
        CALL iotk_scan_dat_inside( xmlinputunit, nstep, ierr = ierr )
        !
-    CASE ( 'nsteps' ) 
+    CASE ( 'nsteps' )
        CALL iotk_scan_dat_inside( xmlinputunit, nsteps, ierr = ierr )
        !
-    CASE ( 'nwf' ) 
+    CASE ( 'nwf' )
        CALL iotk_scan_dat_inside( xmlinputunit, nwf, ierr = ierr )
        !
-    CASE ( 'occupations' ) 
+    CASE ( 'occupations' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        occupations = clean_str(tmpstr)
        !
-    CASE ( 'ortho_eps' ) 
+    CASE ( 'ortho_eps' )
        CALL iotk_scan_dat_inside( xmlinputunit, ortho_eps, ierr = ierr )
        !
-    CASE ( 'ortho_max' ) 
+    CASE ( 'ortho_max' )
        CALL iotk_scan_dat_inside( xmlinputunit, ortho_max, ierr = ierr )
        !
-    CASE ( 'orthogonalization' ) 
+    CASE ( 'orthogonalization' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        orthogonalization = clean_str(tmpstr)
        !
@@ -629,159 +632,162 @@ CONTAINS
     CASE ( 'P_ext' )
        CALL iotk_scan_dat_inside( xmlinputunit, P_ext, ierr = ierr )
        !
-    CASE ( 'P_fin' ) 
+    CASE ( 'P_fin' )
        CALL iotk_scan_dat_inside( xmlinputunit, P_fin, ierr = ierr )
        !
     CASE ( 'P_in' )
        CALL iotk_scan_dat_inside( xmlinputunit, P_in, ierr = ierr )
        !
-    CASE ( 'passop' ) 
+    CASE ( 'passop' )
        CALL iotk_scan_dat_inside( xmlinputunit, passop, ierr = ierr )
        !
-    CASE ( 'pot_extrapolation' ) 
+    CASE ( 'pot_extrapolation' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        pot_extrapolation = clean_str(tmpstr)
        !
-    CASE ( 'press' ) 
+    CASE ( 'press' )
        CALL iotk_scan_dat_inside( xmlinputunit, press, ierr = ierr )
        !
-    CASE ( 'press_conv_thr' ) 
+    CASE ( 'press_conv_thr' )
        CALL iotk_scan_dat_inside( xmlinputunit, press_conv_thr, ierr = ierr )
        !
     CASE ( 'pseudo_dir' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        pseudo_dir = clean_str(tmpstr)
        !
-    CASE ( 'pvar' ) 
+    CASE ( 'pvar' )
        CALL iotk_scan_dat_inside( xmlinputunit, pvar, ierr = ierr )
        !
-    CASE ( 'q2sigma' ) 
+    CASE ( 'q2sigma' )
        CALL iotk_scan_dat_inside( xmlinputunit, q2sigma, ierr = ierr )
        !
-    CASE ( 'qcutz' ) 
+    CASE ( 'qcutz' )
        CALL iotk_scan_dat_inside( xmlinputunit, qcutz, ierr = ierr )
        !
-    CASE ( 'refold_pos' ) 
+    CASE ( 'refold_pos' )
        CALL iotk_scan_dat_inside( xmlinputunit, refold_pos, ierr = ierr )
        !
-    CASE ( 'report' ) 
+    CASE ( 'report' )
        CALL iotk_scan_dat_inside( xmlinputunit, report, ierr = ierr )
        !
-    CASE ( 'remove_rigid_rot' ) 
+    CASE ( 'remove_rigid_rot' )
        CALL iotk_scan_dat_inside( xmlinputunit, remove_rigid_rot, ierr = ierr )
        !
     CASE ( 'restart_mode' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        restart_mode = clean_str(tmpstr)
        !
-    CASE ( 'rho_thr' ) 
+    CASE ( 'rho_thr' )
        CALL iotk_scan_dat_inside( xmlinputunit, rho_thr, ierr = ierr )
        !
-    CASE ( 'saverho' ) 
+    CASE ( 'saverho' )
        CALL iotk_scan_dat_inside( xmlinputunit, saverho, ierr = ierr )
        !
-    CASE ( 'smearing' ) 
+    CASE ( 'smearing' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        smearing = clean_str(tmpstr)
        !
-    CASE ( 'startingpot' ) 
+    CASE ( 'sr1_bfgs' )
+       CALL iotk_scan_dat_inside( xmlinputunit, sr1_bfgs, ierr = ierr )
+       !
+    CASE ( 'startingpot' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        startingpot = clean_str(tmpstr)
        !
-    CASE ( 'startingwfc' ) 
+    CASE ( 'startingwfc' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        startingwfc = clean_str(tmpstr)
        !
-    CASE ( 'Surf_t' ) 
+    CASE ( 'Surf_t' )
        CALL iotk_scan_dat_inside( xmlinputunit, Surf_t, ierr = ierr )
        !
     CASE ( 'sw_len' )
        CALL iotk_scan_dat_inside( xmlinputunit, sw_len, ierr = ierr )
        !
-    CASE ( 'tabps' ) 
+    CASE ( 'tabps' )
        CALL iotk_scan_dat_inside( xmlinputunit, tabps, ierr = ierr )
        !
-    CASE ( 'tcg' ) 
+    CASE ( 'tcg' )
        CALL iotk_scan_dat_inside( xmlinputunit, tcg, ierr = ierr )
        !
     CASE ( 'tefield' )
        CALL iotk_scan_dat_inside( xmlinputunit, tefield, ierr = ierr )
        !
-    CASE ( 'temph' ) 
+    CASE ( 'temph' )
        CALL iotk_scan_dat_inside( xmlinputunit, temph, ierr = ierr )
        !
-    CASE ( 'tempw' ) 
+    CASE ( 'tempw' )
        CALL iotk_scan_dat_inside( xmlinputunit, tempw, ierr = ierr )
        !
-    CASE ( 'tolp' ) 
+    CASE ( 'tolp' )
        CALL iotk_scan_dat_inside( xmlinputunit, tolp, ierr = ierr )
        !
-    CASE ( 'tot_charge' ) 
+    CASE ( 'tot_charge' )
        CALL iotk_scan_dat_inside( xmlinputunit, tot_charge, ierr = ierr )
        !
-    CASE ( 'tot_magnetization' ) 
+    CASE ( 'tot_magnetization' )
        CALL iotk_scan_dat_inside( xmlinputunit, tot_magnetization, ierr = ierr )
        !
-    CASE ( 'tolw' ) 
+    CASE ( 'tolw' )
        CALL iotk_scan_dat_inside( xmlinputunit, tolw, ierr = ierr )
        !
     CASE ( 'tprnfor' )
        CALL iotk_scan_dat_inside( xmlinputunit, tprnfor, ierr = ierr )
        !
-    CASE ( 'tqr' ) 
+    CASE ( 'tqr' )
        CALL iotk_scan_dat_inside( xmlinputunit, tqr, ierr = ierr )
        !
-    CASE ( 'tq_smoothing' ) 
+    CASE ( 'tq_smoothing' )
        CALL iotk_scan_dat_inside( xmlinputunit, tq_smoothing, ierr = ierr )
        !
-    CASE ( 'tbeta_smoothing' ) 
+    CASE ( 'tbeta_smoothing' )
        CALL iotk_scan_dat_inside( xmlinputunit, tbeta_smoothing, ierr = ierr )
        !
-    CASE ( 'trust_radius_ini' ) 
+    CASE ( 'trust_radius_ini' )
        CALL iotk_scan_dat_inside( xmlinputunit, trust_radius_ini, ierr = ierr )
        !
-    CASE ( 'trust_radius_max' ) 
+    CASE ( 'trust_radius_max' )
        CALL iotk_scan_dat_inside( xmlinputunit, trust_radius_max, ierr = ierr )
        !
-    CASE ( 'trust_radius_min' ) 
+    CASE ( 'trust_radius_min' )
        CALL iotk_scan_dat_inside( xmlinputunit, trust_radius_min, ierr = ierr )
        !
     CASE ( 'tstress' )
        CALL iotk_scan_dat_inside( xmlinputunit, tstress, ierr = ierr )
        !
-    CASE ( 'U_projection_type' ) 
+    CASE ( 'U_projection_type' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        U_projection_type = clean_str(tmpstr)
        !
-    CASE ( 'upscale' ) 
+    CASE ( 'upscale' )
        CALL iotk_scan_dat_inside( xmlinputunit, upscale, ierr = ierr )
        !
     CASE ( 'verbosity' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        verbosity = clean_str(tmpstr)
        !
-    CASE ( 'w_1' ) 
+    CASE ( 'w_1' )
        CALL iotk_scan_dat_inside( xmlinputunit, w_1, ierr = ierr )
        !
-    CASE ( 'w_2' ) 
+    CASE ( 'w_2' )
        CALL iotk_scan_dat_inside( xmlinputunit, w_2, ierr = ierr )
        !
     CASE ( 'wf_collect' )
        CALL iotk_scan_dat_inside( xmlinputunit, wf_collect, ierr = ierr )
        !
-    CASE ( 'wf_efield' ) 
+    CASE ( 'wf_efield' )
        CALL iotk_scan_dat_inside( xmlinputunit, wf_efield, ierr = ierr )
        !
-    CASE ( 'wf_friction' ) 
+    CASE ( 'wf_friction' )
        CALL iotk_scan_dat_inside( xmlinputunit, wf_friction, ierr = ierr )
        !
-    CASE ( 'wf_q' ) 
+    CASE ( 'wf_q' )
        CALL iotk_scan_dat_inside( xmlinputunit, wf_q, ierr = ierr )
        !
     CASE ( 'wf_switch' )
        CALL iotk_scan_dat_inside( xmlinputunit, wf_switch, ierr = ierr )
        !
-    CASE ( 'wfc_extrapolation' ) 
+    CASE ( 'wfc_extrapolation' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        wfc_extrapolation = clean_str(tmpstr)
        !
@@ -792,19 +798,19 @@ CONTAINS
     CASE ( 'wfdt' )
        CALL iotk_scan_dat_inside( xmlinputunit, wfdt, ierr = ierr )
        !
-    CASE ( 'wffort' ) 
+    CASE ( 'wffort' )
        CALL iotk_scan_dat_inside( xmlinputunit, wffort, ierr = ierr )
        !
     CASE ( 'wfsd' )
        CALL iotk_scan_dat_inside( xmlinputunit, wfsd, ierr = ierr )
        !
-    CASE ( 'wmass' ) 
+    CASE ( 'wmass' )
        CALL iotk_scan_dat_inside( xmlinputunit, wmass, ierr = ierr )
        !
-    CASE ( 'writev' ) 
+    CASE ( 'writev' )
        CALL iotk_scan_dat_inside( xmlinputunit, writev, ierr = ierr )
        !
-    CASE ( 'xc_specials' ) 
+    CASE ( 'xc_specials' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        xc_specials = clean_str(tmpstr)
        ! ... up to here
@@ -819,7 +825,7 @@ CONTAINS
     case ( 'input_dft' )
       CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
       input_dft = clean_str(tmpstr)
- 
+
     CASE default
        !
        CALL errore( 'read_parameter', 'no parameter with name '//trim( name ), 1 )

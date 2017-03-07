@@ -636,6 +636,8 @@ TYPE :: bfgs_type
    REAL(DP) :: trust_radius_init
    REAL(DP) :: w1
    REAL(DP) :: w2
+   LOGICAL  :: sr1_bfgs
+   LOGICAL  :: init_schlegel
    !
 END TYPE bfgs_type
 

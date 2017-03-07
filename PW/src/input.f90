@@ -21,7 +21,7 @@ SUBROUTINE iosys()
   !
   USE kinds,         ONLY : DP
   USE funct,         ONLY : dft_is_hybrid, dft_has_finite_size_correction, &
-                            set_finite_size_volume, get_inlc 
+                            set_finite_size_volume, get_inlc
   USE funct,         ONLY: set_exx_fraction, set_screening_parameter
   USE control_flags, ONLY: adapt_thr, tr2_init, tr2_multi
   USE constants,     ONLY : autoev, eV_to_kelvin, pi, rytoev, &
@@ -197,7 +197,9 @@ SUBROUTINE iosys()
                             trust_radius_min_ => trust_radius_min, &
                             trust_radius_ini_ => trust_radius_ini, &
                             w_1_              => w_1, &
-                            w_2_              => w_2
+                            w_2_              => w_2, &
+                            sr1_bfgs_         => sr1_bfgs, &
+                            init_schlegel_    => init_schlegel
   USE wannier_new, ONLY :   use_wannier_      => use_wannier, &
                             use_energy_int_   => use_energy_int, &
                             nwan_             => nwan, &
@@ -250,7 +252,7 @@ SUBROUTINE iosys()
                                xdm, xdm_a1, xdm_a2, lforcet,                  &
                                one_atom_occupations,                          &
                                esm_bc, esm_efield, esm_w, esm_nfit, esm_a,    &
-                               lfcpopt, lfcpdyn, fcp_mu, fcp_mass, fcp_tempw, & 
+                               lfcpopt, lfcpdyn, fcp_mu, fcp_mass, fcp_tempw, &
                                fcp_relax_step, fcp_relax_crit,                &
                                space_group, uniqueb, origin_choice,           &
                                rhombohedral, zmon, relaxz, block, block_1,    &
@@ -274,7 +276,8 @@ SUBROUTINE iosys()
                                refold_pos, remove_rigid_rot, upscale,          &
                                pot_extrapolation,  wfc_extrapolation,          &
                                w_1, w_2, trust_radius_max, trust_radius_min,   &
-                               trust_radius_ini, bfgs_ndim, rd_pos, sp_pos, &
+                               trust_radius_ini, bfgs_ndim, sr1_bfgs,          &
+                               init_schlegel, rd_pos, sp_pos,                  &
                                rd_for, rd_if_pos => if_pos, lsg
   !
   ! ... CELL namelist
@@ -305,17 +308,17 @@ SUBROUTINE iosys()
   USE wyckoff,               ONLY : nattot, sup_spacegroup
   USE qexsd_module,          ONLY : qexsd_input_obj
   USE qes_types_module,      ONLY: input_type
-  ! 
+  !
   IMPLICIT NONE
   !
-  INTERFACE  
+  INTERFACE
      SUBROUTINE   pw_init_qexsd_input(obj,obj_tagname)
      IMPORT                       :: input_type
      TYPE(input_type)             :: obj
      CHARACTER(LEN=*),INTENT(IN)  :: obj_tagname
      END SUBROUTINE
   END INTERFACE
-!!!!  
+!!!!
   CHARACTER(LEN=256), EXTERNAL :: trimcheck
   INTEGER, EXTERNAL :: read_config_from_file
   !
@@ -558,7 +561,7 @@ SUBROUTINE iosys()
      !
   CASE( 'smearing' )
      !
-     lgauss = ( degauss > 0.0_dp ) 
+     lgauss = ( degauss > 0.0_dp )
      IF ( .NOT. lgauss ) &
         CALL errore( ' iosys ', &
                    & ' smearing requires gaussian broadening', 1 )
@@ -686,7 +689,7 @@ SUBROUTINE iosys()
   CASE( 'none' )
      !
      ! ... starting_magnetization(nt) = sm_not_set means "not set"
-     ! ... if no constraints are imposed on the magnetization, 
+     ! ... if no constraints are imposed on the magnetization,
      ! ... starting_magnetization must be set for at least one atomic type
      !
      IF ( lscf .AND. lsda .AND. ( .NOT. tfixed_occ ) .AND. &
@@ -896,7 +899,7 @@ SUBROUTINE iosys()
      CALL infomsg( 'iosys', 'wrong startingpot: use default (1)' )
      IF ( lscf ) THEN
         startingpot = 'atomic'
-     ELSE 
+     ELSE
         startingpot = 'file'
      END IF
      !
@@ -918,7 +921,7 @@ SUBROUTINE iosys()
      startingwfc = 'atomic+random'
      !
   ENDIF
-  ! 
+  !
   IF (one_atom_occupations .and. startingwfc /= 'atomic' ) THEN
      CALL infomsg( 'iosys', 'one_atom_occupations requires startingwfc atomic' )
      startingwfc = 'atomic'
@@ -1092,7 +1095,7 @@ SUBROUTINE iosys()
   CASE( 'debug', 'high', 'medium' )
      iverbosity = 1
   CASE( 'low', 'default', 'minimal' )
-     iverbosity = 0 
+     iverbosity = 0
   CASE DEFAULT
      iverbosity = 0
   END SELECT
@@ -1235,6 +1238,8 @@ SUBROUTINE iosys()
   trust_radius_ini_ = trust_radius_ini
   w_1_              = w_1
   w_2_              = w_2
+  sr1_bfgs_         = sr1_bfgs
+  init_schlegel_    = init_schlegel
   !
   IF (trim(occupations) /= 'from_input') one_atom_occupations_=.false.
   !
@@ -1360,7 +1365,7 @@ SUBROUTINE iosys()
   esm_bc_ = esm_bc
   esm_efield_ = esm_efield
   esm_w_ = esm_w
-  esm_nfit_ = esm_nfit 
+  esm_nfit_ = esm_nfit
   esm_a_ = esm_a
   !
   IF ( esm_bc .EQ. 'bc4' ) THEN
@@ -1529,7 +1534,7 @@ SUBROUTINE iosys()
      ecutfock_ = 4.0_DP*ecutwfc
   ELSE
      IF(ecutfock < ecutwfc .OR. ecutfock > ecutrho) CALL errore('iosys', &
-          'ecutfock can not be < ecutwfc or > ecutrho!', 1) 
+          'ecutfock can not be < ecutwfc or > ecutrho!', 1)
      ecutfock_ = ecutfock
   END IF
   IF ( lstres .AND. dft_is_hybrid() .AND. npool > 1 )  CALL errore('iosys', &
@@ -1592,7 +1597,7 @@ SUBROUTINE iosys()
   ! ... End of reading input parameters
   !
   CALL pw_init_qexsd_input(qexsd_input_obj, obj_tagname="input")
-  CALL deallocate_input_parameters ()  
+  CALL deallocate_input_parameters ()
   !
   ! ... Initialize temporary directory(-ies)
   !
@@ -1711,7 +1716,7 @@ SUBROUTINE read_cards_pw ( psfile, tau_format )
      extfor(:,:) = extfortot(:,:)
      if_pos_(:,:) = if_postot(:,:)
      CALL clean_spacegroup()
-  ELSE 
+  ELSE
      DO ia = 1, nat
         !
         tau(:,ia) = rd_pos(:,ia)
@@ -1737,7 +1742,7 @@ SUBROUTINE read_cards_pw ( psfile, tau_format )
   !
   ! ... The constrain on fixed coordinates is implemented using the array
   ! ... if_pos whose value is 0 when the coordinate is to be kept fixed, 1
-  ! ... otherwise. 
+  ! ... otherwise.
   !
   fixatom = COUNT( if_pos_(1,:)==0 .AND. if_pos_(2,:)==0 .AND. if_pos_(3,:)==0 )
   !
@@ -1839,7 +1844,7 @@ SUBROUTINE check_tempdir ( tmp_dir, exst, pfs )
   !
   ios = f_mkdir_safe( TRIM(tmp_dir) )
   CALL mp_sum ( ios, intra_image_comm )
-  pfs = ( ios == -nproc_image ) ! actually this is true only if .not.exst 
+  pfs = ( ios == -nproc_image ) ! actually this is true only if .not.exst
   !
   RETURN
   !

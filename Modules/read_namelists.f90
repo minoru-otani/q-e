@@ -122,7 +122,7 @@ MODULE read_namelists_module
        lorbm = .FALSE.
        nberrycyc  = 1
        lkpoint_dir = .TRUE.
-       lecrpa   = .FALSE.   
+       lecrpa   = .FALSE.
        tqmmm = .FALSE.
        !
        saverho = .TRUE.
@@ -252,7 +252,7 @@ MODULE read_namelists_module
        one_atom_occupations=.FALSE.
        !
        spline_ps = .false.
-       ! 
+       !
        real_space = .false.
        !
        ! ... DFT-D, Tkatchenko-Scheffler, XDM
@@ -501,12 +501,14 @@ MODULE read_namelists_module
        trust_radius_ini = 0.5_DP   ! bohr
        w_1              = 0.01_DP
        w_2              = 0.50_DP
+       sr1_bfgs         =.TRUE.
+       init_schlegel    =.TRUE.
        !
        l_mplathe=.false.
        n_muller=0
        np_muller=1
        l_exit_muller=.false.
-       
+
 
        RETURN
        !
@@ -634,7 +636,7 @@ MODULE read_namelists_module
        wf_friction = 0.3_DP
 !=======================================================================
 !exx_wf related
-       exx_neigh        =  60 
+       exx_neigh        =  60
        vnbsp            =  0
        exx_poisson_eps  =  1.E-6_DP
        exx_dis_cutoff   =  8.0_DP
@@ -784,7 +786,7 @@ MODULE read_namelists_module
        CALL mp_bcast( nqx2,                   ionode_id, intra_image_comm )
        CALL mp_bcast( nqx3,                   ionode_id, intra_image_comm )
        CALL mp_bcast( exx_fraction,           ionode_id, intra_image_comm )
-       CALL mp_bcast( screening_parameter,    ionode_id, intra_image_comm ) 
+       CALL mp_bcast( screening_parameter,    ionode_id, intra_image_comm )
        !gau-pbe in
        CALL mp_bcast( gau_parameter,          ionode_id, intra_image_comm )
        !gau-pbe out
@@ -1059,9 +1061,11 @@ MODULE read_namelists_module
        CALL mp_bcast( trust_radius_ini, ionode_id, intra_image_comm )
        CALL mp_bcast( w_1,              ionode_id, intra_image_comm )
        CALL mp_bcast( w_2,              ionode_id, intra_image_comm )
+       CALL mp_bcast( sr1_bfgs,         ionode_id, intra_image_comm )
+       CALL mp_bcast( init_schlegel,    ionode_id, intra_image_comm )
        !
        CALL mp_bcast(l_mplathe,         ionode_id, intra_image_comm )
-       CALL mp_bcast(n_muller,          ionode_id, intra_image_comm ) 
+       CALL mp_bcast(n_muller,          ionode_id, intra_image_comm )
        CALL mp_bcast(np_muller,         ionode_id, intra_image_comm )
        CALL mp_bcast(l_exit_muller,     ionode_id, intra_image_comm )
 
@@ -1876,7 +1880,7 @@ MODULE read_namelists_module
                TRIM( calculation ) == 'cp-wf-nscf' .OR. &
                TRIM( calculation ) == 'vc-cp-wf'   .OR. &
                TRIM( calculation ) == 'cp-wf' ) READ( unit_loc, ions, iostat = ios )
-  
+
        END IF
        CALL check_namelist_read(ios, unit_loc, "ions")
        !
@@ -1890,7 +1894,7 @@ MODULE read_namelists_module
           IF( TRIM( calculation ) == 'vc-relax' .OR. &
               TRIM( calculation ) == 'vc-cp'    .OR. &
               TRIM( calculation ) == 'vc-md'    .OR. &
-              TRIM( calculation ) == 'vc-md'    .OR. & 
+              TRIM( calculation ) == 'vc-md'    .OR. &
               TRIM( calculation ) == 'vc-cp-wf') THEN
              READ( unit_loc, cell, iostat = ios )
           END IF
