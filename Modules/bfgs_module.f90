@@ -44,7 +44,7 @@ MODULE bfgs_module
    !
    USE kinds,     ONLY : DP
    USE io_files,  ONLY : iunbfgs, prefix
-   USE constants, ONLY : eps8, eps16
+   USE constants, ONLY : eps4, eps8, eps16
    USE cell_base, ONLY : iforceh
    !
    USE basic_algebra_routines
@@ -77,6 +77,7 @@ MODULE bfgs_module
       pos_p(:),          &! positions at the previous accepted iteration
       grad_p(:),         &! gradients at the previous accepted iteration
       inv_hess(:,:),     &! inverse hessian matrix (updated using BFGS formula)
+      fwd_hess(:,:),     &! forward hessian matrix (updated using SR1-BFGS formula)
       metric(:,:),       &
       h_block(:,:),      &
       hinv_block(:,:),   &
@@ -187,6 +188,7 @@ CONTAINS
       ALLOCATE( pos_old(  n, bfgs_ndim ) )
       !
       ALLOCATE( inv_hess( n, n ) )
+      ALLOCATE( fwd_hess( n, n ) )
       !
       ALLOCATE( pos_p(    n ) )
       ALLOCATE( grad_p(   n ) )
@@ -448,6 +450,7 @@ CONTAINS
       DEALLOCATE( pos_old )
       DEALLOCATE( grad_old )
       DEALLOCATE( inv_hess )
+      DEALLOCATE( fwd_hess )
       DEALLOCATE( step )
       DEALLOCATE( step_old )
       DEALLOCATE( pos_best )
@@ -560,7 +563,9 @@ CONTAINS
       !
       INTEGER, INTENT(IN) :: n
       !
-      call invmat(n, metric, inv_hess)
+      CALL invmat(n, metric, inv_hess)
+      !
+      fwd_hess = metric
       !
       gdiis_iter = 0
       !
@@ -582,6 +587,7 @@ CONTAINS
       !
       CHARACTER(LEN=256) :: bfgs_file
       LOGICAL            :: file_exists
+      LOGICAL            :: has_fwd_hess
       !
       !
       bfgs_file = TRIM( scratch ) // TRIM( prefix ) // '.bfgs'
@@ -604,14 +610,20 @@ CONTAINS
          READ( iunbfgs, * ) pos_old
          READ( iunbfgs, * ) grad_old
          READ( iunbfgs, * ) inv_hess
+         READ( iunbfgs, * ) fwd_hess
          READ( iunbfgs, * ) tr_min_hit
          READ( iunbfgs, * ) nr_step_length
+         READ( iunbfgs, * ) has_fwd_hess
          !
          CLOSE( UNIT = iunbfgs )
          !
          step_old = ( pos(:) - pos_p(:) )
          trust_radius_old = scnorm( step_old )
          step_old = step_old / trust_radius_old
+         !
+         IF ( (.NOT. has_fwd_hess) .AND. sr1_bfgs ) THEN
+            CALL invmat(n, inv_hess, fwd_hess)
+         END IF
          !
       ELSE
          !
@@ -620,7 +632,10 @@ CONTAINS
          WRITE( UNIT = stdout, FMT = '(/,5X,"BFGS Geometry Optimization")' )
          !
          ! initialize the inv_hess to the inverse of the metric
-         call invmat(n, metric, inv_hess)
+         CALL invmat(n, metric, inv_hess)
+         !
+         ! initialize the fwd_hess to the metric
+         fwd_hess = metric
          !
          pos_p      = 0.0_DP
          grad_p     = 0.0_DP
@@ -666,8 +681,10 @@ CONTAINS
       WRITE( iunbfgs, * ) pos_old
       WRITE( iunbfgs, * ) grad_old
       WRITE( iunbfgs, * ) inv_hess
+      WRITE( iunbfgs, * ) fwd_hess
       WRITE( iunbfgs, * ) tr_min_hit
       WRITE( iunbfgs, * ) nr_step_length
+      WRITE( iunbfgs, * ) sr1_bfgs
       !
       CLOSE( UNIT = iunbfgs )
       !
@@ -750,20 +767,184 @@ CONTAINS
         endif
       END IF
       !
-      Hy(:) = ( inv_hess .times. y(:) )
-      yH(:) = ( y(:) .times. inv_hess )
-      !
-      ! ... BFGS update
-      !
-      inv_hess = inv_hess + 1.0_DP / sdoty * &
-                 ( ( 1.0_DP + ( y .dot. Hy ) / sdoty ) * matrix( s, s ) - &
-                  ( matrix( s, yH ) +  matrix( Hy, s ) ) )
+      IF ( sr1_bfgs ) THEN
+         !
+         ! ... SR1-BFGS update
+         !     (O.Farkas, H.B.Schlegel, J. Chem. Phys., 1999, 111, 10806-10814)
+         CALL sr1bfgs_forward_hessian( s, y, n, stdout )
+         CALL sr1bfgs_inverse_hessian( n, stdout )
+         !
+      ELSE
+         !
+         ! ... BFGS update
+         !
+         Hy(:) = ( inv_hess .times. y(:) )
+         yH(:) = ( y(:) .times. inv_hess )
+         !
+         inv_hess = inv_hess + 1.0_DP / sdoty * &
+                    ( ( 1.0_DP + ( y .dot. Hy ) / sdoty ) * matrix( s, s ) - &
+                     ( matrix( s, yH ) +  matrix( Hy, s ) ) )
+      END IF
       !
       DEALLOCATE( y, s, Hy, yH )
       !
       RETURN
       !
    END SUBROUTINE update_inverse_hessian
+   !
+   !------------------------------------------------------------------------
+   SUBROUTINE sr1bfgs_forward_hessian( s, y, n, stdout )
+      !------------------------------------------------------------------------
+      !
+      IMPLICIT NONE
+      !
+      REAL(DP), INTENT(IN)  :: s(:)
+      REAL(DP), INTENT(IN)  :: y(:)
+      INTEGER,  INTENT(IN)  :: n
+      INTEGER,  INTENT(IN)  :: stdout
+      !
+      REAL(DP), ALLOCATABLE :: z(:)
+      REAL(DP), ALLOCATABLE :: Bs(:)
+      REAL(DP)              :: sdoty, sBs
+      REAL(DP)              :: sdots, zdotz, sdotz
+      REAL(DP)              :: phi1
+      REAL(DP)              :: phi2
+      REAL(DP), ALLOCATABLE :: B1(:,:) ! SR1's hessian
+      REAL(DP), ALLOCATABLE :: B2(:,:) ! BFGS's hessian
+      LOGICAL               :: lerr
+      !
+      lerr = .FALSE.
+      !
+      ALLOCATE( z( n ), Bs( n ) )
+      ALLOCATE( B1( n, n ), B2( n, n ) )
+      !
+      Bs(:) = ( fwd_hess .times. s(:) )
+      z (:) = y(:) - Bs(:)
+      !
+      sBs   = ( s(:) .dot. Bs(:) )
+      sdoty = ( s(:) .dot. y(:) )
+      sdots = ( s(:) .dot. s(:) )
+      zdotz = ( z(:) .dot. z(:) )
+      sdotz = ( s(:) .dot. z(:) )
+      !
+      ! ... coupling rates
+      !
+      IF ( ABS( sdots ) < eps16 .OR. ABS( zdotz ) < eps16 ) THEN
+         lerr = .TRUE.
+         GOTO 1100
+      END IF
+      !
+      phi1 = sdotz * sdotz / zdotz / sdots
+      phi1 = SQRT( MAX( phi1, 0.0_DP ) )
+      IF ( phi1 < eps4 ) THEN
+         phi1 = 0.0_DP
+      END IF
+      !
+      phi2 = 1.0_DP - phi1
+      !
+      ! ... SR1's hessian
+      !
+      B1 = 0.0_DP
+      !
+      IF ( phi1 > 0.0_DP ) THEN
+         !
+         IF ( ABS( sdotz ) < eps16 ) THEN
+            lerr = .TRUE.
+            GOTO 1100
+         END IF
+         !
+         B1 = ( 1.0_DP / sdotz ) * matrix( z, z )
+         !
+      END IF
+      !
+      ! ... BFGS's hessian
+      !
+      B2 = 0.0_DP
+      !
+      IF ( phi2 > 0.0_DP ) THEN
+         !
+         IF ( ABS( sdoty ) < eps16 .OR. ABS( sBs ) < eps16 ) THEN
+            lerr = .TRUE.
+            GOTO 1100
+         END IF
+         !
+         B2 = ( 1.0_DP / sdoty ) * matrix( y, y ) &
+            - ( 1.0_DP / sBs   ) * matrix( Bs, Bs )
+         !
+      END IF
+      !
+      ! ... update forward hessian
+      !
+      fwd_hess = fwd_hess + phi1 * B1 + phi2 * B2
+      !
+1100  CONTINUE
+      DEALLOCATE( z, Bs )
+      DEALLOCATE( B1, B2 )
+      !
+      IF ( lerr ) THEN
+         !
+         ! ... the history is reset
+         !
+         WRITE( stdout, '(/,5X,"WARNING: unexpected ", &
+                         &     "behaviour in sr1bfgs_forward_hessian")' )
+         WRITE( stdout, '(  5X,"         resetting bfgs history",/)' )
+         !
+         CALL reset_bfgs( n )
+         !
+      END IF
+      !
+   END SUBROUTINE sr1bfgs_forward_hessian
+   !
+   !------------------------------------------------------------------------
+   SUBROUTINE sr1bfgs_inverse_hessian( n, stdout )
+      !------------------------------------------------------------------------
+      !
+      IMPLICIT NONE
+      !
+      INTEGER,  INTENT(IN)  :: n
+      INTEGER,  INTENT(IN)  :: stdout
+      !
+      INTEGER               :: i
+      INTEGER               :: info
+      INTEGER               :: nwork
+      REAL(DP), ALLOCATABLE :: work(:)
+      REAL(DP), ALLOCATABLE :: evec1(:,:)
+      REAL(DP), ALLOCATABLE :: evec2(:,:)
+      REAL(DP), ALLOCATABLE :: eval(:)
+      !
+      ! fwd_hess -> inv_hess,
+      ! where negative or zero eigenvalues are removed.
+      !
+      nwork = 3 * n
+      !
+      ALLOCATE( work( nwork ) )
+      ALLOCATE( evec1( n, n ) )
+      ALLOCATE( evec2( n, n ) )
+      ALLOCATE( eval( n ) )
+      !
+      evec1 = fwd_hess
+      !
+      CALL DSYEV( 'V', 'U', n, evec1, n, eval, work, nwork, info )
+      CALL errore( 'sr1bfgs_inverse_hessian', 'error to diagonalize hessian', ABS( info ) )
+      !
+      DO i = 1, n
+         !
+         IF ( eval(i) > eps16 ) THEN
+            evec2(:, i) = evec1(:, i) / eval(i)
+         ELSE
+            evec2(:, i) = 0.0_DP
+         END IF
+         !
+      END DO
+      !
+      CALL DGEMM( 'N', 'T', n, n, n, 1.0_DP, evec2, n, evec1, n, 0.0_DP, inv_hess, n )
+      !
+      DEALLOCATE( work )
+      DEALLOCATE( evec1 )
+      DEALLOCATE( evec2 )
+      DEALLOCATE( eval )
+      !
+   END SUBROUTINE sr1bfgs_inverse_hessian
    !
    !------------------------------------------------------------------------
    SUBROUTINE check_wolfe_conditions( lwolfe, energy, grad )
