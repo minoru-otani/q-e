@@ -841,6 +841,11 @@ CONTAINS
       !
       phi2 = 1.0_DP - phi1
       !
+      WRITE( UNIT = stdout, &
+           & FMT = '(5X," weight of SR1 ",T30,"= ",F12.4)'   ) phi1
+      WRITE( UNIT = stdout, &
+           & FMT = '(5X," weight of BFGS",T30,"= ",F12.4,/)' ) phi2
+      !
       ! ... SR1's hessian
       !
       B1 = 0.0_DP
@@ -905,6 +910,7 @@ CONTAINS
       !
       INTEGER               :: i
       INTEGER               :: info
+      INTEGER               :: ineg
       INTEGER               :: nwork
       REAL(DP), ALLOCATABLE :: work(:)
       REAL(DP), ALLOCATABLE :: evec1(:,:)
@@ -926,15 +932,21 @@ CONTAINS
       CALL DSYEV( 'V', 'U', n, evec1, n, eval, work, nwork, info )
       CALL errore( 'sr1bfgs_inverse_hessian', 'error to diagonalize hessian', ABS( info ) )
       !
+      ineg = 0
+      !
       DO i = 1, n
          !
          IF ( eval(i) > eps16 ) THEN
             evec2(:, i) = evec1(:, i) / eval(i)
          ELSE
             evec2(:, i) = 0.0_DP
+            ineg = ineg + 1
          END IF
          !
       END DO
+      !
+      WRITE( UNIT = stdout, &
+           & FMT = '(5X,"negative eigenvalues",T30,"= ",I7,/)' ) ineg
       !
       CALL DGEMM( 'N', 'T', n, n, n, 1.0_DP, evec2, n, evec1, n, 0.0_DP, inv_hess, n )
       !
