@@ -684,9 +684,6 @@ CONTAINS
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        smearing = clean_str(tmpstr)
        !
-    CASE ( 'sr1_bfgs' )
-       CALL iotk_scan_dat_inside( xmlinputunit, sr1_bfgs, ierr = ierr )
-       !
     CASE ( 'startingpot' )
        CALL iotk_scan_dat_inside( xmlinputunit, tmpstr, ierr = ierr )
        startingpot = clean_str(tmpstr)
@@ -800,6 +797,9 @@ CONTAINS
        !
     CASE ( 'wfsd' )
        CALL iotk_scan_dat_inside( xmlinputunit, wfsd, ierr = ierr )
+       !
+    CASE ( 'with_sr1' )
+       CALL iotk_scan_dat_inside( xmlinputunit, with_sr1, ierr = ierr )
        !
     CASE ( 'wmass' )
        CALL iotk_scan_dat_inside( xmlinputunit, wmass, ierr = ierr )

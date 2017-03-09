@@ -501,7 +501,7 @@ MODULE read_namelists_module
        trust_radius_ini = 0.5_DP   ! bohr
        w_1              = 0.01_DP
        w_2              = 0.50_DP
-       sr1_bfgs         =.TRUE.
+       with_sr1         =.TRUE.
        !
        l_mplathe=.false.
        n_muller=0
@@ -1060,7 +1060,7 @@ MODULE read_namelists_module
        CALL mp_bcast( trust_radius_ini, ionode_id, intra_image_comm )
        CALL mp_bcast( w_1,              ionode_id, intra_image_comm )
        CALL mp_bcast( w_2,              ionode_id, intra_image_comm )
-       CALL mp_bcast( sr1_bfgs,         ionode_id, intra_image_comm )
+       CALL mp_bcast( with_sr1,         ionode_id, intra_image_comm )
        !
        CALL mp_bcast(l_mplathe,         ionode_id, intra_image_comm )
        CALL mp_bcast(n_muller,          ionode_id, intra_image_comm )

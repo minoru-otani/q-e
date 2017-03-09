@@ -3094,19 +3094,19 @@ SUBROUTINE qes_write_bfgs(iun, obj)
       CALL iotk_write_begin(iun, 'w2')
          WRITE(iun, '(E24.16)') obj%w2
       CALL iotk_write_end(iun, 'w2')
-      CALL iotk_write_begin(iun, 'sr1_bfgs',new_line=.FALSE.)
-         IF (obj%sr1_bfgs) THEN
+      CALL iotk_write_begin(iun, 'with_sr1',new_line=.FALSE.)
+         IF (obj%with_sr1) THEN
             WRITE(iun, '(A)',advance='no')  'true'
          ELSE
             WRITE(iun, '(A)',advance='no')  'false'
          ENDIF
-      CALL iotk_write_end(iun, 'sr1_bfgs',indentation=.FALSE.)
+      CALL iotk_write_end(iun, 'with_sr1',indentation=.FALSE.)
    CALL iotk_write_end(iun, TRIM(obj%tagname))
    !
 END SUBROUTINE qes_write_bfgs
 
 SUBROUTINE qes_init_bfgs(obj, tagname, ndim, trust_radius_min, trust_radius_max, &
-                              trust_radius_init, w1, w2, sr1_bfgs)
+                              trust_radius_init, w1, w2, with_sr1)
    IMPLICIT NONE
 
    TYPE(bfgs_type) :: obj
@@ -3118,7 +3118,7 @@ SUBROUTINE qes_init_bfgs(obj, tagname, ndim, trust_radius_min, trust_radius_max,
    REAL(DP) :: trust_radius_init
    REAL(DP) :: w1
    REAL(DP) :: w2
-   LOGICAL  :: sr1_bfgs
+   LOGICAL  :: with_sr1
 
    obj%tagname = TRIM(tagname)
    obj%ndim = ndim
@@ -3127,7 +3127,7 @@ SUBROUTINE qes_init_bfgs(obj, tagname, ndim, trust_radius_min, trust_radius_max,
    obj%trust_radius_init = trust_radius_init
    obj%w1 = w1
    obj%w2 = w2
-   obj%sr1_bfgs = sr1_bfgs
+   obj%with_sr1 = with_sr1
 
 END SUBROUTINE qes_init_bfgs
 

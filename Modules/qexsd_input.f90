@@ -352,7 +352,7 @@ MODULE qexsd_input
                                      refold_pos,pot_extrapolation,wfc_extrapolation,&
                                       ion_temperature,tempw,tolp,delta_t,nraise,dt,&
                                       bfgs_ndim,trust_radius_min,trust_radius_max,&
-                                      trust_radius_init,w_1,w_2,sr1_bfgs)
+                                      trust_radius_init,w_1,w_2,with_sr1)
    !--------------------------------------------------------------------------------------------------
    !
    IMPLICIT NONE
@@ -362,7 +362,7 @@ MODULE qexsd_input
                                               ion_temperature
    REAL(DP),INTENT(IN)                     :: upscale,tempw,tolp,delta_t,trust_radius_min,trust_radius_max,&
                                               trust_radius_init,w_1,w_2
-   LOGICAL,INTENT(IN)                      :: sr1_bfgs
+   LOGICAL,INTENT(IN)                      :: with_sr1
    INTEGER,INTENT(IN)                      :: nraise,bfgs_ndim
    REAL(DP),INTENT(IN)                     :: dt
    LOGICAL,INTENT(IN)                      :: remove_rigid_rot,refold_pos
@@ -379,7 +379,7 @@ MODULE qexsd_input
       md_ispresent=  .FALSE.
       CALL qes_init_bfgs(bfgs_obj,"bfgs",ndim=bfgs_ndim,trust_radius_min=trust_radius_min,&
                          trust_radius_max=trust_radius_max,trust_radius_init=trust_radius_init,&
-                         w1=w_1,w2=w_2,sr1_bfgs=sr1_bfgs)
+                         w1=w_1,w2=w_2,with_sr1=with_sr1)
    ELSE IF(TRIM(ion_dynamics)=="verlet" .OR. TRIM(ion_dynamics)=="langevin" .OR. &
            TRIM(ion_dynamics) == "langevin-smc" ) THEN
       bfgs_ispresent=.FALSE.

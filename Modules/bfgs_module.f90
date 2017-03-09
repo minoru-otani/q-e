@@ -63,7 +63,7 @@ MODULE bfgs_module
    PUBLIC :: bfgs_ndim,        &
              trust_radius_ini, trust_radius_min, trust_radius_max, &
              w_1,              w_2, &
-             sr1_bfgs
+             with_sr1
    !
    ! ... global module variables
    !
@@ -122,7 +122,7 @@ MODULE bfgs_module
       w_2                 ! 2nd Wolfe condition: sufficient gradient decrease
 
    LOGICAL :: &
-      sr1_bfgs,          &! if .TRUE., SR1-BFGS formula of hessian is used
+      with_sr1,          &! if .TRUE., SR1-BFGS formula of hessian is used
    !
 CONTAINS
    !
@@ -620,7 +620,7 @@ CONTAINS
          trust_radius_old = scnorm( step_old )
          step_old = step_old / trust_radius_old
          !
-         IF ( (.NOT. has_fwd_hess) .AND. sr1_bfgs ) THEN
+         IF ( (.NOT. has_fwd_hess) .AND. with_sr1 ) THEN
             CALL invmat(n, inv_hess, fwd_hess)
          END IF
          !
@@ -683,7 +683,7 @@ CONTAINS
       WRITE( iunbfgs, * ) fwd_hess
       WRITE( iunbfgs, * ) tr_min_hit
       WRITE( iunbfgs, * ) nr_step_length
-      WRITE( iunbfgs, * ) sr1_bfgs
+      WRITE( iunbfgs, * ) with_sr1
       !
       CLOSE( UNIT = iunbfgs )
       !
@@ -766,7 +766,7 @@ CONTAINS
         endif
       END IF
       !
-      IF ( sr1_bfgs ) THEN
+      IF ( with_sr1 ) THEN
          !
          ! ... SR1-BFGS update
          !     (O.Farkas, H.B.Schlegel, J. Chem. Phys., 1999, 111, 10806-10814)
