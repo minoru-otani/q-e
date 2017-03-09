@@ -6,6 +6,13 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
+! TODO
+! TODO When stress tensor is implemented, following subroutines must be modified:
+! TODO 1). rism_module#rism_check -> to check condition
+! TODO 2). solvation_stress_ion   -> to calculate short-range local potential
+! TODO 3). solvation_esm_stress   -> to calculate long-range local potential
+! TODO 4). lj_get_stress_x        -> to calculate Lennard-Jones potential
+! TODO
 !--------------------------------------------------------------------------
 MODULE rism_module
   !--------------------------------------------------------------------------
