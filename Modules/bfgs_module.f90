@@ -63,7 +63,7 @@ MODULE bfgs_module
    PUBLIC :: bfgs_ndim,        &
              trust_radius_ini, trust_radius_min, trust_radius_max, &
              w_1,              w_2, &
-             sr1_bfgs,         init_schlegel
+             sr1_bfgs
    !
    ! ... global module variables
    !
@@ -123,7 +123,6 @@ MODULE bfgs_module
 
    LOGICAL :: &
       sr1_bfgs,          &! if .TRUE., SR1-BFGS formula of hessian is used
-      init_schlegel       ! if .TRUE., Schlegel's initial guess hessian is used
    !
 CONTAINS
    !

@@ -198,8 +198,7 @@ SUBROUTINE iosys()
                             trust_radius_ini_ => trust_radius_ini, &
                             w_1_              => w_1, &
                             w_2_              => w_2, &
-                            sr1_bfgs_         => sr1_bfgs, &
-                            init_schlegel_    => init_schlegel
+                            sr1_bfgs_         => sr1_bfgs
   USE wannier_new, ONLY :   use_wannier_      => use_wannier, &
                             use_energy_int_   => use_energy_int, &
                             nwan_             => nwan, &
@@ -277,8 +276,7 @@ SUBROUTINE iosys()
                                pot_extrapolation,  wfc_extrapolation,          &
                                w_1, w_2, trust_radius_max, trust_radius_min,   &
                                trust_radius_ini, bfgs_ndim, sr1_bfgs,          &
-                               init_schlegel, rd_pos, sp_pos,                  &
-                               rd_for, rd_if_pos => if_pos, lsg
+                               rd_pos, sp_pos, rd_for, rd_if_pos => if_pos, lsg
   !
   ! ... CELL namelist
   !
@@ -1239,7 +1237,6 @@ SUBROUTINE iosys()
   w_1_              = w_1
   w_2_              = w_2
   sr1_bfgs_         = sr1_bfgs
-  init_schlegel_    = init_schlegel
   !
   IF (trim(occupations) /= 'from_input') one_atom_occupations_=.false.
   !

@@ -400,9 +400,6 @@ CONTAINS
     CASE ( 'greasp' )
        CALL iotk_scan_dat_inside( xmlinputunit, greasp, ierr = ierr )
        !
-    CASE ( 'init_schlegel' )
-       CALL iotk_scan_dat_inside( xmlinputunit, init_schlegel, ierr = ierr )
-       !
     CASE ( 'iprint' )
        CALL iotk_scan_dat_inside( xmlinputunit, iprint, ierr = ierr )
        !

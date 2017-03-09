@@ -1410,7 +1410,7 @@ LOGICAL,INTENT(OUT)                   :: ispresent
 INTEGER                               :: ierr, ndim_
 REAL(DP)                              :: trust_radius_min_, trust_radius_max_, trust_radius_init_, &
                                          w1_, w2_
-LOGICAL                               :: sr1_bfgs_, init_schlegel_
+LOGICAL                               :: sr1_bfgs_
 CHARACTER(iotk_attlenx)               :: attr
 !
 ispresent = .FALSE.
@@ -1440,14 +1440,11 @@ IF ( ierr /= 0 ) RETURN
 CALL iotk_scan_dat(iunit, "sr1_bfgs", sr1_bfgs_, IERR =ierr )
 IF ( ierr /= 0 ) RETURN
 !
-CALL iotk_scan_dat(iunit, "init_schlegel", init_schlegel_, IERR =ierr )
-IF ( ierr /= 0 ) RETURN
-!
 CALL iotk_scan_end ( iunit, "bfgs", IERR = ierr )
 IF ( ierr /= 0 ) RETURN
 
 CALL qes_init_bfgs( obj, "bfgs", ndim_, trust_radius_min_, trust_radius_max_, trust_radius_init_, &
-    w1_, w2_, sr1_bfgs_, init_schlegel_ )
+    w1_, w2_, sr1_bfgs_)
 END SUBROUTINE qexsd_get_bfgs
 !
 !----------------------------------------------------------------------------------------
