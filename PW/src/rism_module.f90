@@ -20,7 +20,7 @@ MODULE rism_module
   ! ... this module is a wrapper of 1D- and 3D-RISM,
   ! ... to perform 3D-RISM-SCF (H.Sato et al., J. Chem. Phys. 2000, 112, 9463).
   ! ...
-  ! ... if ESM(BC1) is applied, Laue-RISM-SCF is performed.
+  ! ... if ESM(BC1) is applied, ESM-RISM is performed.
   !
   USE cell_base,        ONLY : at, omega, iforceh
   USE cellmd,           ONLY : at_old, lmovecell
