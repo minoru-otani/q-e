@@ -128,6 +128,7 @@ allocate_wfc.o : pwcom.o
 atomic_rho.o : ../../FFTXlib/fft_interfaces.o
 atomic_rho.o : ../../Modules/atom.o
 atomic_rho.o : ../../Modules/cell_base.o
+atomic_rho.o : ../../Modules/constants.o
 atomic_rho.o : ../../Modules/control_flags.o
 atomic_rho.o : ../../Modules/fft_base.o
 atomic_rho.o : ../../Modules/io_global.o
@@ -459,7 +460,6 @@ esm.o : ../../Modules/mp_global.o
 esm.o : ../../Modules/recvec.o
 esm.o : esm_cft.o
 esm.o : pwcom.o
-esm.o : scf_mod.o
 esm_cft.o : ../../Modules/kind.o
 ewald.o : ../../Modules/constants.o
 ewald.o : ../../Modules/kind.o
@@ -521,6 +521,7 @@ fcp.o : ../../Modules/io_files.o
 fcp.o : ../../Modules/io_global.o
 fcp.o : ../../Modules/ions_base.o
 fcp.o : ../../Modules/kind.o
+fcp.o : ../../Modules/mdiis.o
 fcp.o : ../../Modules/random_numbers.o
 fcp.o : dynamics_module.o
 fcp.o : pwcom.o
@@ -2023,6 +2024,7 @@ stress.o : ../../Modules/recvec.o
 stress.o : ../../Modules/tsvdw.o
 stress.o : ../../Modules/uspp.o
 stress.o : bp_mod.o
+stress.o : esm.o
 stress.o : exx.o
 stress.o : ldaU.o
 stress.o : pwcom.o

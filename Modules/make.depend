@@ -154,6 +154,8 @@ libxc.o : libxc_funcs.o
 linpack.o : kind.o
 lsda_functionals.o : constants.o
 lsda_functionals.o : kind.o
+mdiis.o : kind.o
+mdiis.o : mp.o
 metagga.o : constants.o
 metagga.o : kind.o
 metagga.o : libxc.o
@@ -176,14 +178,15 @@ mp_base.o : parallel_include.o
 mp_diag.o : mp.o
 mp_diag.o : mp_world.o
 mp_diag.o : parallel_include.o
+mp_exx.o : io_global.o
 mp_exx.o : mp.o
 mp_exx.o : mp_bands.o
 mp_exx.o : parallel_include.o
 mp_global.o : command_line_options.o
 mp_global.o : mp.o
 mp_global.o : mp_bands.o
-mp_global.o : mp_exx.o
 mp_global.o : mp_diag.o
+mp_global.o : mp_exx.o
 mp_global.o : mp_images.o
 mp_global.o : mp_pools.o
 mp_global.o : mp_world.o
@@ -250,7 +253,9 @@ qexsd.o : mp_pools.o
 qexsd.o : mp_world.o
 qexsd.o : noncol.o
 qexsd.o : parameters.o
+qexsd.o : qes_libs.o
 qexsd.o : qes_module.o
+qexsd.o : qes_types.o
 qexsd.o : version.o
 qexsd_input.o : ../iotk/src/iotk_base.o
 qexsd_input.o : ../iotk/src/iotk_module.o
