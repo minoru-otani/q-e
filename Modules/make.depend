@@ -697,6 +697,7 @@ set_signal.o : mp.o
 set_signal.o : mp_world.o
 setqf.o : kind.o
 simpsn.o : kind.o
+solute.o : cell_base.o
 solute.o : constants.o
 solute.o : err_rism.o
 solute.o : ions_base.o
