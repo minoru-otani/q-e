@@ -31,15 +31,18 @@ MODULE pw_restart
                           qexml_write_xc, qexml_write_exx, qexml_write_occ, &
                           qexml_write_bz,qexml_write_para, qexml_write_bands_info, &
                           qexml_write_bands_pw, qexml_write_esm, qexml_wfc_filename, &
+                          qexml_write_3drism, &
                           default_fmt_version => qexml_default_version, &
                           qexml_kpoint_dirname, &
                           qexml_read_header, qexml_read_cell, qexml_read_moving_cell, &
                           qexml_read_planewaves, qexml_read_ions, qexml_read_spin, &
                           qexml_read_magnetization, qexml_read_xc, qexml_read_occ, qexml_read_bz, &
                           qexml_read_bands_info, qexml_read_bands_pw, qexml_read_symmetry, &
-                          qexml_read_efield, qexml_read_para, qexml_read_exx, qexml_read_esm
+                          qexml_read_efield, qexml_read_para, qexml_read_exx, qexml_read_esm, &
+                          qexml_read_3drism
   !
   USE xml_io_base, ONLY : rho_binary,read_wfc, write_wfc, create_directory
+  USE xml_io_rism, ONLY : l3drism_binary
   !
   !
   USE kinds,     ONLY : DP
@@ -80,7 +83,8 @@ MODULE pw_restart
              lbs_read     = .FALSE., &
              lefield_read = .FALSE., &
              lwfc_read    = .FALSE., &
-             lsymm_read   = .FALSE.
+             lsymm_read   = .FALSE., &
+             lrism_read   = .FALSE.
   !
   !
   CONTAINS
@@ -101,7 +105,7 @@ MODULE pw_restart
       USE gvect,                ONLY : ig_l2g
       USE ions_base,            ONLY : nsp, ityp, atm, nat, tau, if_pos
       USE noncollin_module,     ONLY : noncolin, npol
-      USE io_files,             ONLY : nwordwfc, iunwfc, psfile
+      USE io_files,             ONLY : nwordwfc, iunwfc, psfile, molfile
       USE buffers,              ONLY : get_buffer
       USE wavefunctions_module, ONLY : evc
       USE klist,                ONLY : nks, nkstot, xk, ngk, igk_k, wk, qnorm, &
@@ -157,6 +161,9 @@ MODULE pw_restart
       USE acfdt_ener,           ONLY : acfdt_in_pw 
       USE london_module,        ONLY : scal6, lon_rcut
       USE tsvdw_module,         ONLY : vdw_isolated
+      USE solvmol,              ONLY : nsolV, solVs
+      USE rism3d_facade,        ONLY : lrism3d, ecutsolv, qsol, expand_r, expand_l, &
+                                       rism3d_is_laue, rism3d_write_to_restart
 
       !
       IMPLICIT NONE
@@ -171,6 +178,9 @@ MODULE pw_restart
       INTEGER, EXTERNAL     :: global_kpoint_index
       INTEGER,  ALLOCATABLE :: ngk_g(:)
       INTEGER,  ALLOCATABLE :: igk_l2g(:,:), igk_l2g_kdip(:,:), mill_g(:,:)
+      INTEGER               :: isolV
+      REAL(DP), ALLOCATABLE :: solvrho1(:)
+      REAL(DP), ALLOCATABLE :: solvrho2(:)
       LOGICAL               :: lwfc, lrho, lxsd
       CHARACTER(iotk_attlenx)  :: attr
       !
@@ -471,6 +481,30 @@ MODULE pw_restart
                                   CREATE=.FALSE., BINARY=.TRUE. )
          !
 !-------------------------------------------------------------------------------
+! ... 3D-RISM
+!-------------------------------------------------------------------------------
+         !
+         IF ( nsolV > 0 ) THEN
+            ALLOCATE( solvrho1( nsolV ) )
+            ALLOCATE( solvrho2( nsolV ) )
+            DO isolV = 1, nsolV
+               solvrho1(isolV) = solVs(isolV)%density
+               solvrho2(isolV) = solVs(isolV)%subdensity
+            END DO
+         ELSE
+            ALLOCATE( solvrho1( 1 ) )
+            ALLOCATE( solvrho2( 1 ) )
+         END IF
+         !
+         CALL qexml_write_3drism( lrism3d, ecutsolv/e2, 'Hartree', &
+                                  rism3d_is_laue(), qsol, expand_r, expand_l, 'alat', &
+                                  nsolV, molfile, pseudo_dir, solvrho1, solvrho2, 'Bohr^-3', &
+                                  dirname, l3drism_binary )
+         !
+         DEALLOCATE( solvrho1 )
+         DEALLOCATE( solvrho2 )
+         !
+!-------------------------------------------------------------------------------
 ! ... BAND_STRUCTURE_INFO
 !-------------------------------------------------------------------------------
          !
@@ -560,6 +594,17 @@ MODULE pw_restart
       ! ... also writes rho%ns if lda+U and rho%bec if PAW
       !
       IF ( lrho ) CALL write_rho( rho, nspin )
+      !
+!-------------------------------------------------------------------------------
+! ... 3D-RISM FILES
+!-------------------------------------------------------------------------------
+      !
+      ! ... do not overwrite the 3D-RISM's correlations, in case of non-scf
+      !
+      IF ( lrism3d ) THEN
+         IF ( lscf ) CALL rism3d_write_to_restart()
+      END IF
+      !
 !-------------------------------------------------------------------------------
 ! ... END RESTART SECTIONS
 !-------------------------------------------------------------------------------
@@ -813,6 +858,7 @@ MODULE pw_restart
       USE io_rho_xml,    ONLY : read_rho
       USE scf,           ONLY : rho
       USE lsda_mod,      ONLY : nspin
+      USE rism3d_facade, ONLY : rism3d_read_to_restart
       USE mp_bands,      ONLY : intra_bgrp_comm
       USE mp,            ONLY : mp_sum
       !
@@ -826,7 +872,7 @@ MODULE pw_restart
       LOGICAL            :: lcell, lpw, lions, lspin, linit_mag, &
                             lxc, locc, lbz, lbs, lwfc, lheader,          &
                             lsymm, lrho, lefield, ldim, &
-                            lef, lexx, lesm
+                            lef, lexx, lesm, lrism, lrism_corr
       !
       INTEGER            :: tmp
       !
@@ -860,6 +906,8 @@ MODULE pw_restart
       lef     = .FALSE.
       lexx    = .FALSE.
       lesm    = .FALSE.
+      lrism   = .FALSE.
+      lrism_corr = .FALSE.
       !
       SELECT CASE( what )
       CASE( 'header' )
@@ -897,6 +945,7 @@ MODULE pw_restart
          lbz     = .TRUE.
          lsymm   = .TRUE.
          lefield = .TRUE.
+         lrism   = .TRUE.
          !
       CASE( 'nowave' )
          !
@@ -911,6 +960,7 @@ MODULE pw_restart
          lbs     = .TRUE.
          lsymm   = .TRUE.
          lefield = .TRUE.
+         lrism   = .TRUE.
          !
       CASE( 'all' )
          !
@@ -926,6 +976,8 @@ MODULE pw_restart
          lwfc    = .TRUE.
          lsymm   = .TRUE.
          lefield = .TRUE.
+         lrism   = .TRUE.
+         lrism_corr = .TRUE.
          lrho    = .TRUE.
          !
       CASE( 'reset' )
@@ -942,6 +994,7 @@ MODULE pw_restart
          lwfc_read    = .FALSE.
          lsymm_read   = .FALSE.
          lefield_read = .FALSE.
+         lrism_read   = .FALSE.
          !
       CASE( 'ef' )
          !
@@ -954,6 +1007,15 @@ MODULE pw_restart
       CASE( 'esm' )
          !
          lesm       = .TRUE.
+         !
+      CASE( 'solvent' )
+         !
+         lrism      = .TRUE.
+         !
+      CASE( 'rism' )
+         !
+         lrism      = .TRUE.
+         lrism_corr = .TRUE.
          !
       CASE DEFAULT
          !
@@ -1143,6 +1205,22 @@ MODULE pw_restart
          END IF
          !
       END IF
+      IF ( lrism ) THEN
+         !
+         CALL read_3drism( dirname, ierr )
+         IF ( ierr > 0 ) THEN
+            errmsg='error reading 3D-RISM in xml data file'
+            GOTO 100
+         END IF
+         !
+      END IF
+      IF ( lrism_corr ) THEN
+         !
+         ! ... to read the 3D-RISM's correlation functions
+         !
+         CALL rism3d_read_to_restart()
+         !
+      END IF
       !
       IF (ionode) THEN
          !
@@ -1223,6 +1301,8 @@ MODULE pw_restart
       USE wvfct,            ONLY : nbnd, npwx
       USE gvecw,            ONLY : ecutwfc
       USE control_flags,    ONLY : gamma_only
+      USE solvmol,          ONLY : nsolV
+      USE rism3d_facade,    ONLY : lrism3d, ecutsolv, expand_r, expand_l, rism3d_set_laue
       USE mp_pools,         ONLY : kunit
       USE mp_global,        ONLY : nproc_file, nproc_pool_file, &
                                    nproc_image_file, ntask_groups_file, &
@@ -1234,6 +1314,7 @@ MODULE pw_restart
       INTEGER,          INTENT(OUT) :: ierr
       !
       INTEGER  :: npwx_
+      LOGICAL  :: lauerism
       LOGICAL  :: found, found2
       CHARACTER(iotk_attlenx)  :: attr
       !
@@ -1283,6 +1364,27 @@ MODULE pw_restart
          CALL qexml_read_bands_info( NBND=nbnd, NELEC=nelec, IERR=ierr )
          IF ( ierr /= 0) GOTO 100
          !
+         CALL qexml_read_3drism( LRISM3D=lrism3d, ECUTSOLV=ecutsolv, &
+                                 LAUE=lauerism, LAUE_RIGHT=expand_r, LAUE_LEFT=expand_l, &
+                                 NMOL=nsolV, FOUND=found, IERR=ierr )
+         IF ( ierr /= 0) GOTO 100
+         !
+         IF ( .NOT. found ) THEN
+            !
+            lrism3d  = .FALSE.
+            ecutsolv = 0.0_DP
+            lauerism = .FALSE.
+            nsolV    = 0
+            !
+         ENDIF
+         !
+         ecutsolv = ecutsolv * e2
+         !
+         IF ( .NOT. lauerism ) THEN
+            expand_r = -1.0_DP
+            expand_l = -1.0_DP
+         ENDIF
+         !
          CALL qexml_read_para( KUNIT=kunit, NPROC=nproc_file, NPROC_POOL=nproc_pool_file, &
               NPROC_IMAGE=nproc_image_file, NTASK_GROUPS = ntask_groups_file, &
               NPROC_BGRP=nproc_bgrp_file, NPROC_ORTHO=nproc_ortho_file, FOUND=found, IERR=ierr )
@@ -1328,6 +1430,13 @@ MODULE pw_restart
       CALL mp_bcast( nkstot,     ionode_id, intra_image_comm )
       CALL mp_bcast( nelec,      ionode_id, intra_image_comm )
       CALL mp_bcast( nbnd,       ionode_id, intra_image_comm )
+      CALL mp_bcast( lrism3d,    ionode_id, intra_image_comm )
+      CALL mp_bcast( ecutsolv,   ionode_id, intra_image_comm )
+      CALL mp_bcast( lauerism,   ionode_id, intra_image_comm )
+      IF ( lauerism ) CALL rism3d_set_laue()
+      CALL mp_bcast( expand_r,   ionode_id, intra_image_comm )
+      CALL mp_bcast( expand_l,   ionode_id, intra_image_comm )
+      CALL mp_bcast( nsolV,      ionode_id, intra_image_comm )
       CALL mp_bcast( kunit,      ionode_id, intra_image_comm )
       CALL mp_bcast( nproc_file, ionode_id, intra_image_comm )
       CALL mp_bcast( nproc_pool_file,    ionode_id, intra_image_comm )
@@ -2719,6 +2828,112 @@ MODULE pw_restart
       RETURN
       !
     END SUBROUTINE read_esm
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE read_3drism( dirname, ierr )
+      !------------------------------------------------------------------------
+      !
+      ! ... read 3D-RISM variables
+      !
+      USE solvmol,       ONLY : nsolV, solVs
+      USE rism3d_facade, ONLY : lrism3d, ecutsolv, qsol, expand_r, expand_l, rism3d_set_laue
+      USE io_files,      ONLY : molfile, pseudo_dir, pseudo_dir_cur
+      !
+      IMPLICIT NONE
+      !
+      CHARACTER(LEN=*), INTENT(IN)  :: dirname
+      INTEGER,          INTENT(OUT) :: ierr
+      !
+      INTEGER               :: isolV
+      LOGICAL               :: lauerism
+      LOGICAL               :: found
+      CHARACTER(LEN=256)    :: molec_dir, molec_dir_cur
+      REAL(DP), ALLOCATABLE :: solvrho1(:)
+      REAL(DP), ALLOCATABLE :: solvrho2(:)
+      !
+      ierr = 0
+      IF ( lrism_read ) RETURN
+      !
+      IF ( .NOT. lions_read ) &
+         CALL errore( 'read_3drism', 'read ions first', 1 )
+      !
+      IF ( nsolV > 0 ) THEN
+         ALLOCATE( solvrho1( nsolV ) )
+         ALLOCATE( solvrho2( nsolV ) )
+      ELSE
+         ALLOCATE( solvrho1( 1 ) )
+         ALLOCATE( solvrho2( 1 ) )
+      END IF
+      !
+      ! this is where MOL files should be read from
+      !
+      molec_dir_cur = trimcheck ( dirname )
+      !
+      IF ( ionode ) THEN
+         !
+         CALL qexml_read_3drism( LRISM3D=lrism3d, ECUTSOLV=ecutsolv, &
+                                 LAUE=lauerism, LAUE_CHARGE=qsol, &
+                                 LAUE_RIGHT=expand_r, LAUE_LEFT=expand_l, &
+                                 NMOL=nsolV, MOLFILE=molfile, MOLEC_DIR=molec_dir, &
+                                 DENS1=solvrho1, DENS2=solvrho2, FOUND=found, IERR=ierr )
+         !
+      ENDIF
+      !
+      CALL mp_bcast( ierr, ionode_id, intra_image_comm )
+      IF ( ierr > 0 ) GOTO 100
+      !
+      CALL mp_bcast( found, ionode_id, intra_image_comm )
+      IF ( .NOT. found ) GOTO 100
+      !
+      IF ( ionode ) THEN
+         !
+         ecutsolv = ecutsolv * e2
+         !
+         IF ( .NOT. lauerism ) THEN
+            qsol     = 0.0_DP
+            expand_r = -1.0_DP
+            expand_l = -1.0_DP
+         END IF
+         !
+      END IF
+      !
+      CALL mp_bcast( lrism3d,  ionode_id, intra_image_comm )
+      CALL mp_bcast( ecutsolv, ionode_id, intra_image_comm )
+      CALL mp_bcast( lauerism, ionode_id, intra_image_comm )
+      IF ( lauerism ) CALL rism3d_set_laue()
+      CALL mp_bcast( qsol,     ionode_id, intra_image_comm )
+      CALL mp_bcast( expand_r, ionode_id, intra_image_comm )
+      CALL mp_bcast( expand_l, ionode_id, intra_image_comm )
+      CALL mp_bcast( nsolV,    ionode_id, intra_image_comm )
+      !
+      IF ( lrism3d ) THEN
+         !
+         CALL mp_bcast( molfile,   ionode_id, intra_image_comm )
+         CALL mp_bcast( molec_dir, ionode_id, intra_image_comm )
+         CALL mp_bcast( solvrho1,  ionode_id, intra_image_comm )
+         CALL mp_bcast( solvrho2,  ionode_id, intra_image_comm )
+         !
+         IF ( TRIM( pseudo_dir_cur ) /= TRIM( molec_dir_cur ) ) &
+            CALL errore( 'read_3drism', 'pseudo_dir_cur /= molec_dir_cur', 1 )
+         !
+         IF ( TRIM( pseudo_dir ) /= TRIM( molec_dir ) ) &
+            CALL errore( 'read_3drism', 'pseudo_dir /= molec_dir', 1 )
+         !
+         DO isolV = 1, nsolV
+            solVs(isolV)%density    = solvrho1(isolV)
+            solVs(isolV)%subdensity = solvrho2(isolV)
+         END DO
+         !
+      END IF
+      !
+100   DEALLOCATE( solvrho1 )
+      DEALLOCATE( solvrho2 )
+      !
+      lrism_read = .TRUE.
+      !
+      RETURN
+      !
+    END SUBROUTINE read_3drism
     !
     !------------------------------------------------------------------------
     SUBROUTINE read_( dirname, ierr )

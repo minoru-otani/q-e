@@ -149,6 +149,10 @@ SUBROUTINE read_xml_file_internal(withbs)
   USE funct,                ONLY : get_inlc, get_dft_name
   USE kernel_table,         ONLY : initialize_kernel_table
   USE esm,                  ONLY : do_comp_esm, esm_init
+  USE solvmol,              ONLY : nsolV, solVs, allocate_solVs
+  USE read_solv_module,     ONLY : read_solvents
+  USE rism_module,          ONLY : rism_pot3d
+  USE rism3d_facade,        ONLY : lrism3d, rism3d_initialize
   USE mp_bands,             ONLY : intra_bgrp_comm
   !
   IMPLICIT NONE
@@ -233,6 +237,12 @@ SUBROUTINE read_xml_file_internal(withbs)
   !
   nbndx = nbnd
   ALLOCATE( et( nbnd, nkstot ) , wg( nbnd, nkstot ) )
+  !
+  ! ... allocate memory for solvent (3D-RISM)
+  !
+  IF ( lrism3d ) THEN
+     CALL allocate_solVs()
+  END IF
   !
   ! ... here we read all the variables defining the system
   !
@@ -344,11 +354,25 @@ SUBROUTINE read_xml_file_internal(withbs)
   !
   CALL pw_readfile('exx', ierr)
   !
+  ! ... read info needed for 3D-RISM
+  !
+  IF ( lrism3d ) THEN
+     CALL pw_readfile( 'solvent', ierr )
+     CALL read_solvents( without_density=.TRUE. )
+     CALL rism3d_initialize()
+     CALL pw_readfile( 'rism', ierr )
+  END IF
+  !
   ! ... recalculate the potential
   !
   CALL v_of_rho( rho, rho_core, rhog_core, &
                  ehart, etxc, vtxc, eth, etotefield, charge, v )
   !
+  ! ... recalculate the solvation potential (3D-RISM)
+  !
+  IF ( lrism3d ) THEN
+     CALL rism_pot3d(v%of_r)
+  END IF
   !
   RETURN
   !

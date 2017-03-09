@@ -241,6 +241,8 @@ MODULE ener
        exdm,           &! the XDM dispersion energy
        demet,          &! variational correction ("-TS") for metals
        epaw,           &! sum of one-center paw contributions
+       esol,           &! the solvation energy, from 3D-RISM
+       vsol,           &! another solvation energy, from 3D-RISM
        ef, ef_up, ef_dw ! the fermi energy (up and dw if two_fermi_energies=.T.)
   !
 END MODULE ener

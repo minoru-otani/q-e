@@ -36,6 +36,7 @@ SUBROUTINE memory_report()
   USE control_flags, ONLY: isolve, nmix, imix, gamma_only, lscf, io_level, &
        lxdm, smallmem, rmm_ndim
   USE ions_base, ONLY : ntyp=>nsp
+  USE rism3d_facade, ONLY : lrism3d, rism3t, rism3d_is_laue
   USE mp_diag,   ONLY : np_ortho
   USE mp_bands,  ONLY : nproc_bgrp, nbgrp
   USE mp_images, ONLY : nproc_image  
@@ -122,6 +123,31 @@ SUBROUTINE memory_report()
   ram =  ram + real_size * ngm * 4 + int_size * ngm * 7
   ! double grid: nls, nlsm
   ram =  ram + int_size * ngms * 2
+  !
+  ! RISM calculations
+  IF ( lrism3d ) THEN
+     IF (.NOT. rism3d_is_laue()) THEN
+        ! in case of 3D-RISM:
+        ! 1D-RISM Susceptibility
+        ram = ram + real_size * rism3t%nsite * rism3t%mp_site%nsite * rism3t%ngs
+        ! R-space
+        ram = ram + real_size * (6 * rism3t%nsite + 2) * rism3t%nr
+        ! G-space
+        ram = ram + complex_size * (3 * rism3t%nsite + 3) * rism3t%ng
+     ELSE
+        ! in case of Laue-RISM:
+        ! 1D-RISM Susceptibility
+        ram = ram + real_size * rism3t%nsite * rism3t%mp_site%nsite * (rism3t%nrzl * rism3t%ngs)
+        ! R-space
+        ram = ram + real_size * (5 * rism3t%nsite + 1) * rism3t%nr
+        ! G-space
+        ram = ram + complex_size * 2 * rism3t%ng
+        ! Laue-rep. (short-range)
+        ram = ram + complex_size * 2 * rism3t%nsite * rism3t%nrzs * rism3t%ngxy
+        ! Laue-rep. (long-range)
+        ram = ram + complex_size * (2 * rism3t%nsite + 3) * rism3t%nrzl * rism3t%ngxy
+     END IF
+  END IF
   !
   ! now scratch space that raises the "high watermark"
   !

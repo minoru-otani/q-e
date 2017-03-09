@@ -26,7 +26,7 @@ SUBROUTINE electrons()
   USE lsda_mod,             ONLY : nspin, magtot, absmag
   USE ener,                 ONLY : etot, hwf_energy, eband, deband, ehart, &
                                    vtxc, etxc, etxcc, ewld, demet, epaw, &
-                                   elondon, ef_up, ef_dw
+                                   elondon, vsol, esol, ef_up, ef_dw
   USE scf,                  ONLY : rho, rho_core, rhog_core, v, vltot, vrs, &
                                    kedtau, vnew
   USE control_flags,        ONLY : tr2, niter, conv_elec, restart, lmd, &
@@ -49,6 +49,8 @@ SUBROUTINE electrons()
   USE paw_onecenter,        ONLY : PAW_potential
   USE paw_symmetry,         ONLY : PAW_symmetrize_ddd
   USE ions_base,            ONLY : nat
+  !
+  USE rism_module,          ONLY : lrism, rism_calc3d 
   !
   !
   IMPLICIT NONE
@@ -119,6 +121,7 @@ SUBROUTINE electrons()
            !
            CALL v_of_rho( rho, rho_core, rhog_core, &
                ehart, etxc, vtxc, eth, etotefield, charge, v)
+           IF (lrism) CALL rism_calc3d(rho%of_g, esol, vsol, v%of_r, tr2)
            IF (okpaw) CALL PAW_potential(rho%bec, ddd_PAW, epaw,etot_cmp_paw)
            CALL set_vrs( vrs, vltot, v%of_r, kedtau, v%kin_r, dfftp%nnr, &
                          nspin, doublegrid )
@@ -188,6 +191,7 @@ SUBROUTINE electrons()
              ehart, etxc, vtxc, eth, etotefield, charge, v)
         etot = etot + etxc + exxen
         !
+        IF (lrism) CALL rism_calc3d(rho%of_g, esol, vsol, v%of_r, tr2)
         IF (okpaw) CALL PAW_potential(rho%bec, ddd_PAW, epaw,etot_cmp_paw)
         CALL set_vrs( vrs, vltot, v%of_r, kedtau, v%kin_r, dfftp%nnr, &
              nspin, doublegrid )
@@ -331,7 +335,7 @@ SUBROUTINE electrons_scf ( printout, exxen )
   USE gvecw,                ONLY : ecutwfc
   USE ener,                 ONLY : etot, hwf_energy, eband, deband, ehart, &
                                    vtxc, etxc, etxcc, ewld, demet, epaw, &
-                                   elondon, ef_up, ef_dw, exdm, ef
+                                   elondon, vsol, esol, ef_up, ef_dw, exdm, ef
   USE scf,                  ONLY : scf_type, scf_type_COPY, bcast_scf_type,&
                                    create_scf_type, destroy_scf_type, &
                                    open_mix_file, close_mix_file, &
@@ -369,6 +373,7 @@ SUBROUTINE electrons_scf ( printout, exxen )
   USE esm,                  ONLY : do_comp_esm, esm_printpot, esm_ewald
   USE fcp_variables,        ONLY : lfcpopt, lfcpdyn
   USE iso_c_binding,        ONLY : c_int
+  USE rism_module,          ONLY : lrism, rism_calc3d, rism_printpot
   !
   USE plugin_variables,     ONLY : plugin_etot
   !
@@ -622,6 +627,11 @@ SUBROUTINE electrons_scf ( printout, exxen )
            !
            CALL v_of_rho( rhoin, rho_core, rhog_core, &
                           ehart, etxc, vtxc, eth, etotefield, charge, v)
+           !
+           IF (lrism) THEN
+              CALL rism_calc3d(rhoin%of_g, esol, vsol, v%of_r, dr2)
+           ENDIF
+           !
            IF (okpaw) THEN
               CALL PAW_potential(rhoin%bec, ddd_paw, epaw,etot_cmp_paw)
               CALL PAW_symmetrize_ddd(ddd_paw)
@@ -649,6 +659,11 @@ SUBROUTINE electrons_scf ( printout, exxen )
            vnew%of_r(:,:) = v%of_r(:,:)
            CALL v_of_rho( rho,rho_core,rhog_core, &
                           ehart, etxc, vtxc, eth, etotefield, charge, v)
+           !
+           IF (lrism) THEN
+              CALL rism_calc3d(rho%of_g, esol, vsol, v%of_r, tr2)
+           END IF
+           !
            vnew%of_r(:,:) = v%of_r(:,:) - vnew%of_r(:,:)
            !
            IF (okpaw) THEN
@@ -779,6 +794,11 @@ SUBROUTINE electrons_scf ( printout, exxen )
         hwf_energy = hwf_energy + ef * tot_charge
      ENDIF
      !
+     IF ( lrism ) THEN
+        etot = etot + esol
+        hwf_energy = hwf_energy + esol
+     END IF
+     !
      ! ... adds possible external contribution from plugins to the energy
      !
      etot = etot + plugin_etot 
@@ -795,6 +815,10 @@ SUBROUTINE electrons_scf ( printout, exxen )
         ! ... print out ESM potentials if desired
         !
         IF ( do_comp_esm ) CALL esm_printpot( rho%of_g )
+        !
+        ! ... print out 3D-RISM potentials if desired
+        !
+        IF ( lrism ) CALL rism_printpot()
         !
         WRITE( stdout, 9110 ) iter
         !
@@ -1133,6 +1157,7 @@ SUBROUTINE electrons_scf ( printout, exxen )
             SUM(etot_cmp_paw(:,2,1))+SUM(etot_cmp_paw(:,2,2))+etxc-etxcc
             ENDIF
           ENDIF
+          IF ( lrism )              WRITE( stdout, 9078 ) esol
           !
           ! ... With Fermi-Dirac population factor, etot is the electronic
           ! ... free energy F = E - TS , demet is the -TS contribution
@@ -1206,6 +1231,7 @@ SUBROUTINE electrons_scf ( printout, exxen )
 9075 FORMAT( '     Dispersion XDM Correction =',F17.8,' Ry' )
 9076 FORMAT( '     Dispersion T-S Correction =',F17.8,' Ry' )
 9077 FORMAT( '     External forces energy    =',F17.8,' Ry' )
+9078 FORMAT( '     solvation energy (RISM)   =',F17.8,' Ry' )
 9080 FORMAT(/'     total energy              =',0PF17.8,' Ry' &
             /'     Harris-Foulkes estimate   =',0PF17.8,' Ry' &
             /'     estimated scf accuracy    <',0PF17.8,' Ry' )

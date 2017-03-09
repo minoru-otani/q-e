@@ -73,7 +73,7 @@ MODULE qexml_module
             qexml_write_planewaves, qexml_write_spin, qexml_write_magnetization, &
             qexml_write_xc, qexml_write_exx, qexml_write_occ, qexml_write_bz, qexml_write_para, &
             qexml_write_bands_pw,qexml_write_bands_cp, qexml_write_bands_info, qexml_write_eig, &
-            qexml_write_gk, qexml_write_wfc, qexml_write_rho, qexml_write_esm
+            qexml_write_gk, qexml_write_wfc, qexml_write_rho, qexml_write_esm, qexml_write_3drism
   !
   PUBLIC :: qexml_read_header, qexml_read_status_cp, qexml_read_cell, qexml_read_moving_cell, qexml_read_ions,      &
             qexml_read_symmetry, qexml_read_efield,                   &
@@ -81,7 +81,7 @@ MODULE qexml_module
             qexml_read_occ, qexml_read_bz, qexml_read_phonon,         &
             qexml_read_bands_pw, qexml_read_bands_cp, qexml_read_bands_info,                  &
             qexml_read_gk, qexml_read_wfc, qexml_read_rho, qexml_read_magnetization, &
-            qexml_read_exx, qexml_read_para, qexml_read_esm
+            qexml_read_exx, qexml_read_para, qexml_read_esm, qexml_read_3drism
   
   !
   PUBLIC :: qexml_wfc_filename, qexml_create_directory, &
@@ -2250,6 +2250,155 @@ CONTAINS
       !
       !
     END SUBROUTINE qexml_write_rho
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE qexml_write_3drism( lrism3d, ecutsolv, cutoff_units, &
+                                   laue, laue_charge, laue_right, laue_left, laue_units, &
+                                   nmol, molfile, molec_dir, dens1, dens2, dens_units, &
+                                   dirname, lbinary )
+      !------------------------------------------------------------------------
+      !
+      USE wrappers, ONLY: f_copy
+      !
+      LOGICAL,          INTENT(in) :: lrism3d
+      REAL(DP),         INTENT(in) :: ecutsolv
+      CHARACTER(LEN=*), INTENT(in) :: cutoff_units
+      LOGICAL,          INTENT(in) :: laue
+      REAL(DP),         INTENT(in) :: laue_charge
+      REAL(DP),         INTENT(in) :: laue_right
+      REAL(DP),         INTENT(in) :: laue_left
+      CHARACTER(LEN=*), INTENT(in) :: laue_units
+      INTEGER,          INTENT(in) :: nmol
+      CHARACTER(LEN=*), INTENT(in) :: molfile(:)
+      CHARACTER(LEN=*), INTENT(in) :: molec_dir
+      REAL(DP),         INTENT(in) :: dens1(:)
+      REAL(DP),         INTENT(in) :: dens2(:)
+      CHARACTER(LEN=*), INTENT(in) :: dens_units
+      CHARACTER(LEN=*), INTENT(in) :: dirname
+      LOGICAL,          INTENT(in) :: lbinary
+      !
+      INTEGER            :: i, flen, flen2, ierrl
+      CHARACTER(LEN=256) :: file_molec_in, file_molec_out
+      LOGICAL            :: molec_exists
+      CHARACTER(LEN=256) :: filename
+      !
+      CALL iotk_write_begin( ounit, "_3D-RISM" )
+      !
+      ! write some variables
+      !
+      CALL iotk_write_dat( ounit, "HAS_3D-RISM", lrism3d )
+      !
+      CALL iotk_write_attr ( attr, "UNITS", TRIM( cutoff_units ), FIRST=.TRUE. )
+      CALL iotk_write_empty( ounit, "UNITS_FOR_CUTOFF", ATTR=attr )
+      !
+      CALL iotk_write_dat( ounit, "SOLVENT_CUTOFF", ecutsolv )
+      !
+      CALL iotk_write_dat( ounit, "HAS_LAUE", laue )
+      !
+      IF ( laue ) THEN
+         !
+         CALL iotk_write_dat( ounit, "LAUE_SOLVENT_CHARGE", laue_charge )
+         !
+         CALL iotk_write_attr ( attr, "UNITS", TRIM( laue_units ), FIRST=.TRUE. )
+         CALL iotk_write_empty( ounit, "UNITS_FOR_LAUE_LENGTH", ATTR=attr )
+         !
+         CALL iotk_write_dat( ounit, "LAUE_LENGTH_RIGHT", laue_right )
+         !
+         CALL iotk_write_dat( ounit, "LAUE_LENGTH_LEFT", laue_left )
+         !
+      END IF
+      !
+      CALL iotk_write_dat( ounit, "NUMBER_OF_SOLVENTS", nmol )
+      !
+      IF ( lrism3d ) THEN
+         !
+         ! write solvents
+         !
+         flen = LEN_TRIM( molec_dir )
+         flen2 = LEN_TRIM( dirname )
+         !
+         CALL iotk_write_attr ( attr, "UNITS", TRIM( dens_units ), FIRST=.TRUE. )
+         CALL iotk_write_empty( ounit, "UNITS_FOR_DENSITY", ATTR=attr )
+         !
+         DO i = 1, nmol
+            !
+            CALL iotk_write_begin( ounit, "SOLVENT"//TRIM( iotk_index(i) ) )
+            !
+            CALL iotk_write_dat( ounit, "DENSITY1", dens1(i) )
+            !
+            CALL iotk_write_dat( ounit, "DENSITY2", dens2(i) )
+            !
+            CALL iotk_write_dat( ounit, "MOLECULE", TRIM( molfile(i) ) )
+            !
+            CALL iotk_write_end( ounit, "SOLVENT"//TRIM( iotk_index(i) ) )
+            !
+            ! copy molecular file into data directory
+            !
+            IF ( molec_dir(flen:flen) /= '/' ) THEN
+               file_molec_in = molec_dir(1:flen) // '/' // TRIM( molfile(i) )
+            ELSE
+               file_molec_in = molec_dir(1:flen) // TRIM(molfile(i))
+            ENDIF
+            !
+            IF ( dirname(flen2:flen2) /= '/' ) THEN
+               file_molec_out = dirname(1:flen2) // '/' // TRIM( molfile(i) )
+            ELSE
+               file_molec_out = dirname(1:flen2) // TRIM( molfile(i) )
+            END IF
+            !
+            IF ( file_molec_in .ne. file_molec_out ) THEN
+               !
+               INQUIRE ( FILE=file_molec_in, EXIST = molec_exists )
+               IF ( molec_exists ) THEN
+                  ierrl = f_copy( file_molec_in, file_molec_out )
+               ELSE
+                  CALL infomsg( 'write_3drism', &
+                      'file ' // TRIM( file_molec_in ) // ' not present' )
+               END IF
+               !
+            END IF
+            !
+         END DO
+         !
+         CALL iotk_write_dat( ounit, "MOLECULE_DIR", TRIM( molec_dir ) )
+         !
+         ! write links to correlation's files
+         !
+         filename = "./3d-rism_csuv_r.dat"
+         IF ( .NOT. lbinary ) filename = "./3d-rism_csuv_r.xml"
+         !
+         CALL iotk_link( ounit, "DIRECT_CORRELATION", TRIM( filename ), &
+                                 CREATE=.FALSE., BINARY=.TRUE. )
+         !
+         filename = "./3d-rism_huv_r.dat"
+         IF ( .NOT. lbinary ) filename = "./3d-rism_huv_r.xml"
+         !
+         CALL iotk_link( ounit, "TOTAL_CORRELATION", TRIM( filename ), &
+                                 CREATE=.FALSE., BINARY=.TRUE. )
+         !
+         filename = "./3d-rism_guv_r.dat"
+         IF ( .NOT. lbinary ) filename = "./3d-rism_guv_r.xml"
+         !
+         CALL iotk_link( ounit, "DISTRIBUTION_FUNCTION", TRIM( filename ), &
+                                 CREATE=.FALSE., BINARY=.TRUE. )
+         !
+         filename = "./3d-rism_hsuv_l.dat"
+         IF ( .NOT. lbinary ) filename = "./3d-rism_hsuv_l.xml"
+         !
+         CALL iotk_link( ounit, "TOTAL_CORRELATION_AS_LAUE_SHORT", TRIM( filename ), &
+                                 CREATE=.FALSE., BINARY=.TRUE. )
+         !
+         filename = "./3d-rism_hluv_l.dat"
+         IF ( .NOT. lbinary ) filename = "./3d-rism_hluv_l.xml"
+         !
+         CALL iotk_link( ounit, "TOTAL_CORRELATION_AS_LAUE_LONG", TRIM( filename ), &
+                                 CREATE=.FALSE., BINARY=.TRUE. )
+      END IF
+      !
+      CALL iotk_write_end( ounit, "_3D-RISM" )
+      !
+    END SUBROUTINE qexml_write_3drism
 !
 !-------------------------------------------
 ! ... read subroutines
@@ -4620,5 +4769,157 @@ CONTAINS
     END SUBROUTINE qexml_read_rho
     !
 #endif
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE qexml_read_3drism( lrism3d, ecutsolv, cutoff_units, &
+                                  laue, laue_charge, laue_right, laue_left, laue_units, &
+                                  nmol, molfile, molec_dir, dens1, dens2, dens_units, &
+                                  found, ierr )
+      !------------------------------------------------------------------------
+      !
+      LOGICAL,          OPTIONAL, INTENT(out) :: lrism3d
+      REAL(DP),         OPTIONAL, INTENT(out) :: ecutsolv
+      CHARACTER(LEN=*), OPTIONAL, INTENT(out) :: cutoff_units
+      LOGICAL,          OPTIONAL, INTENT(out) :: laue
+      REAL(DP),         OPTIONAL, INTENT(out) :: laue_charge
+      REAL(DP),         OPTIONAL, INTENT(out) :: laue_right
+      REAL(DP),         OPTIONAL, INTENT(out) :: laue_left
+      CHARACTER(LEN=*), OPTIONAL, INTENT(out) :: laue_units
+      INTEGER,          OPTIONAL, INTENT(out) :: nmol
+      CHARACTER(LEN=*), OPTIONAL, INTENT(out) :: molfile(:)
+      CHARACTER(LEN=*), OPTIONAL, INTENT(out) :: molec_dir
+      REAL(DP),         OPTIONAL, INTENT(out) :: dens1(:)
+      REAL(DP),         OPTIONAL, INTENT(out) :: dens2(:)
+      CHARACTER(LEN=*), OPTIONAL, INTENT(out) :: dens_units
+      LOGICAL,                    INTENT(out) :: found
+      INTEGER,                    INTENT(out) :: ierr
+      !
+      LOGICAL                     :: lrism3d_
+      REAL(DP)                    :: ecutsolv_
+      CHARACTER(256)              :: cutoff_units_
+      LOGICAL                     :: laue_
+      REAL(DP)                    :: laue_charge_
+      REAL(DP)                    :: laue_right_
+      REAL(DP)                    :: laue_left_
+      CHARACTER(256)              :: laue_units_
+      INTEGER                     :: nmol_
+      CHARACTER(256), ALLOCATABLE :: molfile_(:)
+      CHARACTER(256)              :: molec_dir_
+      REAL(DP),       ALLOCATABLE :: dens1_(:)
+      REAL(DP),       ALLOCATABLE :: dens2_(:)
+      CHARACTER(256)              :: dens_units_
+      !
+      INTEGER :: i
+      !
+      !
+      ierr = 0
+      !
+      CALL iotk_scan_begin( iunit, "_3D-RISM", FOUND=found, IERR=ierr )
+      IF ( ( .NOT. found ).OR.( ierr /= 0 ) ) RETURN
+      !
+      CALL iotk_scan_dat( iunit, "HAS_3D-RISM", lrism3d_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_empty( iunit, "UNITS_FOR_CUTOFF", ATTR=attr, IERR=ierr )
+      IF (ierr/=0) RETURN
+      CALL iotk_scan_attr( attr, "UNITS", cutoff_units_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_dat( iunit, "SOLVENT_CUTOFF", ecutsolv_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_dat( iunit, "HAS_LAUE", laue_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      IF ( laue_ ) THEN
+         !
+         CALL iotk_scan_dat( iunit, "LAUE_SOLVENT_CHARGE", laue_charge_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+         CALL iotk_scan_empty( iunit, "UNITS_FOR_LAUE_LENGTH", ATTR=attr, IERR=ierr )
+         IF (ierr/=0) RETURN
+         CALL iotk_scan_attr( attr, "UNITS", laue_units_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+         CALL iotk_scan_dat( iunit, "LAUE_LENGTH_RIGHT", laue_right_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+         CALL iotk_scan_dat( iunit, "LAUE_LENGTH_LEFT", laue_left_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+      END IF
+      !
+      CALL iotk_scan_dat( iunit, "NUMBER_OF_SOLVENTS", nmol_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      IF ( lrism3d_ ) THEN
+         !
+         IF ( nmol_ > 0 ) THEN
+            ALLOCATE( molfile_(nmol_) )
+            ALLOCATE( dens1_(nmol_) )
+            ALLOCATE( dens2_(nmol_) )
+         END IF
+         !
+         CALL iotk_scan_empty( iunit, "UNITS_FOR_DENSITY", ATTR=attr, IERR=ierr )
+         IF (ierr/=0) RETURN
+         CALL iotk_scan_attr( attr, "UNITS", dens_units_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+         DO i = 1, nmol_
+            !
+            CALL iotk_scan_begin( iunit, "SOLVENT"//trim(iotk_index(i)), IERR=ierr )
+            IF (ierr/=0) RETURN
+            !
+            CALL iotk_scan_dat( iunit, "DENSITY1", dens1_(i), IERR=ierr )
+            IF (ierr/=0) RETURN
+            !
+            CALL iotk_scan_dat( iunit, "DENSITY2", dens2_(i), IERR=ierr )
+            IF (ierr/=0) RETURN
+            !
+            CALL iotk_scan_dat( iunit, "MOLECULE", molfile_(i), IERR=ierr )
+            IF (ierr/=0) RETURN
+            !
+            CALL iotk_scan_end( iunit, "SOLVENT"//trim(iotk_index(i)), IERR=ierr )
+            IF (ierr/=0) RETURN
+            !
+         END DO
+         !
+         CALL iotk_scan_dat( iunit, "MOLECULE_DIR", molec_dir_, IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+      END IF
+      !
+      CALL iotk_scan_end( iunit, "_3D-RISM", IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      !
+      IF ( present(lrism3d) )        lrism3d          = lrism3d_
+      IF ( present(ecutsolv) )       ecutsolv         = ecutsolv_
+      IF ( present(cutoff_units) )   cutoff_units     = cutoff_units_
+      IF ( present(laue) )           laue             = laue_
+      IF ( laue_ ) THEN
+         IF ( present(laue_charge) ) laue_charge      = laue_charge_
+         IF ( present(laue_right) )  laue_right       = laue_right_
+         IF ( present(laue_left) )   laue_left        = laue_left_
+         IF ( present(laue_units) )  laue_units       = laue_units_
+      END IF
+      IF ( present(nmol) )           nmol             = nmol_
+      !
+      IF ( lrism3d_ ) THEN
+         IF ( present(molec_dir) )   molec_dir        = molec_dir_
+         IF ( present(dens_units) )  dens_units       = dens_units_
+         !
+         IF ( nmol_ > 0 ) THEN
+            IF ( present(molfile) )  molfile(1:nmol_) = molfile_(1:nmol_)
+            IF ( present(dens1) )    dens1(1:nmol_)   = dens1_(1:nmol_)
+            IF ( present(dens2) )    dens2(1:nmol_)   = dens2_(1:nmol_)
+            DEALLOCATE( molfile_ )
+            DEALLOCATE( dens1_ )
+            DEALLOCATE( dens2_ )
+         END IF
+      END IF
+      !
+    END SUBROUTINE qexml_read_3drism
+    !
     !
 END MODULE qexml_module

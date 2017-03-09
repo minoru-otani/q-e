@@ -277,6 +277,7 @@ clean_pw.o : ldaU.o
 clean_pw.o : paw_init.o
 clean_pw.o : pwcom.o
 clean_pw.o : realus.o
+clean_pw.o : rism_module.o
 clean_pw.o : scf_mod.o
 clean_pw.o : symm_base.o
 clean_pw.o : symme.o
@@ -443,6 +444,7 @@ electrons.o : newd.o
 electrons.o : paw_onecenter.o
 electrons.o : paw_symmetry.o
 electrons.o : pwcom.o
+electrons.o : rism_module.o
 electrons.o : scf_mod.o
 electrons.o : xdm_dispersion.o
 eqvect.o : ../../Modules/kind.o
@@ -619,6 +621,7 @@ forces.o : esm.o
 forces.o : ldaU.o
 forces.o : martyna_tuckerman.o
 forces.o : pwcom.o
+forces.o : rism_module.o
 forces.o : scf_mod.o
 forces.o : symme.o
 forces.o : xdm_dispersion.o
@@ -810,6 +813,7 @@ hinit1.o : ../../Modules/cell_base.o
 hinit1.o : ../../Modules/control_flags.o
 hinit1.o : ../../Modules/fft_base.o
 hinit1.o : ../../Modules/ions_base.o
+hinit1.o : ../../Modules/kind.o
 hinit1.o : ../../Modules/paw_variables.o
 hinit1.o : ../../Modules/recvec.o
 hinit1.o : ../../Modules/wannier_new.o
@@ -820,6 +824,7 @@ hinit1.o : paw_onecenter.o
 hinit1.o : paw_symmetry.o
 hinit1.o : pwcom.o
 hinit1.o : realus.o
+hinit1.o : rism_module.o
 hinit1.o : scf_mod.o
 init_at_1.o : ../../Modules/atom.o
 init_at_1.o : ../../Modules/cell_base.o
@@ -865,6 +870,7 @@ init_run.o : esm.o
 init_run.o : newd.o
 init_run.o : paw_init.o
 init_run.o : pwcom.o
+init_run.o : rism_module.o
 init_run.o : symme.o
 init_us_0.o : ../../Modules/atom.o
 init_us_0.o : ../../Modules/cell_base.o
@@ -958,6 +964,7 @@ input.o : ldaU.o
 input.o : martyna_tuckerman.o
 input.o : pwcom.o
 input.o : realus.o
+input.o : rism_module.o
 input.o : start_k.o
 input.o : symm_base.o
 input.o : tetra.o
@@ -1055,6 +1062,7 @@ memory_report.o : ../../Modules/mp_diag.o
 memory_report.o : ../../Modules/mp_images.o
 memory_report.o : ../../Modules/noncol.o
 memory_report.o : ../../Modules/recvec.o
+memory_report.o : ../../Modules/rism3d_facade.o
 memory_report.o : ../../Modules/uspp.o
 memory_report.o : ../../Modules/wannier_new.o
 memory_report.o : atomic_wfc_mod.o
@@ -1098,6 +1106,7 @@ move_ions.o : dynamics_module.o
 move_ions.o : fcp.o
 move_ions.o : newd.o
 move_ions.o : pwcom.o
+move_ions.o : rism_module.o
 move_ions.o : scf_mod.o
 move_ions.o : symm_base.o
 n_plane_waves.o : ../../Modules/kind.o
@@ -1376,6 +1385,7 @@ potinit.o : ldaU.o
 potinit.o : paw_init.o
 potinit.o : paw_onecenter.o
 potinit.o : pwcom.o
+potinit.o : rism_module.o
 potinit.o : scf_mod.o
 print_clock_pw.o : ../../Modules/control_flags.o
 print_clock_pw.o : ../../Modules/funct.o
@@ -1385,6 +1395,7 @@ print_clock_pw.o : ../../Modules/uspp.o
 print_clock_pw.o : bp_mod.o
 print_clock_pw.o : ldaU.o
 print_clock_pw.o : realus.o
+print_clock_pw.o : rism_module.o
 print_ks_energies.o : ../../Modules/constants.o
 print_ks_energies.o : ../../Modules/control_flags.o
 print_ks_energies.o : ../../Modules/io_global.o
@@ -1488,11 +1499,14 @@ pw_restart.o : ../../Modules/noncol.o
 pw_restart.o : ../../Modules/parser.o
 pw_restart.o : ../../Modules/qexml.o
 pw_restart.o : ../../Modules/recvec.o
+pw_restart.o : ../../Modules/rism3d_facade.o
 pw_restart.o : ../../Modules/run_info.o
+pw_restart.o : ../../Modules/solvmol.o
 pw_restart.o : ../../Modules/tsvdw.o
 pw_restart.o : ../../Modules/version.o
 pw_restart.o : ../../Modules/wavefunctions.o
 pw_restart.o : ../../Modules/xml_io_base.o
+pw_restart.o : ../../Modules/xml_io_rism.o
 pw_restart.o : ../../iotk/src/iotk_module.o
 pw_restart.o : acfdt_in_pw.o
 pw_restart.o : atomic_wfc_mod.o
@@ -1611,8 +1625,11 @@ read_file.o : ../../Modules/mp_bands.o
 read_file.o : ../../Modules/noncol.o
 read_file.o : ../../Modules/paw_variables.o
 read_file.o : ../../Modules/read_pseudo.o
+read_file.o : ../../Modules/read_solv.o
 read_file.o : ../../Modules/recvec.o
 read_file.o : ../../Modules/recvec_subs.o
+read_file.o : ../../Modules/rism3d_facade.o
+read_file.o : ../../Modules/solvmol.o
 read_file.o : ../../Modules/uspp.o
 read_file.o : ../../Modules/wavefunctions.o
 read_file.o : ../../Modules/xml_io_base.o
@@ -1626,6 +1643,7 @@ read_file.o : paw_onecenter.o
 read_file.o : pw_restart.o
 read_file.o : pwcom.o
 read_file.o : realus.o
+read_file.o : rism_module.o
 read_file.o : scf_mod.o
 read_file.o : symm_base.o
 read_file_new.o : ../../FFTXlib/fft_interfaces.o
@@ -1716,6 +1734,25 @@ restart_in_electrons.o : pwcom.o
 rho2zeta.o : ../../Modules/constants.o
 rho2zeta.o : ../../Modules/io_global.o
 rho2zeta.o : ../../Modules/kind.o
+rism_module.o : ../../FFTXlib/fft_interfaces.o
+rism_module.o : ../../Modules/cell_base.o
+rism_module.o : ../../Modules/check_stop.o
+rism_module.o : ../../Modules/constants.o
+rism_module.o : ../../Modules/control_flags.o
+rism_module.o : ../../Modules/fft_base.o
+rism_module.o : ../../Modules/io_global.o
+rism_module.o : ../../Modules/ions_base.o
+rism_module.o : ../../Modules/kind.o
+rism_module.o : ../../Modules/mp.o
+rism_module.o : ../../Modules/mp_images.o
+rism_module.o : ../../Modules/noncol.o
+rism_module.o : ../../Modules/recvec.o
+rism_module.o : ../../Modules/rism1d_facade.o
+rism_module.o : ../../Modules/rism3d_facade.o
+rism_module.o : ../../Modules/solute.o
+rism_module.o : ../../Modules/solvmol.o
+rism_module.o : esm.o
+rism_module.o : pwcom.o
 rotate_wfc.o : ../../Modules/control_flags.o
 rotate_wfc.o : ../../Modules/kind.o
 rotate_wfc_gamma.o : ../../LAXlib/la_types.o
@@ -1811,6 +1848,7 @@ scale_h.o : ../../Modules/mp_bands.o
 scale_h.o : ../../Modules/recvec.o
 scale_h.o : exx.o
 scale_h.o : pwcom.o
+scale_h.o : rism_module.o
 scale_h.o : start_k.o
 scf_mod.o : ../../FFTXlib/fft_interfaces.o
 scf_mod.o : ../../Modules/cell_base.o
@@ -1864,6 +1902,7 @@ setlocal.o : ../../Modules/recvec.o
 setlocal.o : esm.o
 setlocal.o : martyna_tuckerman.o
 setlocal.o : pwcom.o
+setlocal.o : rism_module.o
 setlocal.o : scf_mod.o
 setup.o : ../../FFTXlib/fft_types.o
 setup.o : ../../Modules/cell_base.o
@@ -1895,6 +1934,7 @@ setup.o : ldaU.o
 setup.o : pw_restart.o
 setup.o : pw_restart_new.o
 setup.o : pwcom.o
+setup.o : rism_module.o
 setup.o : start_k.o
 setup.o : symm_base.o
 setup.o : tetra.o
@@ -2027,6 +2067,7 @@ stress.o : esm.o
 stress.o : exx.o
 stress.o : ldaU.o
 stress.o : pwcom.o
+stress.o : rism_module.o
 stress.o : scf_mod.o
 stress.o : symme.o
 stress.o : xdm_dispersion.o

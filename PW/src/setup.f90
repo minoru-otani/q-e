@@ -94,6 +94,7 @@ SUBROUTINE setup()
   USE paw_variables,      ONLY : okpaw
   USE fcp_variables,      ONLY : lfcpopt, lfcpdyn
   USE extfield,           ONLY : monopole
+  USE rism_module,        ONLY : lrism, rism_calc1d
   !
   IMPLICIT NONE
   !
@@ -663,6 +664,10 @@ SUBROUTINE setup()
   ! ... initialize d1 and d2 to rotate the spherical harmonics
   !
   IF (lda_plus_u .or. okpaw .or. (okvan.and.dft_is_hybrid()) ) CALL d_matrix( d1, d2, d3 )
+  !
+  ! ... calculate solvent-solvent interaction (1D-RISM).
+  !
+  IF (lrism) CALL rism_calc1d()
   !
   RETURN
   !

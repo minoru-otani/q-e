@@ -53,6 +53,7 @@ SUBROUTINE forces()
   USE tsvdw_module,  ONLY : FtsvdW
   USE esm,           ONLY : do_comp_esm, esm_bc, esm_force_ew
   USE qmmm,          ONLY : qmmm_mode
+  USE rism_module,   ONLY : lrism, force_rism
   !
   IMPLICIT NONE
   !
@@ -65,7 +66,8 @@ SUBROUTINE forces()
                            force_mt(:,:), &
                            forcescc(:,:), &
                            forces_bp_efield(:,:), &
-                           forceh(:,:)
+                           forceh(:,:), &
+                           force_sol(:,:)
     ! nonlocal, local, core-correction, ewald, scf correction terms, and hubbard
 !
 ! aux is used to store a possible additional density
@@ -144,6 +146,13 @@ SUBROUTINE forces()
                         nspin, rho%of_g, force_mt )
   END IF
   !
+  ! ... The solvation contribution (3D-RISM)
+  !
+  IF (lrism) THEN
+     ALLOCATE ( force_sol ( 3 , nat ) )
+     CALL force_rism( force_sol )
+  END IF
+  !
   ! ... call void routine for user define/ plugin patches on internal forces
   !
   call plugin_int_forces()
@@ -193,6 +202,7 @@ SUBROUTINE forces()
         IF ( monopole ) force(ipol,na) = force(ipol,na) + forcemono(ipol,na) ! TB
         IF (lelfield)  force(ipol,na) = force(ipol,na) + forces_bp_efield(ipol,na)
         IF (do_comp_mt)force(ipol,na) = force(ipol,na) + force_mt(ipol,na) 
+        IF ( lrism )   force(ipol,na) = force(ipol,na) + force_sol(ipol,na)
 
         sumfor = sumfor + force(ipol,na)
         !
@@ -309,6 +319,13 @@ SUBROUTINE forces()
         END DO
      END IF
      !
+     IF ( lrism) THEN
+        WRITE( stdout, '(/,5x,"3D-RISM Solvation contribution to forces:")')
+        DO na = 1, nat
+           WRITE( stdout, 9035) na, ityp(na), (force_sol(ipol,na), ipol = 1, 3)
+        END DO
+     END IF
+     !
   END IF
   !
   sumfor = 0.D0
@@ -351,10 +368,23 @@ SUBROUTINE forces()
      !
   END IF
   !
+  IF ( lrism .AND. iverbosity > 0 ) THEN
+     !
+     sum_mm = 0.D0
+     DO na = 1, nat
+        sum_mm = sum_mm + &
+                 force_sol(1,na)**2 + force_sol(2,na)**2 + force_sol(3,na)**2
+     END DO
+     sum_mm = SQRT( sum_mm )
+     WRITE ( stdout, '(/,5x, "Total 3D-RISM Solvation Force = ",F12.6)') sum_mm
+     !
+  END IF
+  !
   DEALLOCATE( forcenl, forcelc, forcecc, forceh, forceion, forcescc )
   IF ( llondon )  DEALLOCATE ( force_disp )
   IF ( lxdm ) DEALLOCATE( force_disp_xdm ) 
   IF ( lelfield ) DEALLOCATE ( forces_bp_efield )
+  IF ( lrism )    DEALLOCATE ( force_sol )
   !
   lforce = .TRUE.
   !

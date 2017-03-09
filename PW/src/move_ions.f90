@@ -56,6 +56,7 @@ SUBROUTINE move_ions ( idone )
                                      fcp_relax, fcp_relax_crit
   USE klist,                  ONLY : nelec
   USE dfunct,                 only : newd
+  USE rism_module,            ONLY : lrism, rism_new_conv_thr
   !
   IMPLICIT NONE
   !
@@ -398,6 +399,14 @@ SUBROUTINE move_ions ( idone )
      CALL mp_bcast( omega_old, ionode_id, intra_image_comm )
      CALL mp_bcast( bg,        ionode_id, intra_image_comm )
      !
+  END IF
+  !
+  ! ... update convergence threshold of 3D-RISM
+  !
+  IF ( lrism ) THEN
+     IF ( tr2 < starting_scf_threshold ) THEN
+       CALL rism_new_conv_thr()
+     END IF
   END IF
   !
   RETURN

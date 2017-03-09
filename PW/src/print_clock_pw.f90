@@ -20,6 +20,7 @@ SUBROUTINE print_clock_pw()
    USE ldaU,               ONLY : lda_plus_U
    USE funct,              ONLY : dft_is_hybrid
    USE bp,                 ONLY : lelfield
+   USE rism_module,        ONLY : rism_print_clock
    !
    IMPLICIT NONE
    !
@@ -238,6 +239,8 @@ SUBROUTINE print_clock_pw()
       call print_clock('h_epsi_apply')
       call print_clock('c_phase_field')
    END IF
+   !
+   CALL rism_print_clock()
    !
    CALL plugin_clock()
    !

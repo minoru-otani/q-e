@@ -13,6 +13,7 @@ SUBROUTINE hinit1()
   ! ... Important note: does not recompute structure factors,
   ! ... they must be computed before this routine is called
   !
+  USE kinds,         ONLY : DP
   USE ions_base,     ONLY : nat, nsp, ityp, tau
   USE cell_base,     ONLY : at, bg, omega, tpiba2
   USE fft_base,      ONLY : dfftp
@@ -30,6 +31,8 @@ SUBROUTINE hinit1()
   USE paw_onecenter, ONLY : paw_potential
   USE paw_symmetry,  ONLY : paw_symmetrize_ddd
   USE dfunct,        ONLY : newd
+  USE ener,          ONLY : esol, vsol
+  USE rism_module,   ONLY : lrism, rism_update_pos, rism_calc3d
   !
   IMPLICIT NONE
   !
@@ -38,11 +41,19 @@ SUBROUTINE hinit1()
   !
   CALL setlocal()
   !
+  ! ... update solute position for 3D-RISM
+  !
+  IF (lrism) CALL rism_update_pos()
+  !
   ! these routines can be used to patch quantities that are dependent
   ! on the ions and cell parameters
   !
   CALL plugin_init_ions()
   CALL plugin_init_cell()
+  !
+  ! ... calculate 3D-RISM to get the solvation potential
+  !
+  IF (lrism) CALL rism_calc3d(rho%of_g, esol, vsol, v%of_r, -1.0_DP)
   !
   ! ... plugin contribution to local potential
   !

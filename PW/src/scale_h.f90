@@ -25,6 +25,7 @@ subroutine scale_h
   USE start_k,    ONLY : nks_start, xk_start, nk1,nk2,nk3
   USE exx,        ONLY : exx_grid_reinit
   USE funct,      ONLY : dft_is_hybrid
+  USE rism_module,ONLY : lrism, rism_reinit3d
   USE mp,         ONLY : mp_max
   USE mp_bands,   ONLY : intra_bgrp_comm
   !
@@ -89,6 +90,10 @@ subroutine scale_h
   ! for hybrid functionals
   !
   IF ( dft_is_hybrid() ) CALL exx_grid_reinit()
+  !
+  ! for 3D-RISM
+  !
+  IF ( lrism ) CALL rism_reinit3d()
   !
   return
 end subroutine scale_h

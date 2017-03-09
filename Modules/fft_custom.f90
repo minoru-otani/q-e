@@ -44,6 +44,9 @@ MODULE fft_custom
      INTEGER,  DIMENSION(:), POINTER :: ig1t,ig2t,ig3t
      INTEGER :: nlgt
      INTEGER :: npwt,npwxt
+     INTEGER :: nglt
+     REAL(kind=DP), DIMENSION(:), POINTER :: glt
+     INTEGER, DIMENSION(:), POINTER :: igtonglt
      LOGICAL :: initialized = .FALSE.
      
   END TYPE fft_cus
@@ -432,6 +435,8 @@ CONTAINS
     CALL fft_type_deallocate(fc%dfftt)
     DEALLOCATE(fc%ig_l2gt,fc%ggt,fc%gt)
     DEALLOCATE(fc%ig1t,fc%ig2t,fc%ig3t)
+    IF(ASSOCIATED(fc%glt))      DEALLOCATE(fc%glt)
+    IF(ASSOCIATED(fc%igtonglt)) DEALLOCATE(fc%igtonglt)
     fc%initialized=.FALSE.
 
     RETURN
@@ -595,5 +600,70 @@ CONTAINS
     RETURN
     !
   END SUBROUTINE reorderwfp_col
-  !----------------------------------------------------------------------------  
+  !
+  !-----------------------------------------------------------------------
+  SUBROUTINE gshells_custom (fc, vc)
+    !----------------------------------------------------------------------
+    !
+    ! calculate number of G shells: nglt, and the index ng = igtonglt(ig)
+    ! that gives the shell index ng for (lacal) G-vector of index ig
+    !
+    USE kinds,     ONLY : DP
+    USE constants, ONLY : eps8
+    !
+    IMPLICIT NONE
+    !
+    TYPE(fft_cus), INTENT(INOUT) :: fc
+    LOGICAL, INTENT(IN) :: vc
+    !
+    INTEGER :: ng, iglt
+    !
+    ! deallocate memory, if needed
+    IF(ASSOCIATED(fc%glt))      DEALLOCATE(fc%glt)
+    IF(ASSOCIATED(fc%igtonglt)) DEALLOCATE(fc%igtonglt)
+    !
+    IF ( vc ) THEN
+       !
+       ! in case of a variable cell run each G vector has its shell
+       !
+       ALLOCATE(fc%glt(fc%ngmt))
+       ALLOCATE(fc%igtonglt(fc%ngmt))
+       !
+       fc%nglt = fc%ngmt
+       fc%glt = fc%ggt
+       DO ng = 1, fc%ngmt
+          fc%igtonglt(ng) = ng
+       ENDDO
+    ELSE
+       !
+       ! G vectors are grouped in shells with the same norm
+       !
+       ALLOCATE(fc%igtonglt(fc%ngmt))
+       !
+       fc%nglt = 1
+       fc%igtonglt(1) = 1
+       DO ng = 2, fc%ngmt
+          IF (fc%ggt(ng) > fc%ggt(ng - 1) + eps8) THEN
+             fc%nglt = fc%nglt + 1
+          ENDIF
+          fc%igtonglt(ng) = fc%nglt
+       ENDDO
+       !
+       ALLOCATE(fc%glt(fc%nglt))
+       !
+       fc%glt(1) = fc%ggt(1)
+       iglt = 1
+       DO ng = 2, fc%ngmt
+          IF (fc%ggt(ng) > fc%ggt(ng - 1) + eps8) THEN
+             iglt = iglt + 1
+             fc%glt(iglt) = fc%ggt(ng)
+          ENDIF
+       ENDDO
+       !
+       IF (iglt /= fc%nglt) CALL errore ('gshells_custom', 'iglt <> nglt', fc%nglt)
+       !
+    ENDIF
+    !
+  END SUBROUTINE gshells_custom
+
 END MODULE fft_custom

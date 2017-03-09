@@ -20,6 +20,7 @@ SUBROUTINE lr_run_nscf( )
   USE fft_base,        ONLY : dffts
   USE mp_bands,        ONLY : ntask_groups
   USE lr_variables,    ONLY : tmp_dir_lr
+  USE rism_module,     ONLY : lrism, rism_set_restart
   !
   IMPLICIT NONE
   !
@@ -41,6 +42,7 @@ SUBROUTINE lr_run_nscf( )
   startingconfig    = 'input'
   starting_pot      = 'file'
   starting_wfc      = 'atomic'
+  IF (lrism) CALL rism_set_restart()
   !
   ! Do not confuse the below restart (from control_flags) with
   ! the one from the TDDFPT code (from lr_variables).

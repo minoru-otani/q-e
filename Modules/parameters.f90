@@ -17,6 +17,7 @@ MODULE parameters
        nsx    = ntypx,  &! max number of atomic species (CP)
        npk    = 40000,  &! max number of k-points               
        lmaxx  = 3,      &! max non local angular momentum (l=0 to lmaxx)      
-       lqmax= 2*lmaxx+1  ! max number of angular momenta of Q
+       lqmax= 2*lmaxx+1,&! max number of angular momenta of Q
+       nsolx  = 10       ! max number of solvents (RISM)
 
 END MODULE parameters

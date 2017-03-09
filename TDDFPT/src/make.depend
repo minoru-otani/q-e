@@ -452,6 +452,7 @@ lr_run_nscf.o : ../../Modules/fft_base.o
 lr_run_nscf.o : ../../Modules/io_files.o
 lr_run_nscf.o : ../../Modules/mp_bands.o
 lr_run_nscf.o : ../../PW/src/atomic_wfc_mod.o
+lr_run_nscf.o : ../../PW/src/rism_module.o
 lr_run_nscf.o : lr_variables.o
 lr_set_boxes_density.o : ../../Modules/fft_base.o
 lr_set_boxes_density.o : ../../Modules/io_global.o

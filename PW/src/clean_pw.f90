@@ -63,6 +63,7 @@ SUBROUTINE clean_pw( lflag )
   USE pseudo_types,         ONLY : deallocate_pseudo_upf
   USE bp,                   ONLY : deallocate_bp_efield
   USE exx,                  ONLY : deallocate_exx
+  USE rism_module,          ONLY : deallocate_rism
   !
   USE control_flags,        ONLY : ts_vdw
   USE tsvdw_module,         ONLY : tsvdw_finalize
@@ -210,6 +211,10 @@ SUBROUTINE clean_pw( lflag )
   if (use_wannier) CALL wannier_clean()
   !
   CALL deallocate_exx ( ) 
+  !
+  ! ... arrays for RISM
+  !
+  CALL deallocate_rism( lflag )
   !
   IF (ts_vdw) CALL tsvdw_finalize()
   !

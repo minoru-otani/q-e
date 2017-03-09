@@ -216,6 +216,8 @@ SUBROUTINE iosys()
 
   USE qmmm, ONLY : qmmm_config
 
+  USE rism_module, ONLY : rism_iosys
+
   !
   ! ... CONTROL namelist
   !
@@ -226,7 +228,7 @@ SUBROUTINE iosys()
                                gdir, nppstr, wf_collect,lelfield,lorbm,efield, &
                                nberrycyc, lkpoint_dir, efield_cart, lecrpa,    &
                                vdw_table_name, memory, tqmmm,                  &
-                               efield_phase, monopole
+                               efield_phase, monopole, trism
 
   !
   ! ... SYSTEM namelist
@@ -1610,6 +1612,10 @@ SUBROUTINE iosys()
               'constraints only with fixed-cell dynamics', 1 )
      CALL init_constraint( nat, tau, ityp, alat )
   END IF
+  !
+  ! ... set variables for RISM
+  !
+  CALL rism_iosys(trism)
   !
   ! ... End of reading input parameters
   !

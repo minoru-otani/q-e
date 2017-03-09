@@ -32,6 +32,7 @@ subroutine stress ( sigma )
   USE exx,           ONLY : exx_stress
   USE funct,         ONLY : dft_is_hybrid
   USE tsvdw_module,  ONLY : HtsvdW
+  USE rism_module,   ONLY : lrism, stres_rism
   USE ener,          ONLY : etot ! for ESM stress
   USE esm,           ONLY : do_comp_esm, esm_bc ! for ESM stress
   USE esm,           ONLY : esm_stres_har, esm_stres_ewa, esm_stres_loclong ! for ESM stress
@@ -43,8 +44,8 @@ subroutine stress ( sigma )
   real(DP) :: sigmakin (3, 3), sigmaloc (3, 3), sigmahar (3, 3), &
        sigmaxc (3, 3), sigmaxcc (3, 3), sigmaewa (3, 3), sigmanlc (3, 3), &
        sigmabare (3, 3), sigmah (3, 3), sigmael( 3, 3), sigmaion(3, 3), &
-       sigmalon ( 3 , 3 ), sigmaxdm(3, 3), sigma_nonloc_dft (3 ,3), sigmaexx(3,3), sigma_ts(3,3)
-  real(DP) :: sigmaloclong(3,3)  ! for ESM stress
+       sigmalon ( 3 , 3 ), sigmaxdm(3, 3), sigma_nonloc_dft (3 ,3), sigmaexx(3,3), sigma_ts(3,3), &
+       sigmasol (3, 3), sigmaloclong(3,3)  ! for ESM stress
   integer :: l, m
   !
   WRITE( stdout, '(//5x,"Computing stress (Cartesian axis) and pressure"/)')
@@ -147,13 +148,18 @@ subroutine stress ( sigma )
   sigma_nonloc_dft (:,:) = 0.d0
   call stres_nonloc_dft(rho%of_r, rho_core, nspin, sigma_nonloc_dft)
   !
+  !   The solvation contribution (3D-RISM)
+  !
+  sigmasol(:,:) = 0.d0
+  IF (lrism) CALL stres_rism(sigmasol)
+  !
   ! SUM
   !
   sigma(:,:) = sigmakin(:,:) + sigmaloc(:,:) + sigmahar(:,:) + &
                sigmaxc(:,:) + sigmaxcc(:,:) + sigmaewa(:,:) + &
                sigmanlc(:,:) + sigmah(:,:) + sigmael(:,:) +  &
                sigmaion(:,:) + sigmalon(:,:) + sigmaxdm(:,:) + &
-               sigma_nonloc_dft(:,:) + sigma_ts(:,:)
+               sigma_nonloc_dft(:,:) + sigma_ts(:,:) + sigmasol(:,:)
 
 !!$  write(*,"(f6.3,f8.3,f12.6,f12.6,a)") &
 !!$       alat, omega, etot, sigma(1,1)+sigma(2,2), &
@@ -190,7 +196,8 @@ subroutine stress ( sigma )
      (sigmalon(l,1)*ry_kbar,sigmalon(l,2)*ry_kbar,sigmalon(l,3)*ry_kbar, l=1,3), &
      (sigmaxdm(l,1)*ry_kbar,sigmaxdm(l,2)*ry_kbar,sigmaxdm(l,3)*ry_kbar, l=1,3), &
      (sigma_nonloc_dft(l,1)*ry_kbar,sigma_nonloc_dft(l,2)*ry_kbar,sigma_nonloc_dft(l,3)*ry_kbar, l=1,3),&
-     (sigma_ts(l,1)*ry_kbar,sigma_ts(l,2)*ry_kbar,sigma_ts(l,3)*ry_kbar, l=1,3)
+     (sigma_ts(l,1)*ry_kbar,sigma_ts(l,2)*ry_kbar,sigma_ts(l,3)*ry_kbar, l=1,3),&
+     (sigmasol(l,1)*ry_kbar,sigmasol(l,2)*ry_kbar,sigmasol(l,3)*ry_kbar, l=1,3)
 
   IF ( dft_is_hybrid() .AND. (iverbosity > 0) ) WRITE( stdout, 9006) &
      (sigmaexx(l,1)*ry_kbar,sigmaexx(l,2)*ry_kbar,sigmaexx(l,3)*ry_kbar, l=1,3)
@@ -220,6 +227,7 @@ subroutine stress ( sigma )
          &   5x,'london  stress (kbar)',3f10.2/2(26x,3f10.2/)/ &
          &   5x,'XDM     stress (kbar)',3f10.2/2(26x,3f10.2/)/ &
          &   5x,'dft-nl  stress (kbar)',3f10.2/2(26x,3f10.2/)/ &
-         &   5x,'TS-vdW  stress (kbar)',3f10.2/2(26x,3f10.2/)/ )
+         &   5x,'TS-vdW  stress (kbar)',3f10.2/2(26x,3f10.2/)/ &
+         &   5x,'3D-RISM stress (kbar)',3f10.2/2(26x,3f10.2/)/ )
 end subroutine stress
 

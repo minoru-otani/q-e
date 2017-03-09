@@ -36,6 +36,7 @@ SUBROUTINE run_nscf(do_band, iq)
   USE grid_irr_iq,     ONLY : done_bands
   USE acfdtest,        ONLY : acfdt_is_active, acfdt_num_der, ir_point, delta_vrs
   USE scf,             ONLY : vrs
+  USE rism_module,     ONLY : lrism, rism_set_restart
   USE mp_bands,        ONLY : ntask_groups, intra_bgrp_comm
 
   USE lr_symm_base,    ONLY : minus_q, nsymq, invsymq
@@ -76,6 +77,7 @@ SUBROUTINE run_nscf(do_band, iq)
   startingconfig    = 'input'
   starting_pot      = 'file'
   starting_wfc      = 'atomic'
+  IF (lrism) CALL rism_set_restart()
   restart = ext_restart
   conv_ions=.true.
   !

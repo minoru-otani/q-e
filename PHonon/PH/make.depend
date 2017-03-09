@@ -1246,6 +1246,7 @@ run_nscf.o : ../../Modules/mp_bands.o
 run_nscf.o : ../../Modules/recvec.o
 run_nscf.o : ../../PW/src/atomic_wfc_mod.o
 run_nscf.o : ../../PW/src/pwcom.o
+run_nscf.o : ../../PW/src/rism_module.o
 run_nscf.o : ../../PW/src/scf_mod.o
 run_nscf.o : acfdtest.o
 run_nscf.o : elph.o

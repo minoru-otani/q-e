@@ -34,9 +34,12 @@ SUBROUTINE setlocal
   USE martyna_tuckerman, ONLY : wg_corr_loc, do_comp_mt
   USE esm,       ONLY : esm_local, esm_bc, do_comp_esm
   USE qmmm,      ONLY : qmmm_add_esf
+  USE rism_module, ONLY : lrism, rism_setlocal
   !
   IMPLICIT NONE
   COMPLEX(DP), ALLOCATABLE :: aux (:), v_corr(:)
+  COMPLEX(DP), ALLOCATABLE :: vlesm(:)
+  REAL(DP),    ALLOCATABLE :: vrism(:)
   ! auxiliary variable
   INTEGER :: nt, ng
   ! counter on atom types
@@ -44,6 +47,8 @@ SUBROUTINE setlocal
   !
   ALLOCATE (aux( dfftp%nnr))
   aux(:)=(0.d0,0.d0)
+  ALLOCATE (vlesm(dfftp%nnr))
+  vlesm(:)=(0.d0,0.d0)
   !
   IF (do_comp_mt) THEN
       ALLOCATE(v_corr(ngm))
@@ -67,7 +72,8 @@ SUBROUTINE setlocal
      !
      ! ... Perform ESM correction to local potential
      !
-      CALL esm_local ( aux )
+     CALL esm_local ( vlesm )
+     aux = aux + vlesm
   ENDIF
   !
   ! ... v_of_0 is (Vloc)(G=0)
@@ -98,11 +104,32 @@ SUBROUTINE setlocal
   !
   CALL qmmm_add_esf(vltot,dfftp)
   !
+  ! ... set the local potential to rism_module
+  !
+  IF (lrism) THEN
+      IF ( do_comp_esm .AND. ( esm_bc .NE. 'pbc' ) ) THEN
+          !
+          ! ... for Laue-RISM
+          !
+          ALLOCATE(vrism(dfftp%nnr))
+          CALL invfft ('Dense', vlesm, dfftp)
+          vrism(:) = vltot(:) - DBLE(vlesm(:))
+          CALL rism_setlocal(vrism)
+          DEALLOCATE(vrism)
+      ELSE
+          !
+          ! ... for 3D-RISM
+          !
+          CALL rism_setlocal(vltot)
+      END IF
+  END IF
+  !
   ! ... Save vltot for possible modifications in plugins
   !
   CALL plugin_init_potential()
   !
   DEALLOCATE(aux)
+  DEALLOCATE(vlesm)
   !
   RETURN
 END SUBROUTINE setlocal

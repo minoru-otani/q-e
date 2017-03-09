@@ -187,6 +187,7 @@ remove_atomic_rho.o \
 report_mag.o \
 restart_in_electrons.o \
 rho2zeta.o \
+rism_module.o \
 rotate_wfc.o \
 rotate_wfc_k.o \
 rotate_wfc_gamma.o \
