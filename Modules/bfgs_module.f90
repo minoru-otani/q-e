@@ -945,7 +945,7 @@ CONTAINS
          !
       END DO
       !
-      WRITE( UNIT = stdout, &
+      IF ( ineg > 0 ) WRITE( UNIT = stdout, &
            & FMT = '(5X,"negative eigenvalues",T30,"= ",I7,/)' ) ineg
       !
       CALL DGEMM( 'N', 'T', n, n, n, 1.0_DP, evec2, n, evec1, n, 0.0_DP, inv_hess, n )

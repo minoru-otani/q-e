@@ -1126,7 +1126,7 @@ MODULE input_parameters
         REAL(DP)  :: w_1 = 0.5E-1_DP
         REAL(DP)  :: w_2 = 0.5_DP
 
-        LOGICAL :: with_sr1 = .true.
+        LOGICAL :: with_sr1 = .false.
 
         LOGICAL :: l_mplathe=.false. !if true apply Muller Plathe strategy
         INTEGER :: n_muller=0!number of intermediate sub-cells

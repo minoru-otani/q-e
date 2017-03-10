@@ -2335,7 +2335,7 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
             }
 
             var with_sr1 -type LOGICAL { 
-                default { .TRUE. }
+                default { .FALSE. }
                 info {
                     If .TRUE. perform the SR1-BFGS algorithm.
                     [for details see O.Farkas, H.B.Schlegel, JCP, 1999, 111, 10806-10814]

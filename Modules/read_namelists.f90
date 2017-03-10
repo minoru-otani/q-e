@@ -501,7 +501,7 @@ MODULE read_namelists_module
        trust_radius_ini = 0.5_DP   ! bohr
        w_1              = 0.01_DP
        w_2              = 0.50_DP
-       with_sr1         =.TRUE.
+       with_sr1         =.FALSE.
        !
        l_mplathe=.false.
        n_muller=0
