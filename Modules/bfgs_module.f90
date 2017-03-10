@@ -122,7 +122,7 @@ MODULE bfgs_module
       w_2                 ! 2nd Wolfe condition: sufficient gradient decrease
 
    LOGICAL :: &
-      with_sr1,          &! if .TRUE., SR1-BFGS formula of hessian is used
+      with_sr1            ! if .TRUE., SR1-BFGS formula of hessian is used
    !
 CONTAINS
    !
