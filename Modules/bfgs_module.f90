@@ -842,9 +842,9 @@ CONTAINS
       phi2 = 1.0_DP - phi1
       !
       WRITE( UNIT = stdout, &
-           & FMT = '(5X," weight of SR1 ",T30,"= ",F12.4)'   ) phi1
+           & FMT = '(5X,"weight of SR1 ",T30,"= ",F12.4)'   ) phi1
       WRITE( UNIT = stdout, &
-           & FMT = '(5X," weight of BFGS",T30,"= ",F12.4,/)' ) phi2
+           & FMT = '(5X,"weight of BFGS",T30,"= ",F12.4,/)' ) phi2
       !
       ! ... SR1's hessian
       !
