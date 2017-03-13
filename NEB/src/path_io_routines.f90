@@ -57,6 +57,7 @@ MODULE path_io_routines
        REAL(DP)           :: k_ratio
        CHARACTER(LEN=256) :: outline
        CHARACTER(LEN=20)  :: nim_char, nstep_path_char
+       CHARACTER(LEN=20)  :: qnewton_ndim_char
        !
        CHARACTER(LEN=6), EXTERNAL :: int_to_char
        !
@@ -88,8 +89,10 @@ MODULE path_io_routines
        !
        IF ( llbfgs .OR. llsr1 ) THEN
           !
-          WRITE( UNIT = iunpath, &
-                 FMT = '(5X,"qnewton_ndim",T35," = ",I4)' )           qnewton_ndim
+          qnewton_ndim_char = int_to_char( qnewton_ndim )
+          !
+          WRITE( iunpath, summary_fmt ) "qnewton_ndim", TRIM( qnewton_ndim_char )
+          !
           WRITE( UNIT = iunpath, &
                  FMT = '(5X,"qnewton_step",T35," = ",F9.4," a.u.")' ) qnewton_step
           !
