@@ -138,6 +138,12 @@ input_description -distribution {Quantum Espresso} -package NEB -program neb.x {
 			    second method to be tested and compared with the
 			    previous one.
 			}
+                        opt -val 'l-bfgs' {
+			    Limited-memory BFGS (L-BFGS)
+			}
+                        opt -val 'l-sr1' {
+			    Limited-memory Symmetric Rank One (L-SR1)
+			}
                         opt -val 'quick-min' {
 			    an optimisation algorithm based on the
 			    projected velocity Verlet scheme
