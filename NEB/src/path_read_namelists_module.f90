@@ -63,7 +63,9 @@ MODULE path_read_namelists_module
          k_max          = 0.1_DP
          k_min          = 0.1_DP
          fixed_tan      = .FALSE.
-         nstep_path    = 1
+         nstep_path     = 1
+         qnewton_ndim   = 16
+         qnewton_step   = 0.6_DP
          !
          lfcpopt              = .FALSE.
          fcp_mu               = 0.0_DP
@@ -98,7 +100,7 @@ MODULE path_read_namelists_module
        ! ... "path" variables broadcast
        !
        CALL mp_bcast( restart_mode,         ionode_id, world_comm )
-       CALL mp_bcast( string_method,        ionode_id, world_comm ) 
+       CALL mp_bcast( string_method,        ionode_id, world_comm )
        CALL mp_bcast( num_of_images,        ionode_id, world_comm )
        CALL mp_bcast( first_last_opt,       ionode_id, world_comm )
        CALL mp_bcast( use_masses,           ionode_id, world_comm )
@@ -112,6 +114,8 @@ MODULE path_read_namelists_module
        CALL mp_bcast( k_min,                ionode_id, world_comm )
        CALL mp_bcast( path_thr,             ionode_id, world_comm )
        CALL mp_bcast( nstep_path,           ionode_id, world_comm )
+       CALL mp_bcast( qnewton_ndim,         ionode_id, world_comm )
+       CALL mp_bcast( qnewton_step,         ionode_id, world_comm )
        CALL mp_bcast( lfcpopt,              ionode_id, world_comm )
        CALL mp_bcast( fcp_mu,               ionode_id, world_comm )
        CALL mp_bcast( fcp_relax_step,       ionode_id, world_comm )

@@ -75,7 +75,7 @@ MODULE path_base
       USE path_variables,   ONLY : path_allocation
       USE path_io_routines, ONLY : read_restart
       USE path_io_units_module, ONLY : path_file, dat_file, crd_file, &
-                                   int_file, xyz_file, axsf_file, broy_file
+                                   int_file, xyz_file, axsf_file, broy_file, qnew_file
       USE fcp_variables,        ONLY : lfcpopt
       USE fcp_opt_routines,     ONLY : fcp_opt_allocation
       !
@@ -94,6 +94,7 @@ MODULE path_base
       axsf_file = TRIM( prefix ) // ".axsf"
       !
       broy_file = TRIM( tmp_dir ) // TRIM( prefix ) // ".broyden"
+      qnew_file = TRIM( tmp_dir ) // TRIM( prefix ) // ".qnewton"
       !
       ! ... istep_path is initialised to zero
       !
@@ -1115,9 +1116,10 @@ MODULE path_base
       !
       USE path_variables,    ONLY : num_of_images, frozen, lsteep_des, &
                                     lquick_min, lbroyden, lbroyden2, &
-                                    llangevin, istep_path
+                                    llbfgs, llsr1, llangevin, istep_path
       USE path_opt_routines, ONLY : quick_min, broyden, broyden2, &
                                     steepest_descent, langevin
+      USE path_opt_qnewton,  ONLY : qnewton_lbfgs, qnewton_lsr1
       USE fcp_variables,     ONLY : lfcpopt
       USE fcp_opt_routines,  ONLY : fcp_line_minimisation
       !
@@ -1133,6 +1135,14 @@ MODULE path_base
       ELSE IF (lbroyden2 ) THEN
          !
          CALL broyden2()
+         !
+      ELSE IF ( llbfgs ) THEN
+         !
+         CALL qnewton_lbfgs()
+         !
+      ELSE IF ( llsr1 ) THEN
+         !
+         CALL qnewton_lsr1()
          !
       ELSE
          !

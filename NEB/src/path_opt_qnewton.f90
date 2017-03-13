@@ -29,36 +29,37 @@ MODULE path_opt_qnewton
   !
   PRIVATE
   !
-  INTEGER, PARAMETER :: &
-     HESS_LBFGS = 1,    &
-     HESS_LSR1  = 2
+  INTEGER, PARAMETER ::     &
+            HESS_LBFGS = 1, &
+            HESS_LSR1  = 2
   !
-  PUBLIC :: lbfgs, lsr1
+  PUBLIC :: qnewton_lbfgs, &
+            qnewton_lsr1
   !
   CONTAINS
      !
      !-----------------------------------------------------------------------
-     SUBROUTINE lbfgs()
+     SUBROUTINE qnewton_lbfgs()
        !-----------------------------------------------------------------------
        !
        IMPLICIT NONE
        !
-       CALL qnewton( HESS_LBFGS )
+       CALL qnewton_x( HESS_LBFGS )
        !
-     END SUBROUTINE lbfgs
+     END SUBROUTINE qnewton_lbfgs
      !
      !-----------------------------------------------------------------------
-     SUBROUTINE lsr1()
+     SUBROUTINE qnewton_lsr1()
        !-----------------------------------------------------------------------
        !
        IMPLICIT NONE
        !
-       CALL qnewton( HESS_LSR1 )
+       CALL qnewton_x( HESS_LSR1 )
        !
-     END SUBROUTINE lsr1
+     END SUBROUTINE qnewton_lsr1
      !
      !-----------------------------------------------------------------------
-     SUBROUTINE qnewton( ihess )
+     SUBROUTINE qnewton_x( ihess )
        !-----------------------------------------------------------------------
        !
        IMPLICIT NONE
@@ -237,7 +238,7 @@ MODULE path_opt_qnewton
        !
        RETURN
        !
-     END SUBROUTINE qnewton
+     END SUBROUTINE qnewton_x
      !
      !-----------------------------------------------------------------------
      SUBROUTINE lbfgs_hess( ndim, nvec, dx, g, map, s, y )

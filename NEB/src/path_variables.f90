@@ -59,10 +59,16 @@ MODULE path_variables
        lquick_min  = .FALSE.,    &! .TRUE. if opt_scheme = "quick-min"
        lbroyden    = .FALSE.,    &! .TRUE. if opt_scheme = "broyden"
        lbroyden2   = .FALSE.,    &! .TRUE. if opt_scheme = "broyden2"
+       llbfgs      = .FALSE.,    &! .TRUE. if opt_scheme = "l-bfgs"
+       llsr1       = .FALSE.,    &! .TRUE. if opt_scheme = "l-sr1"
        llangevin   = .FALSE.      ! .TRUE. if opt_scheme = "langevin"
   INTEGER :: &
        istep_path,               &! iteration in the optimization procedure
        nstep_path                 ! maximum number of iterations
+  INTEGER :: &
+       qnewton_ndim               ! # of the history for quasi-newton
+  REAL(DP) :: &
+       qnewton_step               ! maximum step for quasi-newton
   !
   ! ... "general" real space arrays
   !
@@ -154,7 +160,7 @@ MODULE path_variables
        IF ( ALLOCATED( frozen ) )       DEALLOCATE( frozen )
        IF ( ALLOCATED( lang ) )         DEALLOCATE( lang )
        !
-       IF ( ALLOCATED( fix_atom_pos ) )     DEALLOCATE( fix_atom_pos )      
+       IF ( ALLOCATED( fix_atom_pos ) )     DEALLOCATE( fix_atom_pos )
        !
      END SUBROUTINE path_deallocation
      !

@@ -18,12 +18,12 @@ SUBROUTINE ioneb()
   USE kinds,         ONLY : DP
   USE constants,     ONLY : autoev, eV_to_kelvin
   USE io_global,     ONLY : stdout
-  USE io_files,      ONLY : tmp_dir 
+  USE io_files,      ONLY : tmp_dir
   USE path_variables, ONLY : lsteep_des, lquick_min, &
-                             lbroyden, lbroyden2, llangevin, &
-                             lneb, lsmd, restart
+                             lbroyden, lbroyden2, llbfgs, llsr1, &
+                             llangevin, lneb, lsmd, restart
   ! renamed variables
-  USE path_variables, ONLY : nstep_path_      => nstep_path, &    
+  USE path_variables, ONLY : nstep_path_      => nstep_path, &
                              ds_              => ds, &
                              use_masses_      => use_masses, &
                              CI_scheme_       => CI_scheme, &
@@ -34,7 +34,9 @@ SUBROUTINE ioneb()
                              num_of_images_   => num_of_images, &
                              first_last_opt_  => first_last_opt, &
                              temp_req_        => temp_req, &
-                             path_thr_        => path_thr
+                             path_thr_        => path_thr, &
+                             qnewton_ndim_    => qnewton_ndim, &
+                             qnewton_step_    => qnewton_step
   !
   USE fcp_variables, ONLY : lfcpopt_ => lfcpopt, &
                             fcp_mu_ => fcp_mu, &
@@ -48,6 +50,7 @@ SUBROUTINE ioneb()
                                CI_scheme, opt_scheme, use_masses,      &
                                first_last_opt, temp_req, k_max, k_min, &
                                ds, use_freezing, fixed_tan,            &
+                               qnewton_ndim, qnewton_step,             &
                                lfcpopt, fcp_mu, fcp_relax_step,        &
                                fcp_relax_crit, fcp_tot_charge_first,   &
                                fcp_tot_charge_last
@@ -123,6 +126,8 @@ SUBROUTINE ioneb()
      lquick_min  = .false.
      lbroyden    = .false.
      lbroyden2   = .false.
+     llbfgs      = .false.
+     llsr1       = .false.
      !
      SELECT CASE( opt_scheme )
      CASE( "sd" )
@@ -140,6 +145,14 @@ SUBROUTINE ioneb()
      CASE( "broyden2" )
         !
         lbroyden2    = .true.
+        !
+     CASE( "l-bfgs" )
+        !
+        llbfgs = .true.
+        !
+     CASE( "l-sr1" )
+        !
+        llsr1 = .true.
         !
      CASE( "langevin" )
         !
@@ -183,6 +196,8 @@ SUBROUTINE ioneb()
   k_max_          = k_max
   k_min_          = k_min
   fixed_tan_      = fixed_tan
+  qnewton_ndim_   = qnewton_ndim
+  qnewton_step_   = qnewton_step
   !
   lfcpopt_              = lfcpopt
   fcp_mu_               = fcp_mu

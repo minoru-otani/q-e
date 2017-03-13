@@ -24,7 +24,8 @@ MODULE path_io_units_module
     path_file     = 'os.path',   &! file containing information needed to restart a path simulation
     xyz_file      = 'os.xyz',    &! file containing coordinates of all images in xyz format
     axsf_file     = 'os.axsf',   &! file containing coordinates of all images in axsf format
-    broy_file     = 'os.broyden'  ! file containing broyden's history
+    broy_file     = 'os.broyden',&! file containing broyden's history
+    qnew_file     = 'os.qnewton'  ! file containing quasi-newton's history
   !
   INTEGER :: iunrestart  = 2021 ! unit for saving the restart file ( neb_file )
   INTEGER :: iundat      = 2022 ! unit for saving the enegy profile
@@ -32,7 +33,8 @@ MODULE path_io_units_module
   INTEGER :: iunxyz      = 2024 ! unit for saving coordinates ( xyz format )
   INTEGER :: iunaxsf     = 2025 ! unit for saving coordinates ( axsf format )
   INTEGER :: iunbroy     = 2026 ! unit for saving broyden's history
-  INTEGER :: iuncrd      = 2027 ! unit for saving coordinates in pw.x input format
+  INTEGER :: iunqnew     = 2027 ! unit for saving quasi-newton's history
+  INTEGER :: iuncrd      = 2028 ! unit for saving coordinates in pw.x input format
   INTEGER :: iunnewimage = 28 ! unit for parallelization among images
   !
   INTEGER, EXTERNAL :: find_free_unit
@@ -49,9 +51,10 @@ MODULE path_io_units_module
   iunxyz = find_free_unit()
   iunaxsf = find_free_unit()
   iunbroy = find_free_unit()
+  iunqnew = find_free_unit()
   iuncrd = find_free_unit()
   iunnewimage = find_free_unit()
   !
   END SUBROUTINE set_io_units
-  ! 
+  !
 END MODULE path_io_units_module
