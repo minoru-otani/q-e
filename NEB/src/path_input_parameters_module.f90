@@ -68,7 +68,7 @@ MODULE path_input_parameters_module
   !
   INTEGER :: nstep_path
   !
-  CHARACTER(len=80) :: string_method = 'neb' 
+  CHARACTER(len=80) :: string_method = 'neb'
   ! 'neb' traditional neb as described by Jonsson
   !  'sm' strings method
   CHARACTER(len=80) :: string_method_scheme_allowed(2)
@@ -102,10 +102,12 @@ MODULE path_input_parameters_module
   ! 'sd'          steepest descent
   ! 'broyden'     broyden acceleration
   ! 'broyden2'    broyden acceleration - better ?
+  ! 'l-bfgs'      quasi-newton with L-BFGS
+  ! 'l-sr1'       quasi-newton with L-SR1
   ! 'langevin'    langevin dynamics
   !
-  CHARACTER(len=80) :: opt_scheme_allowed(5)
-  DATA opt_scheme_allowed / 'quick-min', 'broyden', 'broyden2', 'sd', 'langevin' /
+  CHARACTER(len=80) :: opt_scheme_allowed(7)
+  DATA opt_scheme_allowed / 'quick-min', 'broyden', 'broyden2', 'l-bfgs', 'l-sr1', 'sd', 'langevin' /
   !
   REAL (DP)  :: temp_req = 0.0_DP
   ! meaningful only when minimization_scheme = 'sim-annealing'
@@ -114,6 +116,9 @@ MODULE path_input_parameters_module
   REAL (DP)  :: k_max = 0.1_DP, k_min = 0.1_DP
   !
   REAL (DP)  :: path_thr = 0.05_DP
+  !
+  INTEGER    :: qnewton_ndim = 16
+  REAL (DP)  :: qnewton_step = 0.6_DP
   !
   LOGICAL    :: lfcpopt              = .FALSE.
   REAL(DP)   :: fcp_mu               = 0.0_DP
@@ -125,10 +130,11 @@ MODULE path_input_parameters_module
   !
   NAMELIST / PATH / &
                     restart_mode, &
-                    string_method, nstep_path, num_of_images, & 
+                    string_method, nstep_path, num_of_images, &
                     CI_scheme, opt_scheme, use_masses,    &
                     first_last_opt, ds, k_max, k_min, temp_req,          &
                     path_thr, fixed_tan, use_freezing, minimum_image, &
+                    qnewton_ndim, qnewton_step, &
                     lfcpopt, fcp_mu, fcp_relax_step, fcp_relax_crit, &
                     fcp_tot_charge_first, fcp_tot_charge_last
 !
