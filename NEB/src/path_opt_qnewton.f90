@@ -14,6 +14,8 @@ MODULE path_opt_qnewton
   ! ... Two algorithms are implemented:
   ! ...   Limited memory BFGS (L-BFGS)
   ! ...   Limited memory SR1  (L-SR1)
+  ! ...
+  ! ... (R.H.Byrd et al., Math. Program., 63:129-156, 1994.)
   !
   USE kinds,                ONLY : DP
   USE path_io_units_module, ONLY : qnew_file, iunqnew, iunpath
