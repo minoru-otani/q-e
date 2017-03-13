@@ -201,7 +201,7 @@ MODULE path_opt_qnewton
           IF ( nsave < 0 ) THEN
              !
              nsave = 0
-             dx(:) = -ds * ds * g(:)
+             dx(:) = -ds * ds * g1(:)
              !
              WRITE( UNIT = iunpath, &
                     FMT = '(/,5X,"hessian is not well-defined : history is reset",/)' )
@@ -287,7 +287,7 @@ MODULE path_opt_qnewton
           ii = map(i)
           !
           rho(i)   = 1.0_DP / ( y(:,ii) .dot. s(:,ii) )
-          alpha(i) = rho * ( s(:,ii) .dot. dx(:) )
+          alpha(i) = rho(i) * ( s(:,ii) .dot. dx(:) )
           dx(:)    = dx(:) - alpha(i) * y(:,ii)
           !
        END DO
