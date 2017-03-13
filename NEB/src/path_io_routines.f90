@@ -45,7 +45,8 @@ MODULE path_io_routines
                                     path_length, path_thr, ds, use_masses, &
                                     first_last_opt, temp_req, use_freezing, &
                                     k_min, k_max, CI_scheme, fixed_tan, &
-                                    llangevin
+                                    llangevin, llbfgs, llsr1, &
+                                    qnewton_ndim, qnewton_step
        USE path_formats,     ONLY : summary_fmt
        USE path_io_units_module,         ONLY : iunpath
        USE fcp_variables,    ONLY : lfcpopt, fcp_mu, fcp_relax_crit
@@ -84,6 +85,15 @@ MODULE path_io_routines
        !
        WRITE( UNIT = iunpath, &
               FMT = '(5X,"ds",T35," = ",F9.4," a.u.")' ) ds
+       !
+       IF ( llbfgs .OR. llsr1 ) THEN
+          !
+          WRITE( UNIT = iunpath, &
+                 FMT = '(5X,"qnewton_ndim",T35," = ",I4)' )           qnewton_ndim
+          WRITE( UNIT = iunpath, &
+                 FMT = '(5X,"qnewton_step",T35," = ",F9.4," a.u.")' ) qnewton_step
+          !
+       END IF
        !
        IF ( lneb ) THEN
           !
