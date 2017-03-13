@@ -131,9 +131,15 @@ MODULE path_opt_qnewton
              READ( UNIT = iunqnew, FMT = * ) nsave
              READ( UNIT = iunqnew, FMT = * ) x2(:)
              READ( UNIT = iunqnew, FMT = * ) g2(:)
-             READ( UNIT = iunqnew, FMT = * ) map(:)
-             READ( UNIT = iunqnew, FMT = * ) s(:,:)
-             READ( UNIT = iunqnew, FMT = * ) y(:,:)
+             IF ( nsave > 0 ) THEN
+                READ( UNIT = iunqnew, FMT = * ) map(1:nsave)
+                READ( UNIT = iunqnew, FMT = * ) s(:,1:nsave)
+                READ( UNIT = iunqnew, FMT = * ) y(:,1:nsave)
+             ELSE
+                map(:) = 0
+                s(:,:) = 0.0_DP
+                y(:,:) = 0.0_DP
+             END IF
              !
           ELSE
              !
@@ -208,9 +214,11 @@ MODULE path_opt_qnewton
           WRITE( UNIT = iunqnew, FMT = * ) nsave
           WRITE( UNIT = iunqnew, FMT = * ) x1(:)
           WRITE( UNIT = iunqnew, FMT = * ) g1(:)
-          WRITE( UNIT = iunqnew, FMT = * ) map(:)
-          WRITE( UNIT = iunqnew, FMT = * ) s(:,:)
-          WRITE( UNIT = iunqnew, FMT = * ) y(:,:)
+          IF ( nsave > 0 ) THEN
+             WRITE( UNIT = iunqnew, FMT = * ) map(1:nsave)
+             WRITE( UNIT = iunqnew, FMT = * ) s(:,1:nsave)
+             WRITE( UNIT = iunqnew, FMT = * ) y(:,1:nsave)
+          END IF
           !
           CLOSE( UNIT = iunqnew )
           !
