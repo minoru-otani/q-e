@@ -28,6 +28,7 @@ path_input_parameters_module.o \
 path_io_routines.o \
 path_io_tools.o \
 path_io_units_module.o \
+path_opt_qnewton.o \
 path_opt_routines.o \
 path_reparametrisation.o \
 path_read_cards_module.o \
