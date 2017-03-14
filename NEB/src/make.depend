@@ -88,6 +88,7 @@ path_base.o : path_formats.o
 path_base.o : path_input_parameters_module.o
 path_base.o : path_io_routines.o
 path_base.o : path_io_units_module.o
+path_base.o : path_opt_qnewton.o
 path_base.o : path_opt_routines.o
 path_base.o : path_reparametrisation.o
 path_base.o : path_variables.o
@@ -118,6 +119,14 @@ path_io_routines.o : path_io_units_module.o
 path_io_routines.o : path_reparametrisation.o
 path_io_routines.o : path_variables.o
 path_io_tools.o : ../../Modules/kind.o
+path_opt_qnewton.o : ../../Modules/basic_algebra_routines.o
+path_opt_qnewton.o : ../../Modules/constants.o
+path_opt_qnewton.o : ../../Modules/io_global.o
+path_opt_qnewton.o : ../../Modules/kind.o
+path_opt_qnewton.o : ../../Modules/mp.o
+path_opt_qnewton.o : ../../Modules/mp_world.o
+path_opt_qnewton.o : path_io_units_module.o
+path_opt_qnewton.o : path_variables.o
 path_opt_routines.o : ../../Modules/basic_algebra_routines.o
 path_opt_routines.o : ../../Modules/constants.o
 path_opt_routines.o : ../../Modules/io_global.o
