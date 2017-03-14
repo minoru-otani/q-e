@@ -174,6 +174,14 @@ MODULE path_read_namelists_module
           CALL errore( sub_name, ' CI_scheme ''' // &
                       & TRIM( CI_scheme ) //''' not allowed ', 1 )
        !
+       !
+       ! ... quasi-Newton (L-BFGS, L-SR1)
+       !
+       IF ( qnewton_ndim < 1 ) &
+          CALL errore( sub_name, 'qnewton_ndim out of range', 1 )
+       IF ( qnewton_step <= 0.0_DP ) &
+          CALL errore( sub_name, 'qnewton_step out of range', 1 )
+       !
        RETURN
        !
      END SUBROUTINE
