@@ -359,7 +359,7 @@ MODULE path_opt_qnewton
        !
        DO i = 1, nvec
           !
-          ii = map(i)
+          ii = map(nvec - i + 1)
           !
           psi(:,i) = s(:,ii) - H0 * y(:,ii)
           !
@@ -367,7 +367,7 @@ MODULE path_opt_qnewton
        !
        DO i = 1, nvec
           !
-          ii = map(i)
+          ii = map(nvec - i + 1)
           !
           DO j = 1, i
              !
