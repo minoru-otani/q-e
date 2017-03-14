@@ -70,8 +70,11 @@ SUBROUTINE iosys()
                             fcp_mu_ => fcp_mu, &
                             fcp_mass_ => fcp_mass, &
                             fcp_temperature, &
+                            fcp_relax_ => fcp_relax, &
                             fcp_relax_step_ => fcp_relax_step, &
-                            fcp_relax_crit_ => fcp_relax_crit
+                            fcp_relax_crit_ => fcp_relax_crit, &
+                            fcp_mdiis_size_ => fcp_mdiis_size, &
+                            fcp_mdiis_step_ => fcp_mdiis_step
   !
   USE extfield,      ONLY : tefield_  => tefield, &
                             dipfield_ => dipfield, &
@@ -255,7 +258,8 @@ SUBROUTINE iosys()
                                one_atom_occupations,                          &
                                esm_bc, esm_efield, esm_w, esm_nfit, esm_a,    &
                                lfcpopt, lfcpdyn, fcp_mu, fcp_mass, fcp_tempw, &
-                               fcp_relax_step, fcp_relax_crit,                &
+                               fcp_relax, fcp_relax_step, fcp_relax_crit,     &
+                               fcp_mdiis_size, fcp_mdiis_step,                &
                                space_group, uniqueb, origin_choice,           &
                                rhombohedral, zmon, relaxz, block, block_1,    &
                                block_2, block_height
@@ -1410,8 +1414,11 @@ SUBROUTINE iosys()
   !
   IF ( fcp_temperature == 0.0_DP ) &
      fcp_temperature = temperature
+  fcp_relax_      = fcp_relax
   fcp_relax_step_ = fcp_relax_step
   fcp_relax_crit_ = fcp_relax_crit
+  fcp_mdiis_size_ = fcp_mdiis_size
+  fcp_mdiis_step_ = fcp_mdiis_step
   !
   CALL plugin_read_input()
   !

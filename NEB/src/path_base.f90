@@ -1121,7 +1121,7 @@ MODULE path_base
                                     steepest_descent, langevin
       USE path_opt_qnewton,  ONLY : qnewton_lbfgs, qnewton_lsr1
       USE fcp_variables,     ONLY : lfcpopt
-      USE fcp_opt_routines,  ONLY : fcp_line_minimisation
+      USE fcp_opt_routines,  ONLY : fcp_opt_perform
       !
       IMPLICIT NONE
       !
@@ -1168,7 +1168,7 @@ MODULE path_base
          !
       END IF
       !
-      IF ( lfcpopt ) CALL fcp_line_minimisation()
+      IF ( lfcpopt ) CALL fcp_opt_perform()
       !
       RETURN
       !
