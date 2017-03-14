@@ -117,7 +117,7 @@ MODULE path_input_parameters_module
   !
   REAL (DP)  :: path_thr = 0.05_DP
   !
-  INTEGER    :: qnewton_ndim = 16
+  INTEGER    :: qnewton_ndim = 8
   REAL (DP)  :: qnewton_step = 0.6_DP
   !
   LOGICAL    :: lfcpopt              = .FALSE.

@@ -64,7 +64,7 @@ MODULE path_read_namelists_module
          k_min          = 0.1_DP
          fixed_tan      = .FALSE.
          nstep_path     = 1
-         qnewton_ndim   = 16
+         qnewton_ndim   = 8
          qnewton_step   = 0.6_DP
          !
          lfcpopt              = .FALSE.
