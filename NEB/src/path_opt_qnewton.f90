@@ -18,6 +18,7 @@ MODULE path_opt_qnewton
   ! ... (R.H.Byrd et al., Math. Program., 63:129-156, 1994.)
   !
   USE kinds,                ONLY : DP
+  USE constants,            ONLY : eps16
   USE path_io_units_module, ONLY : qnew_file, iunqnew, iunpath
   USE path_variables,       ONLY : ds, pos, grad, dim1, frozen, nim => num_of_images, &
                                    qnewton_ndim, qnewton_step
@@ -133,11 +134,12 @@ MODULE path_opt_qnewton
              READ( UNIT = iunqnew, FMT = * ) nsave
              READ( UNIT = iunqnew, FMT = * ) x2(:)
              READ( UNIT = iunqnew, FMT = * ) g2(:)
-             IF ( nsave > 0 ) THEN
+             IF ( 1 <= nsave .AND. nsave <= qnewton_ndim ) THEN
                 READ( UNIT = iunqnew, FMT = * ) map(1:nsave)
                 READ( UNIT = iunqnew, FMT = * ) s(:,1:nsave)
                 READ( UNIT = iunqnew, FMT = * ) y(:,1:nsave)
              ELSE
+                nsave  = 0
                 map(:) = 0
                 s(:,:) = 0.0_DP
                 y(:,:) = 0.0_DP
@@ -265,7 +267,7 @@ MODULE path_opt_qnewton
        REAL(DP), INTENT(IN)    :: y(ndim,*)
        !
        REAL(DP), ALLOCATABLE   :: rho(:), alpha(:)
-       REAL(DP)                :: H0, beta
+       REAL(DP)                :: H0, ys, beta
        INTEGER                 :: i, ii
        !
        H0 = ds * ds
@@ -286,7 +288,14 @@ MODULE path_opt_qnewton
           !
           ii = map(i)
           !
-          rho(i)   = 1.0_DP / ( y(:,ii) .dot. s(:,ii) )
+          ys = ( y(:,ii) .dot. s(:,ii) )
+          !
+          IF ( ABS( ys ) < eps16 ) THEN
+             nvec = -1
+             GOTO 100
+          END IF
+          !
+          rho(i)   = 1.0_DP / ys
           alpha(i) = rho(i) * ( s(:,ii) .dot. dx(:) )
           dx(:)    = dx(:) - alpha(i) * y(:,ii)
           !
@@ -305,6 +314,7 @@ MODULE path_opt_qnewton
        !
        dx(:) = -dx(:)
        !
+100    CONTINUE
        DEALLOCATE( rho, alpha )
        !
      END SUBROUTINE lbfgs_hess
