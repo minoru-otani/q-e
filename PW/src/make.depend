@@ -446,6 +446,7 @@ electrons.o : pwcom.o
 electrons.o : scf_mod.o
 electrons.o : xdm_dispersion.o
 eqvect.o : ../../Modules/kind.o
+esm.o : ../../FFTXlib/fft_scalar.o
 esm.o : ../../Modules/cell_base.o
 esm.o : ../../Modules/constants.o
 esm.o : ../../Modules/control_flags.o
@@ -458,9 +459,7 @@ esm.o : ../../Modules/mp.o
 esm.o : ../../Modules/mp_bands.o
 esm.o : ../../Modules/mp_global.o
 esm.o : ../../Modules/recvec.o
-esm.o : esm_cft.o
 esm.o : pwcom.o
-esm_cft.o : ../../Modules/kind.o
 ewald.o : ../../Modules/constants.o
 ewald.o : ../../Modules/kind.o
 ewald.o : ../../Modules/mp.o
