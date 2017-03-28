@@ -284,7 +284,7 @@ cat > Li-EtOH.in << EOF
     solute_lj(1) = 'uff'
     ! Laue-RISM
     laue_expand_right   = 50.00 ! bohr
-    laue_starting_right = -3.24 ! bohr
+    laue_starting_right =  3.24 ! bohr
     laue_buffer_right   =  2.00 ! bohr
  /
 ATOMIC_SPECIES
