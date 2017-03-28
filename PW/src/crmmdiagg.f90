@@ -246,13 +246,65 @@ CONTAINS
     !
     IMPLICIT NONE
     !
+    INTEGER :: ibnd
+    !
+    COMPLEX(DP), EXTERNAL :: ZDOTC
+    !
     ! ... Operate the Hamiltonian : H |psi>
+    !
+    hpsi = ZERO
     !
     CALL h_psi( npwx, npw, nbnd, psi, hpsi )
     !
     ! ... Operate the Overlap : S |psi>
     !
-    IF ( uspp ) CALL s_psi( npwx, npw, nbnd, psi, spsi )
+    IF ( uspp ) THEN
+       !
+       spsi = ZERO
+       !
+       CALL s_psi( npwx, npw, nbnd, psi, spsi )
+       !
+    END IF
+    !
+    ! ... Matrix element : <psi| H |psi>
+    !
+    DO ibnd = ibnd_start, ibnd_end
+       !
+       hw(ibnd) = DBLE( ZDOTC( kdim, psi(1,ibnd), 1, hpsi(1,ibnd), 1 ) )
+       !
+    END DO
+    !
+    CALL mp_sum( hw(ibnd_start:ibnd_end), intra_bgrp_comm )
+    !
+    ! ... Matrix element : <psi| S |psi>
+    !
+    DO ibnd = ibnd_start, ibnd_end
+       !
+       IF ( uspp ) THEN
+          !
+          sw(ibnd) = DBLE( ZDOTC( kdim, psi(1,ibnd), 1, spsi(1,ibnd), 1 ) )
+          !
+       ELSE
+          !
+          sw(ibnd) = DBLE( ZDOTC( kdim, psi(1,ibnd), 1, psi(1,ibnd), 1 ) )
+          !
+       END IF
+       !
+    END DO
+    !
+    CALL mp_sum( sw(ibnd_start:ibnd_end), intra_bgrp_comm )
+    !
+    ! ... Energy eigenvalues
+    !
+    IF( ANY( sw(ibnd_start:ibnd_end) <= eps16 ) ) &
+    CALL errore( ' crmmdiagg ', ' sw <= 0 ', 1 )
+    !
+    ew(1:nbnd) = 0._DP
+    ew(ibnd_start:ibnd_end) = hw(ibnd_start:ibnd_end) / sw(ibnd_start:ibnd_end)
+    !
+    CALL mp_sum( ew, inter_bgrp_comm )
+    !
+    e(1:nbnd) = ew(1:nbnd)
     !
     RETURN
     !
