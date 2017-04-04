@@ -19,9 +19,5 @@ if test -f vdwDF_example/run_example_delta_scf; then
         sh vdwDF_example/run_example_delta_scf
 fi
 
-if test -f RISM_example/run_example_post; then
-        sh RISM_example/run_example_post
-fi
-
 echo
 echo "run_all_examples: done"
