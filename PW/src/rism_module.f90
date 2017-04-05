@@ -28,9 +28,11 @@ MODULE rism_module
   USE constants,        ONLY : eps14
   USE control_flags,    ONLY : gamma_only, tr2
   USE esm,              ONLY : do_comp_esm, esm_bc
+  USE exx,              ONLY : x_gamma_extrapolation
   USE fft_base,         ONLY : dfftp
   USE fft_interfaces,   ONLY : invfft
   USE force_mod,        ONLY : lstres
+  USE funct,            ONLY : exx_is_active
   USE gvect,            ONLY : ngm, gstart, nl, nlm
   USE io_global,        ONLY : stdout, ionode, ionode_id
   USE ions_base,        ONLY : nat, tau
@@ -134,6 +136,11 @@ CONTAINS
           CALL errore('rism_check', 'incorrect k-point for Laue-RISM', ik)
         END IF
       END DO
+      !
+      ! ... correct Vexx(G=0) ?
+      IF (exx_is_active() .AND. (.NOT. x_gamma_extrapolation)) THEN
+        CALL errore('rism_check', 'Laue-RISM requires Vexx(G=0)', 1)
+      END IF
       !
     END IF
     !
