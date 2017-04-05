@@ -7080,17 +7080,19 @@ END SUBROUTINE esm_force_lc_bc4
        end if
 
        if( nspin == 2 ) then
-          rho0g(igz) = rhog(ig,1) + rhog(ig,2)
+          rg3 = rhog(ig,1) + rhog(ig,2)
        else
-          rho0g(igz) = rhog(ig,1)
+          rg3 = rhog(ig,1)
        endif
+
+       rho0g(igz) = rg3
 
        if( gamma_only .and. iga==0 .and. igb==0 ) then
           igz = 1-mill(3,ig)
           if( igz<1 ) then
              igz = igz + dfftp%nr3
           end if
-          rho0g(igz) = CONJG(rho0g(igz))
+          rho0g(igz) = CONJG(rg3)
        end if
     end do ! ig
 
