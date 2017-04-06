@@ -1,5 +1,5 @@
 
-     Program PWSCF v.6.1 starts on 27Mar2017 at 19:37:39 
+     Program PWSCF v.6.1 starts on  6Apr2017 at 18:49:32 
 
      This program is part of the open-source Quantum ESPRESSO suite
      for quantum simulation of materials; please cite
@@ -288,7 +288,7 @@
 
      Starting wfc are    6 randomized atomic wfcs
 
-     total cpu time spent up to now is        3.0 secs
+     total cpu time spent up to now is        3.2 secs
 
      per-process dynamical memory:    64.8 Mb
 
@@ -331,7 +331,7 @@
                 GaussFluct   0.130545E+01 kcal/mol
 
 
-     total cpu time spent up to now is        3.6 secs
+     total cpu time spent up to now is        3.8 secs
 
      total energy              =     -34.29567457 Ry
      Harris-Foulkes estimate   =     -34.52894916 Ry
@@ -374,7 +374,7 @@
                 GaussFluct  -0.173762E+00 kcal/mol
 
 
-     total cpu time spent up to now is        4.0 secs
+     total cpu time spent up to now is        4.1 secs
 
      total energy              =     -34.40236515 Ry
      Harris-Foulkes estimate   =     -34.41039530 Ry
@@ -418,7 +418,7 @@
                 GaussFluct  -0.423578E+01 kcal/mol
 
 
-     total cpu time spent up to now is        4.9 secs
+     total cpu time spent up to now is        5.1 secs
 
      total energy              =     -34.40117951 Ry
      Harris-Foulkes estimate   =     -34.41973045 Ry
@@ -506,7 +506,7 @@
                 GaussFluct  -0.482597E+01 kcal/mol
 
 
-     total cpu time spent up to now is        7.3 secs
+     total cpu time spent up to now is        7.2 secs
 
      total energy              =     -34.40532340 Ry
      Harris-Foulkes estimate   =     -34.40585206 Ry
@@ -551,7 +551,7 @@
                 GaussFluct  -0.661988E+01 kcal/mol
 
 
-     total cpu time spent up to now is        8.8 secs
+     total cpu time spent up to now is        8.6 secs
 
      total energy              =     -34.40558643 Ry
      Harris-Foulkes estimate   =     -34.41093370 Ry
@@ -594,7 +594,7 @@
                 GaussFluct  -0.643237E+01 kcal/mol
 
 
-     total cpu time spent up to now is        9.2 secs
+     total cpu time spent up to now is        9.1 secs
 
      total energy              =     -34.40553767 Ry
      Harris-Foulkes estimate   =     -34.40507754 Ry
@@ -855,7 +855,7 @@ H        4.203176020   5.572541800   5.000000000
                 GaussFluct  -0.638224E+01 kcal/mol
 
 
-     total cpu time spent up to now is       13.1 secs
+     total cpu time spent up to now is       12.9 secs
 
      total energy              =     -34.40663359 Ry
      Harris-Foulkes estimate   =     -34.40747844 Ry
@@ -898,7 +898,7 @@ H        4.203176020   5.572541800   5.000000000
                 GaussFluct  -0.621567E+01 kcal/mol
 
 
-     total cpu time spent up to now is       13.5 secs
+     total cpu time spent up to now is       13.4 secs
 
      total energy              =     -34.40694139 Ry
      Harris-Foulkes estimate   =     -34.40642851 Ry
@@ -1116,7 +1116,7 @@ H        4.210154652   5.576117385   5.000000000
                 GaussFluct  -0.589039E+01 kcal/mol
 
 
-     total cpu time spent up to now is       16.2 secs
+     total cpu time spent up to now is       16.6 secs
 
      per-process dynamical memory:    64.3 Mb
 
@@ -1165,7 +1165,7 @@ H        4.210154652   5.576117385   5.000000000
                 GaussFluct  -0.584406E+01 kcal/mol
 
 
-     total cpu time spent up to now is       19.8 secs
+     total cpu time spent up to now is       20.3 secs
 
      total energy              =     -34.40716254 Ry
      Harris-Foulkes estimate   =     -34.40702753 Ry
@@ -1208,7 +1208,7 @@ H        4.210154652   5.576117385   5.000000000
                 GaussFluct  -0.582789E+01 kcal/mol
 
 
-     total cpu time spent up to now is       20.4 secs
+     total cpu time spent up to now is       20.8 secs
 
      total energy              =     -34.40718171 Ry
      Harris-Foulkes estimate   =     -34.40712132 Ry
@@ -1251,7 +1251,7 @@ H        4.210154652   5.576117385   5.000000000
                 GaussFluct  -0.580598E+01 kcal/mol
 
 
-     total cpu time spent up to now is       21.0 secs
+     total cpu time spent up to now is       21.6 secs
 
      total energy              =     -34.40719288 Ry
      Harris-Foulkes estimate   =     -34.40711488 Ry
@@ -1294,7 +1294,7 @@ H        4.210154652   5.576117385   5.000000000
                 GaussFluct  -0.580713E+01 kcal/mol
 
 
-     total cpu time spent up to now is       21.5 secs
+     total cpu time spent up to now is       22.0 secs
 
      End of self-consistent calculation
 
@@ -1383,7 +1383,7 @@ H        4.218981677   5.586625834   5.000000000
                 GaussFluct  -0.582280E+01 kcal/mol
 
 
-     total cpu time spent up to now is       23.0 secs
+     total cpu time spent up to now is       23.6 secs
 
      per-process dynamical memory:    64.3 Mb
 
@@ -1439,7 +1439,7 @@ H        4.218981677   5.586625834   5.000000000
                 GaussFluct  -0.569444E+01 kcal/mol
 
 
-     total cpu time spent up to now is       30.1 secs
+     total cpu time spent up to now is       30.6 secs
 
      total energy              =     -34.40739714 Ry
      Harris-Foulkes estimate   =     -34.40700346 Ry
@@ -1483,7 +1483,7 @@ H        4.218981677   5.586625834   5.000000000
                 GaussFluct  -0.572072E+01 kcal/mol
 
 
-     total cpu time spent up to now is       31.1 secs
+     total cpu time spent up to now is       31.6 secs
 
      total energy              =     -34.40743220 Ry
      Harris-Foulkes estimate   =     -34.40750851 Ry
@@ -1528,7 +1528,7 @@ H        4.218981677   5.586625834   5.000000000
                 GaussFluct  -0.577193E+01 kcal/mol
 
 
-     total cpu time spent up to now is       33.0 secs
+     total cpu time spent up to now is       33.3 secs
 
      total energy              =     -34.40744460 Ry
      Harris-Foulkes estimate   =     -34.40759636 Ry
@@ -1659,7 +1659,7 @@ H        4.218981677   5.586625834   5.000000000
                 GaussFluct  -0.577785E+01 kcal/mol
 
 
-     total cpu time spent up to now is       35.4 secs
+     total cpu time spent up to now is       35.5 secs
 
      End of self-consistent calculation
 
@@ -1748,7 +1748,7 @@ H        4.223650806   5.596943053   5.000000000
                 GaussFluct  -0.578524E+01 kcal/mol
 
 
-     total cpu time spent up to now is       37.0 secs
+     total cpu time spent up to now is       37.2 secs
 
      per-process dynamical memory:    64.3 Mb
 
@@ -1835,7 +1835,7 @@ H        4.223650806   5.596943053   5.000000000
                 GaussFluct  -0.571783E+01 kcal/mol
 
 
-     total cpu time spent up to now is       39.1 secs
+     total cpu time spent up to now is       39.0 secs
 
      total energy              =     -34.40757626 Ry
      Harris-Foulkes estimate   =     -34.40770876 Ry
@@ -1879,7 +1879,7 @@ H        4.223650806   5.596943053   5.000000000
                 GaussFluct  -0.579936E+01 kcal/mol
 
 
-     total cpu time spent up to now is       39.9 secs
+     total cpu time spent up to now is       39.8 secs
 
      total energy              =     -34.40757779 Ry
      Harris-Foulkes estimate   =     -34.40783532 Ry
@@ -1922,7 +1922,7 @@ H        4.223650806   5.596943053   5.000000000
                 GaussFluct  -0.581138E+01 kcal/mol
 
 
-     total cpu time spent up to now is       40.7 secs
+     total cpu time spent up to now is       40.5 secs
 
      total energy              =     -34.40758176 Ry
      Harris-Foulkes estimate   =     -34.40761738 Ry
@@ -1965,7 +1965,7 @@ H        4.223650806   5.596943053   5.000000000
                 GaussFluct  -0.581224E+01 kcal/mol
 
 
-     total cpu time spent up to now is       41.2 secs
+     total cpu time spent up to now is       41.0 secs
 
      total energy              =     -34.40758094 Ry
      Harris-Foulkes estimate   =     -34.40758465 Ry
@@ -2008,7 +2008,7 @@ H        4.223650806   5.596943053   5.000000000
                 GaussFluct  -0.581058E+01 kcal/mol
 
 
-     total cpu time spent up to now is       41.8 secs
+     total cpu time spent up to now is       41.5 secs
 
      total energy              =     -34.40758141 Ry
      Harris-Foulkes estimate   =     -34.40757565 Ry
@@ -2051,7 +2051,7 @@ H        4.223650806   5.596943053   5.000000000
                 GaussFluct  -0.581105E+01 kcal/mol
 
 
-     total cpu time spent up to now is       42.2 secs
+     total cpu time spent up to now is       41.9 secs
 
      End of self-consistent calculation
 
@@ -2140,7 +2140,7 @@ H        4.223129868   5.598650619   5.000000000
                 GaussFluct  -0.581280E+01 kcal/mol
 
 
-     total cpu time spent up to now is       43.6 secs
+     total cpu time spent up to now is       43.4 secs
 
      per-process dynamical memory:    64.3 Mb
 
@@ -2196,7 +2196,7 @@ H        4.223129868   5.598650619   5.000000000
                 GaussFluct  -0.577948E+01 kcal/mol
 
 
-     total cpu time spent up to now is       48.1 secs
+     total cpu time spent up to now is       47.4 secs
 
      total energy              =     -34.40759783 Ry
      Harris-Foulkes estimate   =     -34.40750729 Ry
@@ -2240,7 +2240,7 @@ H        4.223129868   5.598650619   5.000000000
                 GaussFluct  -0.579650E+01 kcal/mol
 
 
-     total cpu time spent up to now is       49.0 secs
+     total cpu time spent up to now is       48.2 secs
 
      total energy              =     -34.40760067 Ry
      Harris-Foulkes estimate   =     -34.40765543 Ry
@@ -2284,7 +2284,7 @@ H        4.223129868   5.598650619   5.000000000
                 GaussFluct  -0.582005E+01 kcal/mol
 
 
-     total cpu time spent up to now is       49.9 secs
+     total cpu time spent up to now is       49.2 secs
 
      total energy              =     -34.40759898 Ry
      Harris-Foulkes estimate   =     -34.40767488 Ry
@@ -2328,7 +2328,7 @@ H        4.223129868   5.598650619   5.000000000
                 GaussFluct  -0.582794E+01 kcal/mol
 
 
-     total cpu time spent up to now is       50.7 secs
+     total cpu time spent up to now is       49.9 secs
 
      total energy              =     -34.40759892 Ry
      Harris-Foulkes estimate   =     -34.40762388 Ry
@@ -2371,7 +2371,7 @@ H        4.223129868   5.598650619   5.000000000
                 GaussFluct  -0.583249E+01 kcal/mol
 
 
-     total cpu time spent up to now is       51.3 secs
+     total cpu time spent up to now is       50.6 secs
 
      End of self-consistent calculation
 
@@ -2421,68 +2421,68 @@ End final coordinates
 
      Writing output data file H2O.NaCl_aq.save
 
-     init_run     :      0.93s CPU      2.37s WALL (       1 calls)
-     electrons    :     39.90s CPU     41.01s WALL (       6 calls)
-     update_pot   :      1.15s CPU      1.17s WALL (       5 calls)
-     forces       :      3.48s CPU      3.46s WALL (       6 calls)
+     init_run     :      1.34s CPU      2.49s WALL (       1 calls)
+     electrons    :     38.34s CPU     39.65s WALL (       6 calls)
+     update_pot   :      1.16s CPU      1.21s WALL (       5 calls)
+     forces       :      3.62s CPU      3.61s WALL (       6 calls)
 
      Called by init_run:
      wfcinit      :      0.00s CPU      0.01s WALL (       1 calls)
-     potinit      :      0.82s CPU      1.98s WALL (       1 calls)
+     potinit      :      1.16s CPU      2.04s WALL (       1 calls)
 
      Called by electrons:
-     c_bands      :      0.42s CPU      0.49s WALL (      38 calls)
-     sum_band     :      2.47s CPU      2.45s WALL (      38 calls)
-     v_of_rho     :      4.37s CPU      4.51s WALL (      43 calls)
-     newd         :      1.66s CPU      1.68s WALL (      43 calls)
-     mix_rho      :      0.45s CPU      0.46s WALL (      38 calls)
+     c_bands      :      0.42s CPU      0.45s WALL (      38 calls)
+     sum_band     :      2.49s CPU      2.48s WALL (      38 calls)
+     v_of_rho     :      4.33s CPU      4.44s WALL (      43 calls)
+     newd         :      1.65s CPU      1.70s WALL (      43 calls)
+     mix_rho      :      0.44s CPU      0.45s WALL (      38 calls)
 
      Called by c_bands:
      init_us_2    :      0.02s CPU      0.02s WALL (      77 calls)
-     regterg      :      0.40s CPU      0.46s WALL (      38 calls)
+     regterg      :      0.40s CPU      0.42s WALL (      38 calls)
 
      Called by sum_band:
      sum_band:bec :      0.00s CPU      0.00s WALL (      38 calls)
-     addusdens    :      1.65s CPU      1.63s WALL (      38 calls)
+     addusdens    :      1.65s CPU      1.65s WALL (      38 calls)
 
      Called by *egterg:
-     h_psi        :      0.35s CPU      0.41s WALL (     116 calls)
-     s_psi        :      0.00s CPU      0.01s WALL (     116 calls)
+     h_psi        :      0.35s CPU      0.36s WALL (     116 calls)
+     s_psi        :      0.01s CPU      0.01s WALL (     116 calls)
      g_psi        :      0.00s CPU      0.00s WALL (      77 calls)
      rdiaghg      :      0.00s CPU      0.01s WALL (     109 calls)
 
      Called by h_psi:
-     h_psi:pot    :      0.35s CPU      0.40s WALL (     116 calls)
+     h_psi:pot    :      0.34s CPU      0.36s WALL (     116 calls)
      h_psi:calbec :      0.01s CPU      0.02s WALL (     116 calls)
-     vloc_psi     :      0.33s CPU      0.38s WALL (     116 calls)
+     vloc_psi     :      0.32s CPU      0.34s WALL (     116 calls)
      add_vuspsi   :      0.01s CPU      0.01s WALL (     116 calls)
 
      General routines
      calbec       :      0.02s CPU      0.03s WALL (     178 calls)
-     fft          :      4.11s CPU      4.32s WALL (     814 calls)
-     ffts         :      0.06s CPU      0.07s WALL (      81 calls)
-     fftw         :      0.28s CPU      0.32s WALL (     524 calls)
-     fftc         :     10.50s CPU     10.64s WALL (    5569 calls)
-     interpolate  :      0.56s CPU      0.54s WALL (      81 calls)
+     fft          :      4.23s CPU      4.31s WALL (     814 calls)
+     ffts         :      0.08s CPU      0.06s WALL (      81 calls)
+     fftw         :      0.25s CPU      0.27s WALL (     524 calls)
+     fftc         :      9.52s CPU      9.71s WALL (    5569 calls)
+     interpolate  :      0.54s CPU      0.54s WALL (      81 calls)
      davcio       :      0.00s CPU      0.00s WALL (       6 calls)
 
      Parallel routines
-     fft_scatter  :      7.28s CPU      7.22s WALL (    6988 calls)
+     fft_scatter  :      6.78s CPU      6.53s WALL (    6988 calls)
 
      RISM routines
      1DRISM_pre   :      0.00s CPU      0.00s WALL (       1 calls)
-     1DRISM_run   :      0.39s CPU      0.47s WALL (       1 calls)
-     3DRISM_pre   :      0.00s CPU      0.54s WALL (       1 calls)
-     3DRISM_run   :     31.62s CPU     32.92s WALL (      43 calls)
-     3DRISM_ions  :      1.75s CPU      1.74s WALL (       5 calls)
-     3DRISM_for   :      2.68s CPU      2.66s WALL (       6 calls)
-     3DRISM_vsol  :      0.19s CPU      0.28s WALL (      43 calls)
-     3DRISM_esol  :      0.03s CPU      0.03s WALL (      43 calls)
+     1DRISM_run   :      0.29s CPU      0.52s WALL (       1 calls)
+     3DRISM_pre   :      0.34s CPU      0.44s WALL (       1 calls)
+     3DRISM_run   :     30.12s CPU     31.72s WALL (      43 calls)
+     3DRISM_ions  :      1.71s CPU      1.70s WALL (       5 calls)
+     3DRISM_for   :      2.73s CPU      2.71s WALL (       6 calls)
+     3DRISM_vsol  :      0.25s CPU      0.28s WALL (      43 calls)
+     3DRISM_esol  :      0.02s CPU      0.02s WALL (      43 calls)
 
-     PWSCF        :    49.11s CPU        52.08s WALL
+     PWSCF        :    47.97s CPU        51.51s WALL
 
 
-   This run was terminated on:  19:38:31  27Mar2017            
+   This run was terminated on:  18:50:23   6Apr2017            
 
 =------------------------------------------------------------------------------=
    JOB DONE.

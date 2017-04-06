@@ -8,24 +8,30 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !---------------------------------------------------------------------------
-SUBROUTINE solvation_esm_potential(rismt, ireference, ierr)
+SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
   !---------------------------------------------------------------------------
   !
   ! ... calculate solvation potential of ESM(BC1), from Laue-RISM.
   ! ... calculation is performed around the expanded cell.
+  !
+  ! ... Variables:
+  ! ...   iref: reference position of solvation potential
+  ! ...   vref: reference value of solvation potential
   !
   USE cell_base,     ONLY : alat, tpiba, tpiba2
   USE constants,     ONLY : tpi, fpi, e2
   USE err_rism,      ONLY : IERR_RISM_NULL, IERR_RISM_INCORRECT_DATA_TYPE
   USE kinds,         ONLY : DP
   USE lauefft,       ONLY : fw_lauefft_1z_exp, inv_lauefft_1z_exp
+  USE mp,            ONLY : mp_sum
   USE rism,          ONLY : rism_type, ITYPE_LAUERISM
   USE rism3d_facade, ONLY : IREFERENCE_AVERAGE, IREFERENCE_RIGHT, IREFERENCE_LEFT
   !
   IMPLICIT NONE
   !
   TYPE(rism_type), INTENT(INOUT) :: rismt
-  INTEGER,         INTENT(IN)    :: ireference
+  INTEGER,         INTENT(IN)    :: iref
+  REAL(DP),        INTENT(OUT)   :: vref
   INTEGER,         INTENT(OUT)   :: ierr
   !
   INTEGER                  :: iz
@@ -97,6 +103,9 @@ SUBROUTINE solvation_esm_potential(rismt, ireference, ierr)
   fac1   = e2 * fpi / tpiba2        ! -> Energy/G/G
   fac2   = e2 * fpi * alat / tpiba  ! -> Energy/R/G
   fac3   = e2 * fpi * alat * alat   ! -> Energy*R*R
+  !
+  ! ... initialize reference potential
+  vref = 0.0_DP
   !
   ! ... calculate exp(i*gz*zright) and exp(i*gz*zleft)
   DO igz = 1, rismt%lfft%ngz_x
@@ -286,28 +295,35 @@ SUBROUTINE solvation_esm_potential(rismt, ireference, ierr)
     END DO
     !
     ! ... modify reference of solvation potential
-    IF (ireference == IREFERENCE_AVERAGE) THEN
+    vsolv = 0.0_DP
+    vsolu = 0.0_DP
+    !
+    IF (iref == IREFERENCE_AVERAGE) THEN
       vsolv = 0.0_DP
       vsolu = 0.0_DP
       !
-    ELSE IF (ireference == IREFERENCE_RIGHT) THEN
+    ELSE IF (iref == IREFERENCE_RIGHT) THEN
       vsolv = fac1 * ( + realr - reall) &
           & + fac2 * ( + zright * imager - zleft * imagel ) &
           & + fac3 * 0.25_DP * rho0 * ( + zright * zright - zleft * zleft )
       vsolu = AIMAG(rismt%vright(igxy))
       !
-    ELSE IF (ireference == IREFERENCE_LEFT) THEN
+    ELSE IF (iref == IREFERENCE_LEFT) THEN
       vsolv = fac1 * ( - realr + reall) &
           & + fac2 * ( - zright * imager + zleft * imagel ) &
           & + fac3 * 0.25_DP * rho0 * ( - zright * zright + zleft * zleft )
       vsolu = AIMAG(rismt%vleft(igxy))
     END IF
     !
+    vref = vsolv + vsolu
+    !
     DO iz = 1, rismt%lfft%nrz
-      rismt%vpot(iz + jgxy) = rismt%vpot(iz + jgxy) - CMPLX(vsolv + vsolu, 0.0_DP, kind=DP)
+      rismt%vpot(iz + jgxy) = rismt%vpot(iz + jgxy) - CMPLX(vref, 0.0_DP, kind=DP)
     END DO
     !
   END IF
+  !
+  CALL mp_sum(vref, rismt%mp_site%intra_sitg_comm)
   !
   ! ... deallocate memory
   IF (rismt%lfft%ngz_x * rismt%lfft%ngxy > 0) THEN
@@ -337,8 +353,8 @@ SUBROUTINE solvation_esm_force(rismt, alpha, force, ierr)
   ! ...             pi^(3/2) * alpha^3       [    alpha^2  ]  .
   !
   ! ... Variables:
-  ! ...   alpha:  gaussian width (in alat units)
-  ! ...   force:  solvation force from local potential of ESM(BC1)
+  ! ...   alpha: gaussian width (in alat units)
+  ! ...   force: solvation force from local potential of ESM(BC1)
   !
   USE cell_base,     ONLY : alat
   USE constants,     ONLY : pi, tpi, e2
