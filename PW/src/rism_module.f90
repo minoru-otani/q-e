@@ -620,40 +620,59 @@ CONTAINS
     REAL(DP) :: vr, vi
     REAL(DP) :: rr, ri
     !
+#if defined (__RISM_ESOL)
     CALL start_clock('3DRISM_esol')
     !
+#endif
+    ! ... solvation energy
     esol = rism3t%esol
     !
-    vsol = 0.0_DP
-    !
-    IF (gamma_only) THEN
-      fac = 2.0_DP
+    IF (llaue) THEN
+       ! ... potential shifting energy (for Laue-RISM)
+       vsol = rism3t%vsol
+       !
     ELSE
-      fac = 1.0_DP
+#if defined (__RISM_ESOL)
+       ! ... the integral V_sol * rho (for 3D-RISM)
+       vsol = 0.0_DP
+       !
+       IF (gamma_only) THEN
+         fac = 2.0_DP
+       ELSE
+         fac = 1.0_DP
+       END IF
+       !
+       DO is = 1, nspin_lsda
+         !
+         IF (gstart > 1) THEN
+           vr = DBLE( vpog(1))
+           rr = DBLE( rhog(1, is))
+           vsol = vsol + omega * (vr * rr)
+         END IF
+         !
+         DO ig = gstart, ngm
+           vr = DBLE( vpog(ig))
+           vi = AIMAG(vpog(ig))
+           rr = DBLE( rhog(ig, is))
+           ri = AIMAG(rhog(ig, is))
+           vsol = vsol + fac * omega * (vr * rr + vi * ri)
+         END DO
+         !
+       END DO
+       !
+       CALL mp_sum(vsol, rism3t%mp_site%intra_sitg_comm)
+       !
+#else
+       ! ... zero (for 3D-RISM)
+       vsol = 0.0_DP
+       !
+#endif
     END IF
     !
-    DO is = 1, nspin_lsda
-      !
-      IF (gstart > 1) THEN
-        vr = DBLE( vpog(1))
-        rr = DBLE( rhog(1, is))
-        vsol = vsol + omega * (vr * rr)
-      END IF
-      !
-      DO ig = gstart, ngm
-        vr = DBLE( vpog(ig))
-        vi = AIMAG(vpog(ig))
-        rr = DBLE( rhog(ig, is))
-        ri = AIMAG(rhog(ig, is))
-        vsol = vsol + fac * omega * (vr * rr + vi * ri)
-      END DO
-      !
-    END DO
-    !
-    CALL mp_sum(vsol, rism3t%mp_site%intra_sitg_comm)
-    !
+#if defined (__RISM_ESOL)
     CALL stop_clock('3DRISM_esol')
     !
+#endif
   END SUBROUTINE solvation_erg
   !
   !----------------------------------------------------------------------------
@@ -846,7 +865,9 @@ CONTAINS
     !
     IF (lrism) THEN
       CALL print_clock('3DRISM_vsol')
+#if defined (__RISM_ESOL)
       CALL print_clock('3DRISM_esol')
+#endif
     END IF
     !
   END SUBROUTINE rism_print_clock

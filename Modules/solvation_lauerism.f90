@@ -68,7 +68,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   REAL(DP)                 :: fac1
   REAL(DP)                 :: fac2
   REAL(DP)                 :: charge0
-  REAL(DP)                 :: esol0
+  REAL(DP)                 :: vsol0
   COMPLEX(DP), ALLOCATABLE :: ggz(:,:)
   !
   INTEGER,     PARAMETER   :: RHOG_NEDGE     = 3
@@ -296,7 +296,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   END IF
   !
   ! ... make vpot
-  CALL solvation_esm_potential(rismt, ireference, esol0, ierr)
+  CALL solvation_esm_potential(rismt, ireference, vsol0, ierr)
   IF (ierr /= IERR_RISM_NULL) THEN
     RETURN
   END IF
@@ -323,7 +323,8 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   !
   CALL mp_sum(rismt%esol, rismt%mp_site%inter_sitg_comm)
   !
-  rismt%esol = rismt%esol + esol0 * charge  ! contribution of reference level shifting
+  ! ... make vsol (contribution of reference level shifting)
+  rismt%vsol = vsol0 * charge
   !
   ! ... deallocate memory
   IF (rismt%nrzs * rismt%ngxy * rismt%nsite > 0) THEN

@@ -64,6 +64,7 @@ SUBROUTINE write_rism_type(rismt)
   WRITE(stdout, '(5X,"# G-shell        = ",I10)')   rismt%ngs
   WRITE(stdout, '(5X,"# Gxy-plane      = ",I10)')   rismt%ngxy
   WRITE(stdout, '(5X,"Solvation erg.   = ",E16.8)') rismt%esol
+  WRITE(stdout, '(5X,"Solvation pot.   = ",E16.8)') rismt%vsol
   !
   IF (ASSOCIATED(rismt%csr)) THEN
     WRITE(stdout, '(5X,"[Cs(r)]")')

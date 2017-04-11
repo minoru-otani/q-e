@@ -107,6 +107,7 @@ MODULE rism
     REAL(DP),    POINTER :: usol(:)      ! solvation's chemical potential for each site
     REAL(DP),    POINTER :: usol_GF(:)   ! solvation's chemical potential for each site (by G.F.)
     REAL(DP)             :: esol         ! solvation's energy
+    REAL(DP)             :: vsol         ! potential shifting energy (for Laue-RISM)
     COMPLEX(DP), POINTER :: rhog(:)      ! charge density of solvent in G-space or Laue-rep.
     COMPLEX(DP), POINTER :: vpot(:)      ! coulomb potential of solvent in G-space or Laue-rep.
     INTEGER              :: pbc_nfit     ! number of fitting points for rhog_pbc and vpot_pbc. (for Laue-RISM)
@@ -449,6 +450,7 @@ CONTAINS
     rismt%ngs   = ngs
     rismt%ngxy  = ngxy
     rismt%esol  = 0.0_DP
+    rismt%vsol  = 0.0_DP
     !
     ! ... allocate arrays
     ! ..... R-space
@@ -756,6 +758,7 @@ CONTAINS
       rismt%nsite    = 0
       rismt%qtot     = 0.0_DP
       rismt%esol     = 0.0_DP
+      rismt%vsol     = 0.0_DP
       rismt%pbc_nfit = 0
     END IF
     rismt%nr   = 0
@@ -822,6 +825,7 @@ CONTAINS
     !
     rismt%qtot = R_ZERO
     rismt%esol = R_ZERO
+    rismt%vsol = R_ZERO
     IF (ASSOCIATED(rismt%csr))      rismt%csr      = R_ZERO
     IF (ASSOCIATED(rismt%csg))      rismt%csg      = R_ZERO
     IF (ASSOCIATED(rismt%csgz))     rismt%csgz     = C_ZERO

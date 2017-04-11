@@ -795,8 +795,8 @@ SUBROUTINE electrons_scf ( printout, exxen )
      ENDIF
      !
      IF ( lrism ) THEN
-        etot = etot + esol
-        hwf_energy = hwf_energy + esol
+        etot = etot + esol + vsol
+        hwf_energy = hwf_energy + esol + vsol
      END IF
      !
      ! ... adds possible external contribution from plugins to the energy
@@ -1157,7 +1157,13 @@ SUBROUTINE electrons_scf ( printout, exxen )
             SUM(etot_cmp_paw(:,2,1))+SUM(etot_cmp_paw(:,2,2))+etxc-etxcc
             ENDIF
           ENDIF
-          IF ( lrism )              WRITE( stdout, 9078 ) esol
+          IF ( lrism ) THEN
+             IF ( ABS( vsol ) > eps8 ) THEN
+                WRITE( stdout, 9078 ) esol, vsol
+             ELSE
+                WRITE( stdout, 9079 ) esol
+             END IF
+          END IF
           !
           ! ... With Fermi-Dirac population factor, etot is the electronic
           ! ... free energy F = E - TS , demet is the -TS contribution
@@ -1231,7 +1237,9 @@ SUBROUTINE electrons_scf ( printout, exxen )
 9075 FORMAT( '     Dispersion XDM Correction =',F17.8,' Ry' )
 9076 FORMAT( '     Dispersion T-S Correction =',F17.8,' Ry' )
 9077 FORMAT( '     External forces energy    =',F17.8,' Ry' )
-9078 FORMAT( '     solvation energy (RISM)   =',F17.8,' Ry' )
+9078 FORMAT( '     solvation energy (RISM)   =',F17.8,' Ry' &
+            /'     level-shifting contrib.   =',F17.8,' Ry' )
+9079 FORMAT( '     solvation energy (RISM)   =',F17.8,' Ry' )
 9080 FORMAT(/'     total energy              =',0PF17.8,' Ry' &
             /'     Harris-Foulkes estimate   =',0PF17.8,' Ry' &
             /'     estimated scf accuracy    <',0PF17.8,' Ry' )
