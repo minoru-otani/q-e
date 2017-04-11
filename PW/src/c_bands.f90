@@ -341,7 +341,7 @@ CONTAINS
        ! ... Gram-Schmidt orthogonalization
        !
        CALL gram_schmidt( npwx, npw, nbnd, npol, evc, hevc, sevc, et(1,ik), &
-                          okvan, .TRUE., .NOT. lscf, gstart, gs_nblock )
+                          okvan, .TRUE., .TRUE., gstart, gs_nblock )
        !
        avg_iter = avg_iter + 0.5D0
        !
@@ -533,7 +533,7 @@ CONTAINS
        ! ... Gram-Schmidt orthogonalization
        !
        CALL gram_schmidt( npwx, npw, nbnd, npol, evc, hevc, sevc, et(1,ik), &
-                          okvan, .TRUE., .NOT. lscf, gstart, gs_nblock )
+                          okvan, .TRUE., .TRUE., gstart, gs_nblock )
        !
        avg_iter = avg_iter + 0.5D0
        !
