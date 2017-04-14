@@ -1508,7 +1508,7 @@ MODULE input_parameters
         LOGICAL :: laue_both_hands = .FALSE.
           ! number of fitting points in Laue-RISM calculation
 
-        CHARACTER(len=80) :: laue_reference = 'none'
+        CHARACTER(len=80) :: laue_reference = 'average'
           ! laue_reference = 'none' | 'average' | 'right' | 'left'
           ! reference of electrostatic potential in Laue-RISM calculation
           ! 'none'     explicit reference is not defined

@@ -2833,6 +2833,7 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
         }
 
         var laue_reference -type CHARACTER {
+            default { 'average' }
             options {
                 info {
                     Set reference level of electrostatic potential for Laue-RISM.
