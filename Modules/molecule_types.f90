@@ -29,23 +29,24 @@ MODULE molecule_types
   !
   ! ... define type of molecule
   TYPE molecule
-    CHARACTER(LEN=LEN_NV)             :: nv          ! MOL file three-digit version i.e. 1.0.0
-    CHARACTER(LEN=LEN_AUTHOR)         :: author      ! author of molecular file
-    CHARACTER(LEN=LEN_DATE)           :: date        ! generation date
-    CHARACTER(LEN=LEN_COMMENT)        :: comment     ! author's comment
-    CHARACTER(LEN=LEN_FORMULA)        :: formula     ! chemical formula of molecule
-    CHARACTER(LEN=LEN_NAME)           :: name        ! name of molecule
-    INTEGER                           :: natom       ! number of atoms in molecule
-    REAL(DP)                          :: mass        ! mass of molecule           (in a.m.u.)
-    REAL(DP)                          :: density     ! density of molecule        (in 1/bohr^3)
-    REAL(DP)                          :: subdensity  ! second density of molecule (in 1/bohr^3)
-    LOGICAL                           :: has_charge  ! if .true. includes charge
-    LOGICAL                           :: has_lj      ! if .true. includes Lennard-Jones
-    CHARACTER(LEN=LEN_ANAME), POINTER :: aname(:)    ! name of atoms
-    REAL(DP),                 POINTER :: coord(:,:)  ! xyz-coordinate of atoms (in bohr)
-    REAL(DP),                 POINTER :: charge(:)   ! charge of atoms         (in e)
-    REAL(DP),                 POINTER :: ljeps(:)    ! L.J.-epsilon of atoms   (in Ry)
-    REAL(DP),                 POINTER :: ljsig(:)    ! L.J.-sgmma of atoms     (in bohr)
+    CHARACTER(LEN=LEN_NV)             :: nv           ! MOL file three-digit version i.e. 1.0.0
+    CHARACTER(LEN=LEN_AUTHOR)         :: author       ! author of molecular file
+    CHARACTER(LEN=LEN_DATE)           :: date         ! generation date
+    CHARACTER(LEN=LEN_COMMENT)        :: comment      ! author's comment
+    CHARACTER(LEN=LEN_FORMULA)        :: formula      ! chemical formula of molecule
+    CHARACTER(LEN=LEN_NAME)           :: name         ! name of molecule
+    INTEGER                           :: natom        ! number of atoms in molecule
+    REAL(DP)                          :: mass         ! mass of molecule           (in a.m.u.)
+    REAL(DP)                          :: density      ! density of molecule        (in 1/bohr^3)
+    REAL(DP)                          :: subdensity   ! second density of molecule (in 1/bohr^3)
+    REAL(DP)                          :: permittivity ! relative permittivity
+    LOGICAL                           :: has_charge   ! if .true. includes charge
+    LOGICAL                           :: has_lj       ! if .true. includes Lennard-Jones
+    CHARACTER(LEN=LEN_ANAME), POINTER :: aname(:)     ! name of atoms
+    REAL(DP),                 POINTER :: coord(:,:)   ! xyz-coordinate of atoms (in bohr)
+    REAL(DP),                 POINTER :: charge(:)    ! charge of atoms         (in e)
+    REAL(DP),                 POINTER :: ljeps(:)     ! L.J.-epsilon of atoms   (in Ry)
+    REAL(DP),                 POINTER :: ljsig(:)     ! L.J.-sgmma of atoms     (in bohr)
   END TYPE molecule
   !
   ! ... public components
@@ -67,18 +68,19 @@ CONTAINS
     !
     TYPE(molecule), INTENT(INOUT) :: mol
     !
-    mol%nv         = ''
-    mol%author     = ''
-    mol%date       = ''
-    mol%comment    = ''
-    mol%formula    = ''
-    mol%name       = ''
-    mol%natom      = 0
-    mol%mass       = 0.0_DP
-    mol%density    = 0.0_DP
-    mol%subdensity = 0.0_DP
-    mol%has_charge = .FALSE.
-    mol%has_lj     = .FALSE.
+    mol%nv           = ''
+    mol%author       = ''
+    mol%date         = ''
+    mol%comment      = ''
+    mol%formula      = ''
+    mol%name         = ''
+    mol%natom        = 0
+    mol%mass         = 0.0_DP
+    mol%density      = 0.0_DP
+    mol%subdensity   = 0.0_DP
+    mol%permittivity = 0.0_DP
+    mol%has_charge   = .FALSE.
+    mol%has_lj       = .FALSE.
     NULLIFY(mol%aname)
     NULLIFY(mol%coord)
     NULLIFY(mol%charge)

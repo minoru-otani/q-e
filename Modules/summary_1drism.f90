@@ -137,9 +137,14 @@ SUBROUTINE print_solv_info(iverbosity)
       WRITE(stdout, '(5X,2X,E16.8," g/cm^3")')  rhov * solVs(isolV)%mass * BOHRm3_TO_MOLCMm3
     END DO
     !
+    IF (solVs(isolV)%permittivity > 0.0_DP) THEN
+      WRITE(stdout, '(5X,"Permittivity:")')
+      WRITE(stdout, '(5X,F12.6)') solVs(isolV)%permittivity
+    END IF
+    !
     WRITE(stdout, '(5X,"Number of atoms: ",I3)') solVs(isolV)%natom
     !
-    WRITE(stdout, '(5X,"Atoms: ")')
+    WRITE(stdout, '(5X,"Atoms:")')
     WRITE(stdout, '(5X,A)') &
       & '  #  atom  ' // &
       & '    X (angs)      Y (angs)      Z (angs)      Q (e)     ' // &

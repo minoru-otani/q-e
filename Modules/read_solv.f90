@@ -18,12 +18,13 @@ MODULE read_solv_module
   USE mp,              ONLY : mp_sum
   USE mp_images,       ONLY : intra_image_comm
   USE read_mol_module, ONLY : read_mol, clean_mol_readables, &
-                            & without_mass_    => without_mass,    &
-                            & without_density_ => without_density, &
-                            & without_element_ => without_element, &
-                            & without_xyz_     => without_xyz,     &
-                            & without_charge_  => without_charge,  &
-                            & without_lj_      => without_lj
+                            & without_mass_         => without_mass,         &
+                            & without_density_      => without_density,      &
+                            & without_permittivity_ => without_permittivity, &
+                            & without_element_      => without_element,      &
+                            & without_xyz_          => without_xyz,          &
+                            & without_charge_       => without_charge,       &
+                            & without_lj_           => without_lj
   USE solvmol,         ONLY : nsolV, solVs, allocate_solVs, deallocate_solVs, set_index_of_solVs
   !
   IMPLICIT NONE
@@ -35,7 +36,7 @@ MODULE read_solv_module
 CONTAINS
   !
   !--------------------------------------------------------------------------
-  SUBROUTINE read_solvents(printout, without_mass, without_density, &
+  SUBROUTINE read_solvents(printout, without_mass, without_density, without_permittivity, &
                          & without_element, without_xyz, without_charge, without_lj)
     !--------------------------------------------------------------------------
     !
@@ -47,6 +48,7 @@ CONTAINS
     LOGICAL, OPTIONAL, INTENT(IN) :: printout
     LOGICAL, OPTIONAL, INTENT(IN) :: without_mass
     LOGICAL, OPTIONAL, INTENT(IN) :: without_density
+    LOGICAL, OPTIONAL, INTENT(IN) :: without_permittivity
     LOGICAL, OPTIONAL, INTENT(IN) :: without_element
     LOGICAL, OPTIONAL, INTENT(IN) :: without_xyz
     LOGICAL, OPTIONAL, INTENT(IN) :: without_charge
@@ -72,6 +74,10 @@ CONTAINS
     !
     IF (PRESENT(without_density)) THEN
       without_density_ = without_density
+    END IF
+    !
+    IF (PRESENT(without_permittivity)) THEN
+      without_permittivity_ = without_permittivity
     END IF
     !
     IF (PRESENT(without_element)) THEN

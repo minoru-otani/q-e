@@ -60,6 +60,7 @@ MODULE rism
     INTEGER              :: itype   = ITYPE_NULL    ! data for 1D-RISM or 3D-RISM or Laue-RISM ?
     INTEGER              :: closure = CLOSURE_NULL  ! type of Closure equation
     REAL(DP)             :: temp    = 300.0_DP      ! temperature of solvent system
+    REAL(DP)             :: perm    = 1.0_DP        ! permittivity of solvent system
     REAL(DP)             :: tau     = 1.0_DP        ! coulomb smearing radius
     !
     ! ... dimensions of data
@@ -754,6 +755,7 @@ CONTAINS
       rismt%itype    = ITYPE_NULL
       rismt%closure  = CLOSURE_NULL
       rismt%temp     = 0.0_DP
+      rismt%perm     = 0.0_DP
       rismt%tau      = 0.0_DP
       rismt%nsite    = 0
       rismt%qtot     = 0.0_DP

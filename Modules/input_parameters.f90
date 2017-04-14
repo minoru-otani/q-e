@@ -1398,6 +1398,10 @@ MODULE input_parameters
           ! value of the solvent temperature (in Kelvin)
           ! during 1D- and 3D-RISM calculations.
 
+        REAL(DP) :: permittivity = 0.0_DP
+          ! value of the solvent permittivity
+          ! during 1D- and 3D-RISM calculations.
+
         REAL(DP) :: ecutsolv = 0.0_DP
           ! energy cutoff for 3D-RISM in k-space (in Rydberg)
           ! by default its value is "4 * ecutwfc"
@@ -1518,7 +1522,7 @@ MODULE input_parameters
         CHARACTER(len=80) :: laue_reference_allowed(4)
         DATA laue_reference_allowed / 'none', 'average', 'right', 'left' /
 
-        NAMELIST / rism / nsolv, closure, tempv, ecutsolv, solute_lj, &
+        NAMELIST / rism / nsolv, closure, tempv, permittivity, ecutsolv, solute_lj, &
                           solute_epsilon, solute_sigma, rmax_lj, rmax1d, &
                           starting1d, starting3d, smear1d, smear3d, &
                           rism1d_maxstep, rism3d_maxstep, rism1d_conv_thr, rism3d_conv_thr, &

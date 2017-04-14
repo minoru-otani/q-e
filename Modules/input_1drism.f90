@@ -35,8 +35,8 @@ SUBROUTINE iosys_1drism(laue)
   !
   ! ... RISM namelist
   !
-  USE input_parameters, ONLY : nsolv, closure, starting1d, tempv, rmax1d, smear1d, &
-                               rism1d_maxstep, rism1d_conv_thr, rism1d_bond_width, &
+  USE input_parameters, ONLY : nsolv, closure, starting1d, tempv, permittivity, rmax1d, &
+                               smear1d, rism1d_maxstep, rism1d_conv_thr, rism1d_bond_width, &
                                rism1d_nproc, mdiis1d_size, mdiis1d_step, &
                                laue_expand_right, laue_expand_left, laue_both_hands
   !
@@ -57,6 +57,8 @@ SUBROUTINE iosys_1drism(laue)
   CHARACTER(LEN=10), ALLOCATABLE :: slabel(:)
   REAL(DP),          ALLOCATABLE :: sdens1(:)
   REAL(DP),          ALLOCATABLE :: sdens2(:)
+  REAL(DP)                       :: pertot, per1
+  REAL(DP)                       :: dentot, den1
   INTEGER                        :: ihand
   INTEGER                        :: nhand
   !
@@ -161,7 +163,7 @@ SUBROUTINE iosys_1drism(laue)
     !
   END DO
   !
-  ! ... modify mdiis1d_step
+  ! ... modify mdiis1d_step (this operation must be after read_solvents)
   IF (mdiis1d_step < 0.0_DP) THEN
     nsite = get_nsite_in_solVs()
     IF (nsite <= MDIIS_SWITCH) THEN
@@ -170,6 +172,26 @@ SUBROUTINE iosys_1drism(laue)
       mdiis1d_step = MDIIS_STEP_DEF2
     END IF
     mdiis_step = mdiis1d_step
+  END IF
+  !
+  ! ... modify permittivity (this operation must be after read_solvents)
+  IF (permittivity <= 0.0_DP) THEN
+    pertot = 0.0_DP
+    dentot = 0.0_DP
+    DO isolV = 1, nsolV_
+      per1 = solVs(isolV)%permittivity
+      den1 = 0.5_DP * (solVs(isolV)%density + solVs(isolV)%subdensity)
+      IF (per1 > 0.0_DP)  THEN
+        pertot = pertot + per1 * den1
+        dentot = dentot + den1
+      END IF
+    END DO
+    !
+    IF (dentot > 0.0_DP) THEN
+      permittivity = pertot / dentot
+    ELSE
+      permittivity = 0.0_DP
+    END IF
   END IF
   !
   ! ... initialize rism1d_facade
@@ -192,6 +214,7 @@ SUBROUTINE iosys_1drism(laue)
       rism1t%closure = CLOSURE_KH
     END IF
     rism1t%temp = tempv
+    rism1t%perm = permittivity
     rism1t%tau  = smear1d
   END DO
   !

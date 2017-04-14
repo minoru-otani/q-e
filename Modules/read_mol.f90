@@ -24,16 +24,18 @@ MODULE read_mol_module
   PRIVATE
   !
   ! ... data to avoid reading
-  LOGICAL :: without_mass    = .FALSE.
-  LOGICAL :: without_density = .FALSE.
-  LOGICAL :: without_element = .FALSE.
-  LOGICAL :: without_xyz     = .FALSE.
-  LOGICAL :: without_charge  = .FALSE.
-  LOGICAL :: without_lj      = .FALSE.
+  LOGICAL :: without_mass         = .FALSE.
+  LOGICAL :: without_density      = .FALSE.
+  LOGICAL :: without_permittivity = .FALSE.
+  LOGICAL :: without_element      = .FALSE.
+  LOGICAL :: without_xyz          = .FALSE.
+  LOGICAL :: without_charge       = .FALSE.
+  LOGICAL :: without_lj           = .FALSE.
   !
   ! ... public components
   PUBLIC :: without_mass
   PUBLIC :: without_density
+  PUBLIC :: without_permittivity
   PUBLIC :: without_element
   PUBLIC :: without_xyz
   PUBLIC :: without_charge
@@ -49,12 +51,13 @@ CONTAINS
     !
     IMPLICIT NONE
     !
-    without_mass    = .FALSE.
-    without_density = .FALSE.
-    without_element = .FALSE.
-    without_xyz     = .FALSE.
-    without_charge  = .FALSE.
-    without_lj      = .FALSE.
+    without_mass         = .FALSE.
+    without_density      = .FALSE.
+    without_permittivity = .FALSE.
+    without_element      = .FALSE.
+    without_xyz          = .FALSE.
+    without_charge       = .FALSE.
+    without_lj           = .FALSE.
   END SUBROUTINE clean_mol_readables
   !
   !--------------------------------------------------------------------------
@@ -154,6 +157,11 @@ CONTAINS
     ! ... read density of molecule
     IF (.NOT. without_density) THEN
       CALL read_mol_density(u, mol)
+    END IF
+    !
+    ! ... read permittivity of molecule
+    IF (.NOT. without_permittivity) THEN
+      CALL read_mol_permittivity(u, mol)
     END IF
     !
     ! ... read element of every atom
@@ -277,6 +285,24 @@ CONTAINS
       mol%subdensity = mol%density
       !
     END SUBROUTINE read_mol_density
+    !
+    SUBROUTINE read_mol_permittivity(u, mol)
+      IMPLICIT NONE
+      INTEGER,        INTENT(IN)    :: u    ! i/o unit
+      TYPE(molecule), INTENT(INOUT) :: mol  ! the molecular data
+      !
+      LOGICAL :: found
+      !
+      CALL iotk_scan_dat(u, 'MOL_PERMITTIVITY', mol%permittivity, FOUND=found)
+      IF (.NOT. found) THEN
+        mol%permittivity = 0.0_DP
+      END IF
+      !
+      IF (mol%permittivity < 0.0_DP) THEN
+        CALL infomsg('read_mol_v1', 'molecular permittivity is negative @MOL_PERMITTIVITY')
+        mol%permittivity = 0.0_DP
+      END IF
+    END SUBROUTINE read_mol_permittivity
     !
     SUBROUTINE read_mol_element(u, mol)
       IMPLICIT NONE

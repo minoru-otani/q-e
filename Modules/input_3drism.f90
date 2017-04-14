@@ -35,7 +35,7 @@ SUBROUTINE iosys_3drism(laue, linit)
   !
   ! ... RISM namelist
   !
-  USE input_parameters, ONLY : closure, starting3d, tempv, ecutsolv, smear3d, &
+  USE input_parameters, ONLY : closure, starting3d, tempv, permittivity, ecutsolv, smear3d, &
                                solute_lj, solute_epsilon, solute_sigma, rmax_lj, &
                                rism3d_maxstep, rism3d_conv_thr, mdiis3d_size, mdiis3d_step, &
                                rism3d_conv_always, rism3d_planar_average, &
@@ -182,6 +182,7 @@ SUBROUTINE iosys_3drism(laue, linit)
     rism3t%closure = CLOSURE_KH
   END IF
   rism3t%temp = tempv
+  rism3t%perm = permittivity
   rism3t%tau  = smear3d
   !
   IF (linit) THEN
