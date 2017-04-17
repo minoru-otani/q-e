@@ -2833,19 +2833,22 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
         }
 
         var laue_reference -type CHARACTER {
-            default { 'average' }
             options {
                 info {
-                    Set reference level of electrostatic potential for Laue-RISM.
+                    Set reference level of electrostatic potential for Laue-RISM,
+                    which is used to evaluate Fermi energy and to perform FCP calculation (@ref lfcpopt).
                 }
                 opt -val 'average' {
                     Average of potential of the right-hand side and that of the left-hand side.
+                    This is default if @ref laue_expand_right > 0.0 and laue_expand_left > 0.0.
                 }
                 opt -val 'right' {
                     Potential of the right-hand side.
+                    This is default if @ref laue_expand_right > 0.0 and laue_expand_left <= 0.0.
                 }
                 opt -val 'left' {
                     Potential of the left-hand side.
+                    This is default if @ref laue_expand_right <= 0.0 and laue_expand_left > 0.0.
                 }
             }
         }

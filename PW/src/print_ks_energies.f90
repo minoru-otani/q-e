@@ -18,11 +18,12 @@ SUBROUTINE print_ks_energies()
   USE klist,                ONLY : xk, ngk, nks, nkstot, wk, lgauss, ltetra, &
                                    two_fermi_energies
   USE fixed_occ,            ONLY : one_atom_occupations
-  USE ener,                 ONLY : ef, ef_up, ef_dw 
+  USE ener,                 ONLY : ef, ef_up, ef_dw, vsol
   USE lsda_mod,             ONLY : lsda, nspin
   USE spin_orb,             ONLY : lforcet
   USE wvfct,                ONLY : nbnd, et, wg
   USE control_flags,        ONLY : conv_elec, lbands, iverbosity
+  USE rism_module,          ONLY : lrism
   USE mp_bands,             ONLY : root_bgrp, intra_bgrp_comm, inter_bgrp_comm
   USE mp,                   ONLY : mp_sum, mp_bcast
   USE mp_pools,             ONLY : inter_pool_comm 
@@ -125,6 +126,16 @@ SUBROUTINE print_ks_energies()
            WRITE( stdout, 9040 ) ef*rytoev
         END IF
         !
+        ! ... Fermi energy from reference level (for Laue-RISM)
+        !
+        IF ( lrism .AND. vsol > 0.d0 ) THEN
+           IF ( two_fermi_energies ) THEN
+              WRITE( stdout, 9051 ) (ef_up+vsol)*rytoev, (ef_dw+vsol)*rytoev
+           ELSE
+              WRITE( stdout, 9050 ) (ef-vsol)*rytoev
+           END IF
+        END IF
+        !
      ELSE IF ( .NOT. one_atom_occupations ) THEN
         !
         ! ... presumably not a metal: print HOMO (and LUMO if available)
@@ -156,6 +167,8 @@ SUBROUTINE print_ks_energies()
 9042 FORMAT(/'     highest occupied, lowest unoccupied level (ev): ',2F10.4 )
 9041 FORMAT(/'     the spin up/dw Fermi energies are ',2F10.4,' ev' )
 9040 FORMAT(/'     the Fermi energy is ',F10.4,' ev' )
+9051 FORMAT(/'     the spin up/dw Fermi energies are ',2F10.4,' ev (from reference level)' )
+9050 FORMAT(/'     the Fermi energy is ',F10.4,' ev (from reference level)' )
 !
   !
 END SUBROUTINE print_ks_energies

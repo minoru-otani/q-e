@@ -732,7 +732,7 @@ MODULE read_namelists_module
        laue_buffer_right     = -1.0_DP  ! will initialize at iosys_3drism
        laue_buffer_left      = -1.0_DP  ! will initialize at iosys_3drism
        laue_both_hands       = .FALSE.
-       laue_reference        = 'average'
+       laue_reference        = 'none'   ! will initialize at iosys_3drism
        !
        ! ... ( 'none' | 'average' | 'right' | 'left' )
        !

@@ -1512,9 +1512,10 @@ MODULE input_parameters
         LOGICAL :: laue_both_hands = .FALSE.
           ! number of fitting points in Laue-RISM calculation
 
-        CHARACTER(len=80) :: laue_reference = 'average'
+        CHARACTER(len=80) :: laue_reference = 'none'
           ! laue_reference = 'none' | 'average' | 'right' | 'left'
           ! reference of electrostatic potential in Laue-RISM calculation
+          ! (used to evaluate Fermi energy and to calculate FCP)
           ! 'none'     explicit reference is not defined
           ! 'average'  average of right-hand side and left-hand side
           ! 'right'    right-hand side
