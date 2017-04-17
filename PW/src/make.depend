@@ -47,8 +47,10 @@ add_qexsd_step.o : ../../Modules/cell_base.o
 add_qexsd_step.o : ../../Modules/control_flags.o
 add_qexsd_step.o : ../../Modules/fcp_variables.o
 add_qexsd_step.o : ../../Modules/ions_base.o
+add_qexsd_step.o : ../../Modules/kind.o
 add_qexsd_step.o : ../../Modules/qexsd.o
 add_qexsd_step.o : pwcom.o
+add_qexsd_step.o : rism_module.o
 add_vhub_to_deeq.o : ../../Modules/ions_base.o
 add_vhub_to_deeq.o : ../../Modules/kind.o
 add_vhub_to_deeq.o : ../../Modules/uspp.o
@@ -526,6 +528,7 @@ fcp.o : ../../Modules/mdiis.o
 fcp.o : ../../Modules/random_numbers.o
 fcp.o : dynamics_module.o
 fcp.o : pwcom.o
+fcp.o : rism_module.o
 fcp.o : symm_base.o
 find_group.o : ../../Modules/kind.o
 force_cc.o : ../../FFTXlib/fft_interfaces.o
@@ -1404,6 +1407,7 @@ print_ks_energies.o : ../../Modules/mp.o
 print_ks_energies.o : ../../Modules/mp_bands.o
 print_ks_energies.o : ../../Modules/mp_pools.o
 print_ks_energies.o : pwcom.o
+print_ks_energies.o : rism_module.o
 punch.o : ../../Modules/control_flags.o
 punch.o : ../../Modules/funct.o
 punch.o : ../../Modules/io_files.o

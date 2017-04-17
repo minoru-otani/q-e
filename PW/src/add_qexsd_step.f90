@@ -18,13 +18,15 @@ SUBROUTINE add_qexsd_step(i_step)
 !------------------------------------------------------------------------
 !       START_GLOBAL_VARIABLES ( INTENT (IN) ) 
 !--------------------------------------------------------------------------
+USE kinds,        ONLY: DP
 USE ions_base,    ONLY: tau, nat, nsp, atm, ityp
 USE cell_base,    ONLY: alat, at
-USE ener,         ONLY: etot, eband, ehart, etxc, vtxc, ewld, demet, ef 
+USE ener,         ONLY: etot, eband, ehart, etxc, vtxc, ewld, demet, ef, vsol
 USE klist,        ONLY: degauss, tot_charge
 USE force_mod,    ONLY: force, sigma
 USE control_flags,ONLY: nstep, n_scf_steps, scf_error
 USE fcp_variables,ONLY: fcp_mu, lfcpopt, lfcpdyn 
+USE rism_module,  ONLY: lrism
 !-----------------------------------------------------------------------------
 !   END_GLOBAL_VARIABLES
 !----------------------------------------------------------------------------- 
@@ -44,12 +46,21 @@ INTEGER,INTENT(IN)        ::   i_step
 !-------------------------------------------------------------------------------
 !                    END_INPUT_VARIABLES
 !-------------------------------------------------------------------------------- 
+REAL(DP) :: potstat, fcp_for
 !            
 IF ( lfcpopt .OR. lfcpdyn ) THEN 
+   IF ( lrism ) THEN
+      potstat = (fcp_mu - vsol) * tot_charge
+      fcp_for = fcp_mu - vsol - ef
+   ELSE
+      potstat = fcp_mu * tot_charge
+      fcp_for = fcp_mu - ef
+   END IF
+   !
    CALL qexsd_step_addstep ( i_step, nstep, nsp, atm, ityp, nat, tau, alat, at(:,1),   &
                           at(:,2), at(:,3), etot, eband, ehart, vtxc, etxc, ewld, degauss, demet, force, sigma,&
                           n_scf_steps, scf_error, &
-                          POTSTAT_CONTR = (ef * tot_charge),  FCP_FORCE  = (fcp_mu-ef) , FCP_TOT_CHARGE = tot_charge)
+                          POTSTAT_CONTR = potstat,  FCP_FORCE = fcp_for, FCP_TOT_CHARGE = tot_charge)
 ELSE 
    CALL qexsd_step_addstep ( i_step, nstep, nsp, atm, ityp, nat, tau, alat, at(:,1), at(:,2), at(:,3), etot, eband, &
                              ehart, vtxc, etxc, ewld, degauss, demet, force, sigma, n_scf_steps, scf_error)

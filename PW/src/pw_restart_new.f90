@@ -68,7 +68,7 @@ MODULE pw_restart_new
       USE fft_base,             ONLY : dffts
       USE wvfct,                ONLY : npwx, et, wg, nbnd
       USE ener,                 ONLY : ef, ef_up, ef_dw, vtxc, etxc, ewld, etot, &
-                                       ehart, eband, demet 
+                                       ehart, eband, demet, vsol
       USE gvecw,                ONLY : ecutwfc
       USE fixed_occ,            ONLY : tfixed_occ, f_inp
       USE ldaU,                 ONLY : lda_plus_u, lda_plus_u_kind, U_projection, &
@@ -116,6 +116,7 @@ MODULE pw_restart_new
       USE bfgs_module,          ONLY : bfgs_get_n_iter
       USE qexsd_module,         ONLY : qexsd_dipol_obj, qexsd_bp_obj
       USE fcp_variables,        ONLY : lfcpopt, lfcpdyn, fcp_mu  
+      USE rism_module,          ONLY : lrism
       !
       IMPLICIT NONE
       !
@@ -353,9 +354,14 @@ MODULE pw_restart_new
          END IF
          IF (lfcpopt .OR. lfcpdyn ) THEN 
             output%total_energy%potentiostat_contr_ispresent = .TRUE.
-            output%total_energy%potentiostat_contr = ef * tot_charge/e2
             output%FCP_tot_charge = tot_charge
-            output%FCP_force = fcp_mu - ef 
+            IF (lrism) THEN
+               output%total_energy%potentiostat_contr = (fcp_mu - vsol) * tot_charge/e2
+               output%FCP_force = fcp_mu - vsol - ef
+            ELSE
+               output%total_energy%potentiostat_contr = fcp_mu * tot_charge/e2
+               output%FCP_force = fcp_mu - ef
+            END IF
          END IF 
          !
 !---------------------------------------------------------------------------------------------

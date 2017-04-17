@@ -128,11 +128,11 @@ SUBROUTINE print_ks_energies()
         !
         ! ... Fermi energy from reference level (for Laue-RISM)
         !
-        IF ( lrism .AND. vsol > 0.d0 ) THEN
+        IF ( lrism .AND. ABS(vsol) > 1.d-10 ) THEN
            IF ( two_fermi_energies ) THEN
               WRITE( stdout, 9051 ) (ef_up+vsol)*rytoev, (ef_dw+vsol)*rytoev
            ELSE
-              WRITE( stdout, 9050 ) (ef-vsol)*rytoev
+              WRITE( stdout, 9050 ) (ef+vsol)*rytoev
            END IF
         END IF
         !

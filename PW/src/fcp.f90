@@ -75,9 +75,10 @@ CONTAINS
       !
       USE cell_base,      ONLY : alat
       USE control_flags,  ONLY : istep
-      USE ener,           ONLY : ef
+      USE ener,           ONLY : ef, vsol
       USE klist,          ONLY : nelec, tot_charge
       USE ions_base,      ONLY : nat, ityp, zv
+      USE rism_module,    ONLY : lrism
       !
       IMPLICIT NONE
       !
@@ -128,6 +129,7 @@ CONTAINS
       ! ... guess for the calculation of the lagrange multipliers )
       !
       force = fcp_mu - ef
+      IF ( lrism ) force = force - vsol
       acc = force / fcp_mass / alat
       !
       ! ... Verlet integration scheme
@@ -174,7 +176,11 @@ CONTAINS
       nelec = tau
       tot_charge = SUM( zv(ityp(1:nat)) ) - nelec
       !
-      WRITE( stdout, '(/,5X,"FCP : Fermi Energy = ",F12.6," eV")') ef     * rytoev
+      IF ( lrism ) THEN
+         WRITE( stdout, '(/,5X,"FCP : Fermi Energy = ",F12.6," eV")') (ef+vsol) * rytoev
+      ELSE
+         WRITE( stdout, '(/,5X,"FCP : Fermi Energy = ",F12.6," eV")') ef * rytoev
+      END IF
       WRITE( stdout, '(  5X,"FCP : Target Mu    = ",F12.6," eV")') fcp_mu * rytoev
       WRITE( stdout, '(  5X,"FCP : tot_charge   = ",F12.6      )') tot_charge
       !
@@ -467,10 +473,11 @@ CONTAINS
       ! ... using the steepest descent algorithm.
       !
       USE control_flags,  ONLY : iverbosity
-      USE ener,           ONLY : ef
+      USE ener,           ONLY : ef, vsol
       USE klist,          ONLY : nelec, tot_charge
       USE ions_base,      ONLY : nat, ityp, zv
       USE cell_base,      ONLY : at, alat
+      USE rism_module,    ONLY : lrism
       !
       IMPLICIT NONE
       LOGICAL, INTENT(OUT) :: conv_fcp
@@ -482,6 +489,7 @@ CONTAINS
       REAL(DP), SAVE :: nelec0 = 0.0_DP
       !
       force = fcp_mu - ef
+      IF ( lrism ) force = force - vsol
       !
       ! ... assumption: capacitance with vacuum gives the upper bound of 
       ! ... tot_charge difference.
@@ -524,9 +532,11 @@ CONTAINS
          !
       END IF
       !
-      WRITE( stdout, FMT = 9001 ) force
+      WRITE( stdout, FMT = 9001 ) tot_charge
+      WRITE( stdout, FMT = 9011 ) force
       !
-9001  FORMAT(/,5X,'FCP Optimisation: Force acting on FCP =',F12.6,' Ry',/)
+9001  FORMAT(/,5X,'FCP Optimisation: Total charge        =',F12.6)
+9011  FORMAT(  5X,'FCP Optimisation: Force acting on FCP =',F12.6,' Ry',/)
       !
    END SUBROUTINE fcp_line_minimisation
    !
@@ -538,9 +548,10 @@ CONTAINS
       ! ... using the MDIIS algorithm.
       !
       USE control_flags,  ONLY : iverbosity
-      USE ener,           ONLY : ef
+      USE ener,           ONLY : ef, vsol
       USE klist,          ONLY : nelec, tot_charge
       USE ions_base,      ONLY : nat, ityp, zv
+      USE rism_module,    ONLY : lrism
       !
       IMPLICIT NONE
       LOGICAL, INTENT(OUT) :: conv_fcp
@@ -558,6 +569,7 @@ CONTAINS
       nelec0    = nelec
       nelec1(1) = nelec
       force     = fcp_mu - ef
+      IF ( lrism ) force = force - vsol
       force1(1) = force
       CALL update_by_mdiis(mdiist, nelec1, force1)
       nelec = nelec1(1)
@@ -583,9 +595,11 @@ CONTAINS
          !
       END IF
       !
-      WRITE( stdout, FMT = 9002 ) force
+      WRITE( stdout, FMT = 9002 ) tot_charge
+      WRITE( stdout, FMT = 9012 ) force
       !
-9002  FORMAT(/,5X,'FCP Optimisation: Force acting on FCP =',F12.6,' Ry',/)
+9002  FORMAT(/,5X,'FCP Optimisation: Total charge        =',F12.6)
+9012  FORMAT(  5X,'FCP Optimisation: Force acting on FCP =',F12.6,' Ry',/)
       !
    END SUBROUTINE fcp_mdiis_update
    !

@@ -371,7 +371,7 @@ SUBROUTINE electrons_scf ( printout, exxen )
   USE paw_symmetry,         ONLY : PAW_symmetrize_ddd
   USE dfunct,               ONLY : newd
   USE esm,                  ONLY : do_comp_esm, esm_printpot, esm_ewald
-  USE fcp_variables,        ONLY : lfcpopt, lfcpdyn
+  USE fcp_variables,        ONLY : lfcpopt, lfcpdyn, fcp_mu
   USE iso_c_binding,        ONLY : c_int
   USE rism_module,          ONLY : lrism, rism_calc3d, rism_printpot
   !
@@ -790,9 +790,14 @@ SUBROUTINE electrons_scf ( printout, exxen )
      END IF
      !
      IF ( lfcpopt .or. lfcpdyn ) THEN
-        etot = etot + ef * tot_charge
-        hwf_energy = hwf_energy + ef * tot_charge
-     ENDIF
+        IF ( lrism ) THEN
+           etot = etot + (fcp_mu - vsol) * tot_charge
+           hwf_energy = hwf_energy + (fcp_mu - vsol) * tot_charge
+        ELSE
+           etot = etot + fcp_mu * tot_charge
+           hwf_energy = hwf_energy + fcp_mu * tot_charge
+        END IF
+     END IF
      !
      IF ( lrism ) THEN
         etot = etot + esol
@@ -1168,7 +1173,13 @@ SUBROUTINE electrons_scf ( printout, exxen )
           ! ... potential energy Omega = E - muN, -muN is the potentiostat
           ! ... contribution.
           !
-          IF ( lfcpopt .or. lfcpdyn ) WRITE( stdout, 9072 ) ef*tot_charge
+          IF ( lfcpopt .OR. lfcpdyn ) THEN
+             IF ( lrism ) THEN
+                WRITE( stdout, 9072 ) (fcp_mu-vsol)*tot_charge
+             ELSE
+                WRITE( stdout, 9072 ) fcp_mu*tot_charge
+             END IF
+          END IF
           !
        ELSE IF ( conv_elec ) THEN
           !

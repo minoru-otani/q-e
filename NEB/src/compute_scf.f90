@@ -24,7 +24,7 @@ SUBROUTINE compute_scf( fii, lii, stat  )
   USE control_flags,    ONLY : conv_elec
   USE cell_base,        ONLY : alat
   USE ions_base,        ONLY : tau, nat, ityp, zv
-  USE ener,             ONLY : etot, ef
+  USE ener,             ONLY : etot, ef, vsol
   USE force_mod,        ONLY : force
   USE rism_module,      ONLY : lrism, rism_set_restart
   USE io_files,         ONLY : prefix, tmp_dir, wfc_dir,  iunupdate, seqopn, &
@@ -361,7 +361,21 @@ SUBROUTINE compute_scf( fii, lii, stat  )
       !
       CALL close_files(.FALSE.)
       !
-      IF ( lfcpopt ) fcp_neb_ef(image) = ef
+      ! ... Fermi energies
+      !
+      IF ( lfcpopt ) THEN
+         !
+         IF ( lrism ) THEN
+            !
+            fcp_neb_ef(image) = ef + vsol
+            !
+         ELSE
+            !
+            fcp_neb_ef(image) = ef
+            !
+         END IF
+         !
+      END IF
       !
       RETURN
       !
