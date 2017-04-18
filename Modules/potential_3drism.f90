@@ -43,7 +43,6 @@ SUBROUTINE potential_3drism(rismt, vrs, rhog, ierr)
   INTEGER                  :: isolV
   INTEGER                  :: iatom
   REAL(DP)                 :: qv
-  REAL(DP)                 :: charge
   REAL(DP),    ALLOCATABLE :: vrss(:)    ! potential(V) in R-Space for Smooth-FFT
   REAL(DP),    ALLOCATABLE :: vrss_s(:)  ! potential(V) in R-Space for Smooth-FFT (Short-range)
   REAL(DP),    ALLOCATABLE :: vrss_l(:)  ! potential(V) in R-Space for Smooth-FFT (Long-range)
