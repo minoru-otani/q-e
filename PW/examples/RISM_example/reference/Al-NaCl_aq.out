@@ -1,5 +1,5 @@
 
-     Program PWSCF v.6.1 starts on  6Apr2017 at 18:51:19 
+     Program PWSCF v.6.1 starts on 17Apr2017 at 22:52: 7 
 
      This program is part of the open-source Quantum ESPRESSO suite
      for quantum simulation of materials; please cite
@@ -36,7 +36,7 @@
          0.55506881E+02 mol/L
          0.99997200E+00 g/cm^3
      Number of atoms:   3
-     Atoms: 
+     Atoms:
        #  atom      X (angs)      Y (angs)      Z (angs)      Q (e)         E (kcal/mol)  S (angs)
        1  O/h2o     0.00000000    0.00000000    0.00000000   -0.82000000    0.15540000    3.16600000
        2  H/h2o     0.81649000    0.57736000    0.00000000    0.41000000    0.04600000    1.00000000
@@ -51,7 +51,7 @@
          0.50000000E+01 mol/L
          0.11494885E+00 g/cm^3
      Number of atoms:   1
-     Atoms: 
+     Atoms:
        #  atom      X (angs)      Y (angs)      Z (angs)      Q (e)         E (kcal/mol)  S (angs)
        1  Na        0.00000000    0.00000000    0.00000000    1.00000000    0.13010000    2.35000000
 
@@ -64,7 +64,7 @@
          0.50000000E+01 mol/L
          0.17726350E+00 g/cm^3
      Number of atoms:   1
-     Atoms: 
+     Atoms:
        #  atom      X (angs)      Y (angs)      Z (angs)      Q (e)         E (kcal/mol)  S (angs)
        1  Cl        0.00000000    0.00000000    0.00000000   -1.00000000    0.10010000    4.40000000
 
@@ -410,9 +410,9 @@
 
      Starting wfc are   12 randomized atomic wfcs
 
-     total cpu time spent up to now is       21.4 secs
+     total cpu time spent up to now is       24.3 secs
 
-     per-process dynamical memory:    22.7 Mb
+     per-process dynamical memory:    22.8 Mb
 
      Self-consistent Calculation
 
@@ -570,10 +570,10 @@
      Total      GaussFluct   0.278579E+01 kcal/mol
 
 
-     total cpu time spent up to now is       40.6 secs
+     total cpu time spent up to now is       44.5 secs
 
-     total energy              =     -11.15706403 Ry
-     Harris-Foulkes estimate   =     -12.87098701 Ry
+     total energy              =     -11.12781848 Ry
+     Harris-Foulkes estimate   =     -12.84174146 Ry
      estimated scf accuracy    <       3.49170069 Ry
 
      iteration #  2     ecut=    25.00 Ry     beta=0.20
@@ -697,10 +697,10 @@
      Total      GaussFluct   0.140638E+02 kcal/mol
 
 
-     total cpu time spent up to now is       55.6 secs
+     total cpu time spent up to now is       61.5 secs
 
-     total energy              =     -11.02273242 Ry
-     Harris-Foulkes estimate   =     -14.06533497 Ry
+     total energy              =     -11.02907463 Ry
+     Harris-Foulkes estimate   =     -14.07167718 Ry
      estimated scf accuracy    <      21.76450677 Ry
 
      iteration #  3     ecut=    25.00 Ry     beta=0.20
@@ -735,10 +735,10 @@
      Total      GaussFluct   0.143108E+02 kcal/mol
 
 
-     total cpu time spent up to now is       56.0 secs
+     total cpu time spent up to now is       62.0 secs
 
-     total energy              =     -12.42024068 Ry
-     Harris-Foulkes estimate   =     -12.39895214 Ry
+     total energy              =     -12.42619473 Ry
+     Harris-Foulkes estimate   =     -12.40490619 Ry
      estimated scf accuracy    <       0.35340936 Ry
 
      iteration #  4     ecut=    25.00 Ry     beta=0.20
@@ -783,10 +783,10 @@
      Total      GaussFluct   0.149630E+02 kcal/mol
 
 
-     total cpu time spent up to now is       57.7 secs
+     total cpu time spent up to now is       63.7 secs
 
-     total energy              =     -12.28792355 Ry
-     Harris-Foulkes estimate   =     -12.41900244 Ry
+     total energy              =     -12.29756809 Ry
+     Harris-Foulkes estimate   =     -12.42864698 Ry
      estimated scf accuracy    <       0.41170871 Ry
 
      iteration #  5     ecut=    25.00 Ry     beta=0.20
@@ -822,10 +822,10 @@
      Total      GaussFluct   0.149741E+02 kcal/mol
 
 
-     total cpu time spent up to now is       58.0 secs
+     total cpu time spent up to now is       64.1 secs
 
-     total energy              =     -12.40926678 Ry
-     Harris-Foulkes estimate   =     -12.40470715 Ry
+     total energy              =     -12.41919107 Ry
+     Harris-Foulkes estimate   =     -12.41463144 Ry
      estimated scf accuracy    <       0.47555134 Ry
 
      iteration #  6     ecut=    25.00 Ry     beta=0.20
@@ -862,10 +862,10 @@
      Total      GaussFluct   0.157195E+02 kcal/mol
 
 
-     total cpu time spent up to now is       58.5 secs
+     total cpu time spent up to now is       64.7 secs
 
-     total energy              =     -12.42027101 Ry
-     Harris-Foulkes estimate   =     -12.40759300 Ry
+     total energy              =     -12.43181119 Ry
+     Harris-Foulkes estimate   =     -12.41913318 Ry
      estimated scf accuracy    <       0.56315489 Ry
 
      iteration #  7     ecut=    25.00 Ry     beta=0.20
@@ -911,10 +911,10 @@
      Total      GaussFluct   0.156975E+02 kcal/mol
 
 
-     total cpu time spent up to now is       60.3 secs
+     total cpu time spent up to now is       66.8 secs
 
-     total energy              =     -12.43164028 Ry
-     Harris-Foulkes estimate   =     -12.42229379 Ry
+     total energy              =     -12.44451959 Ry
+     Harris-Foulkes estimate   =     -12.43517310 Ry
      estimated scf accuracy    <       0.83089954 Ry
 
      iteration #  8     ecut=    25.00 Ry     beta=0.20
@@ -951,10 +951,10 @@
      Total      GaussFluct   0.156598E+02 kcal/mol
 
 
-     total cpu time spent up to now is       60.9 secs
+     total cpu time spent up to now is       67.3 secs
 
-     total energy              =     -12.54337524 Ry
-     Harris-Foulkes estimate   =     -12.55313568 Ry
+     total energy              =     -12.55565955 Ry
+     Harris-Foulkes estimate   =     -12.56541998 Ry
      estimated scf accuracy    <       3.27950388 Ry
 
      iteration #  9     ecut=    25.00 Ry     beta=0.20
@@ -990,10 +990,10 @@
      Total      GaussFluct   0.156669E+02 kcal/mol
 
 
-     total cpu time spent up to now is       61.0 secs
+     total cpu time spent up to now is       67.5 secs
 
-     total energy              =     -12.54781401 Ry
-     Harris-Foulkes estimate   =     -12.54766535 Ry
+     total energy              =     -12.56018975 Ry
+     Harris-Foulkes estimate   =     -12.56004109 Ry
      estimated scf accuracy    <       3.19670849 Ry
 
      iteration # 10     ecut=    25.00 Ry     beta=0.20
@@ -1031,10 +1031,10 @@
      Total      GaussFluct   0.161539E+02 kcal/mol
 
 
-     total cpu time spent up to now is       61.6 secs
+     total cpu time spent up to now is       68.4 secs
 
-     total energy              =     -12.50553800 Ry
-     Harris-Foulkes estimate   =     -12.54964029 Ry
+     total energy              =     -12.51746531 Ry
+     Harris-Foulkes estimate   =     -12.56156760 Ry
      estimated scf accuracy    <       3.26846884 Ry
 
      iteration # 11     ecut=    25.00 Ry     beta=0.20
@@ -1073,10 +1073,10 @@
      Total      GaussFluct   0.162762E+02 kcal/mol
 
 
-     total cpu time spent up to now is       62.3 secs
+     total cpu time spent up to now is       69.4 secs
 
-     total energy              =     -12.53790792 Ry
-     Harris-Foulkes estimate   =     -12.50908320 Ry
+     total energy              =     -12.55010950 Ry
+     Harris-Foulkes estimate   =     -12.52128478 Ry
      estimated scf accuracy    <       2.91324229 Ry
 
      iteration # 12     ecut=    25.00 Ry     beta=0.20
@@ -1116,10 +1116,10 @@
      Total      GaussFluct   0.171959E+02 kcal/mol
 
 
-     total cpu time spent up to now is       63.2 secs
+     total cpu time spent up to now is       70.2 secs
 
-     total energy              =     -12.41265053 Ry
-     Harris-Foulkes estimate   =     -12.56583133 Ry
+     total energy              =     -12.42276362 Ry
+     Harris-Foulkes estimate   =     -12.57594442 Ry
      estimated scf accuracy    <       4.21382298 Ry
 
      iteration # 13     ecut=    25.00 Ry     beta=0.20
@@ -1159,10 +1159,10 @@
      Total      GaussFluct   0.172278E+02 kcal/mol
 
 
-     total cpu time spent up to now is       64.1 secs
+     total cpu time spent up to now is       71.1 secs
 
-     total energy              =     -12.43360343 Ry
-     Harris-Foulkes estimate   =     -12.45079266 Ry
+     total energy              =     -12.44380104 Ry
+     Harris-Foulkes estimate   =     -12.46099026 Ry
      estimated scf accuracy    <       1.20430478 Ry
 
      iteration # 14     ecut=    25.00 Ry     beta=0.20
@@ -1202,10 +1202,10 @@
      Total      GaussFluct   0.140543E+02 kcal/mol
 
 
-     total cpu time spent up to now is       65.1 secs
+     total cpu time spent up to now is       72.1 secs
 
-     total energy              =     -12.29383755 Ry
-     Harris-Foulkes estimate   =     -12.46428871 Ry
+     total energy              =     -12.29522874 Ry
+     Harris-Foulkes estimate   =     -12.46567989 Ry
      estimated scf accuracy    <       1.04660720 Ry
 
      iteration # 15     ecut=    25.00 Ry     beta=0.20
@@ -1245,10 +1245,10 @@
      Total      GaussFluct   0.138835E+02 kcal/mol
 
 
-     total cpu time spent up to now is       66.0 secs
+     total cpu time spent up to now is       73.0 secs
 
-     total energy              =     -12.37364761 Ry
-     Harris-Foulkes estimate   =     -12.39098249 Ry
+     total energy              =     -12.37482968 Ry
+     Harris-Foulkes estimate   =     -12.39216456 Ry
      estimated scf accuracy    <       0.06767272 Ry
 
      iteration # 16     ecut=    25.00 Ry     beta=0.20
@@ -1285,10 +1285,10 @@
      Total      GaussFluct   0.122836E+02 kcal/mol
 
 
-     total cpu time spent up to now is       66.3 secs
+     total cpu time spent up to now is       73.5 secs
 
-     total energy              =     -12.38030718 Ry
-     Harris-Foulkes estimate   =     -12.38782762 Ry
+     total energy              =     -12.37982658 Ry
+     Harris-Foulkes estimate   =     -12.38734702 Ry
      estimated scf accuracy    <       0.04568658 Ry
 
      iteration # 17     ecut=    25.00 Ry     beta=0.20
@@ -1330,10 +1330,10 @@
      Total      GaussFluct   0.113734E+02 kcal/mol
 
 
-     total cpu time spent up to now is       67.6 secs
+     total cpu time spent up to now is       74.8 secs
 
-     total energy              =     -12.38375835 Ry
-     Harris-Foulkes estimate   =     -12.39054040 Ry
+     total energy              =     -12.38045809 Ry
+     Harris-Foulkes estimate   =     -12.38724015 Ry
      estimated scf accuracy    <       0.02028868 Ry
 
      iteration # 18     ecut=    25.00 Ry     beta=0.20
@@ -1404,10 +1404,10 @@
      Total      GaussFluct   0.108823E+02 kcal/mol
 
 
-     total cpu time spent up to now is       73.7 secs
+     total cpu time spent up to now is       80.7 secs
 
-     total energy              =     -12.38618615 Ry
-     Harris-Foulkes estimate   =     -12.38794077 Ry
+     total energy              =     -12.38204179 Ry
+     Harris-Foulkes estimate   =     -12.38379641 Ry
      estimated scf accuracy    <       0.01087877 Ry
 
      iteration # 19     ecut=    25.00 Ry     beta=0.20
@@ -1444,10 +1444,10 @@
      Total      GaussFluct   0.122101E+02 kcal/mol
 
 
-     total cpu time spent up to now is       74.2 secs
+     total cpu time spent up to now is       81.4 secs
 
-     total energy              =     -12.38111586 Ry
-     Harris-Foulkes estimate   =     -12.37451561 Ry
+     total energy              =     -12.38114832 Ry
+     Harris-Foulkes estimate   =     -12.37454807 Ry
      estimated scf accuracy    <       0.01205415 Ry
 
      iteration # 20     ecut=    25.00 Ry     beta=0.20
@@ -1494,10 +1494,10 @@
      Total      GaussFluct   0.122171E+02 kcal/mol
 
 
-     total cpu time spent up to now is       76.1 secs
+     total cpu time spent up to now is       83.5 secs
 
-     total energy              =     -12.38268284 Ry
-     Harris-Foulkes estimate   =     -12.38201357 Ry
+     total energy              =     -12.38293882 Ry
+     Harris-Foulkes estimate   =     -12.38226956 Ry
      estimated scf accuracy    <       0.00401434 Ry
 
      iteration # 21     ecut=    25.00 Ry     beta=0.20
@@ -1542,10 +1542,10 @@
      Total      GaussFluct   0.122203E+02 kcal/mol
 
 
-     total cpu time spent up to now is       78.0 secs
+     total cpu time spent up to now is       85.4 secs
 
-     total energy              =     -12.38061136 Ry
-     Harris-Foulkes estimate   =     -12.38488401 Ry
+     total energy              =     -12.38010767 Ry
+     Harris-Foulkes estimate   =     -12.38438031 Ry
      estimated scf accuracy    <       0.00473085 Ry
 
      iteration # 22     ecut=    25.00 Ry     beta=0.20
@@ -1600,10 +1600,10 @@
      Total      GaussFluct   0.123445E+02 kcal/mol
 
 
-     total cpu time spent up to now is       81.5 secs
+     total cpu time spent up to now is       88.7 secs
 
-     total energy              =     -12.38016559 Ry
-     Harris-Foulkes estimate   =     -12.38090554 Ry
+     total energy              =     -12.37972579 Ry
+     Harris-Foulkes estimate   =     -12.38046574 Ry
      estimated scf accuracy    <       0.00387992 Ry
 
      iteration # 23     ecut=    25.00 Ry     beta=0.20
@@ -1684,10 +1684,10 @@
      Total      GaussFluct   0.127887E+02 kcal/mol
 
 
-     total cpu time spent up to now is       88.9 secs
+     total cpu time spent up to now is       96.3 secs
 
-     total energy              =     -12.37846642 Ry
-     Harris-Foulkes estimate   =     -12.37604830 Ry
+     total energy              =     -12.37950197 Ry
+     Harris-Foulkes estimate   =     -12.37708385 Ry
      estimated scf accuracy    <       0.00186341 Ry
 
      iteration # 24     ecut=    25.00 Ry     beta=0.20
@@ -1727,10 +1727,10 @@
      Total      GaussFluct   0.131641E+02 kcal/mol
 
 
-     total cpu time spent up to now is       89.9 secs
+     total cpu time spent up to now is       97.4 secs
 
-     total energy              =     -12.37756870 Ry
-     Harris-Foulkes estimate   =     -12.37547986 Ry
+     total energy              =     -12.37963595 Ry
+     Harris-Foulkes estimate   =     -12.37754711 Ry
      estimated scf accuracy    <       0.00582156 Ry
 
      iteration # 25     ecut=    25.00 Ry     beta=0.20
@@ -1770,10 +1770,10 @@
      Total      GaussFluct   0.138929E+02 kcal/mol
 
 
-     total cpu time spent up to now is       90.7 secs
+     total cpu time spent up to now is       98.3 secs
 
-     total energy              =     -12.37529654 Ry
-     Harris-Foulkes estimate   =     -12.37255718 Ry
+     total energy              =     -12.37874738 Ry
+     Harris-Foulkes estimate   =     -12.37600803 Ry
      estimated scf accuracy    <       0.00287275 Ry
 
      iteration # 26     ecut=    25.00 Ry     beta=0.20
@@ -1880,10 +1880,10 @@
      Total      GaussFluct   0.139678E+02 kcal/mol
 
 
-     total cpu time spent up to now is      102.7 secs
+     total cpu time spent up to now is      110.1 secs
 
-     total energy              =     -12.37481185 Ry
-     Harris-Foulkes estimate   =     -12.37450298 Ry
+     total energy              =     -12.37860877 Ry
+     Harris-Foulkes estimate   =     -12.37829990 Ry
      estimated scf accuracy    <       0.00025158 Ry
 
      iteration # 27     ecut=    25.00 Ry     beta=0.20
@@ -1942,10 +1942,10 @@
      Total      GaussFluct   0.138105E+02 kcal/mol
 
 
-     total cpu time spent up to now is      106.7 secs
+     total cpu time spent up to now is      114.2 secs
 
-     total energy              =     -12.37535208 Ry
-     Harris-Foulkes estimate   =     -12.37633993 Ry
+     total energy              =     -12.37869229 Ry
+     Harris-Foulkes estimate   =     -12.37968014 Ry
      estimated scf accuracy    <       0.00027996 Ry
 
      iteration # 28     ecut=    25.00 Ry     beta=0.20
@@ -1994,10 +1994,10 @@
      Total      GaussFluct   0.140331E+02 kcal/mol
 
 
-     total cpu time spent up to now is      109.0 secs
+     total cpu time spent up to now is      116.4 secs
 
-     total energy              =     -12.37466436 Ry
-     Harris-Foulkes estimate   =     -12.37340955 Ry
+     total energy              =     -12.37862385 Ry
+     Harris-Foulkes estimate   =     -12.37736904 Ry
      estimated scf accuracy    <       0.00020608 Ry
 
      iteration # 29     ecut=    25.00 Ry     beta=0.20
@@ -2039,10 +2039,10 @@
      Total      GaussFluct   0.140455E+02 kcal/mol
 
 
-     total cpu time spent up to now is      110.2 secs
+     total cpu time spent up to now is      117.6 secs
 
-     total energy              =     -12.37464454 Ry
-     Harris-Foulkes estimate   =     -12.37458055 Ry
+     total energy              =     -12.37863230 Ry
+     Harris-Foulkes estimate   =     -12.37856831 Ry
      estimated scf accuracy    <       0.00005436 Ry
 
      iteration # 30     ecut=    25.00 Ry     beta=0.20
@@ -2086,10 +2086,10 @@
      Total      GaussFluct   0.140670E+02 kcal/mol
 
 
-     total cpu time spent up to now is      112.0 secs
+     total cpu time spent up to now is      119.0 secs
 
-     total energy              =     -12.37456914 Ry
-     Harris-Foulkes estimate   =     -12.37445877 Ry
+     total energy              =     -12.37861658 Ry
+     Harris-Foulkes estimate   =     -12.37850621 Ry
      estimated scf accuracy    <       0.00003532 Ry
 
      iteration # 31     ecut=    25.00 Ry     beta=0.20
@@ -2127,10 +2127,10 @@
      Total      GaussFluct   0.140398E+02 kcal/mol
 
 
-     total cpu time spent up to now is      112.6 secs
+     total cpu time spent up to now is      119.6 secs
 
-     total energy              =     -12.37468677 Ry
-     Harris-Foulkes estimate   =     -12.37474798 Ry
+     total energy              =     -12.37869564 Ry
+     Harris-Foulkes estimate   =     -12.37875685 Ry
      estimated scf accuracy    <       0.00001019 Ry
 
      iteration # 32     ecut=    25.00 Ry     beta=0.20
@@ -2170,10 +2170,10 @@
      Total      GaussFluct   0.140542E+02 kcal/mol
 
 
-     total cpu time spent up to now is      113.5 secs
+     total cpu time spent up to now is      120.5 secs
 
-     total energy              =     -12.37462558 Ry
-     Harris-Foulkes estimate   =     -12.37458802 Ry
+     total energy              =     -12.37866135 Ry
+     Harris-Foulkes estimate   =     -12.37862379 Ry
      estimated scf accuracy    <       0.00000143 Ry
 
      iteration # 33     ecut=    25.00 Ry     beta=0.20
@@ -2212,10 +2212,10 @@
      Total      GaussFluct   0.140441E+02 kcal/mol
 
 
-     total cpu time spent up to now is      114.2 secs
+     total cpu time spent up to now is      121.3 secs
 
-     total energy              =     -12.37464794 Ry
-     Harris-Foulkes estimate   =     -12.37467311 Ry
+     total energy              =     -12.37867661 Ry
+     Harris-Foulkes estimate   =     -12.37870177 Ry
      estimated scf accuracy    <       0.00000170 Ry
 
      iteration # 34     ecut=    25.00 Ry     beta=0.20
@@ -2251,7 +2251,7 @@
      Total      GaussFluct   0.140433E+02 kcal/mol
 
 
-     total cpu time spent up to now is      114.7 secs
+     total cpu time spent up to now is      122.2 secs
 
      End of self-consistent calculation
 
@@ -2269,8 +2269,8 @@
 
      the Fermi energy is    -5.7179 ev
 
-!    total energy              =     -12.37465888 Ry
-     Harris-Foulkes estimate   =     -12.37462497 Ry
+!    total energy              =     -12.37870031 Ry
+     Harris-Foulkes estimate   =     -12.37866640 Ry
      estimated scf accuracy    <       0.00000016 Ry
 
      The total energy is the sum of the following terms:
@@ -2279,7 +2279,8 @@
      hartree contribution      =     -79.87456840 Ry
      xc contribution           =      -4.74191268 Ry
      ewald contribution        =     -91.61035544 Ry
-     solvation energy (RISM)   =       0.05287183 Ry
+     solvation energy (RISM)   =       0.04478896 Ry
+     level-shifting contrib.   =       0.00404144 Ry
      smearing contrib. (-TS)   =      -0.00434593 Ry
 
      convergence has been achieved in  34 iterations
@@ -2298,7 +2299,7 @@
      number of scf cycles    =   1
      number of bfgs steps    =   0
 
-     energy   new            =     -12.3746588774 Ry
+     energy   new            =     -12.3787003147 Ry
 
      new trust radius        =       0.0033529561 bohr
      new conv_thr            =       0.0000010000 Ry
@@ -2343,9 +2344,9 @@ Al       1.430000000   0.830000000   2.171101510    0   0   1
      Total      GaussFluct   0.136375E+02 kcal/mol
 
 
-     total cpu time spent up to now is      116.1 secs
+     total cpu time spent up to now is      123.5 secs
 
-     per-process dynamical memory:    15.4 Mb
+     per-process dynamical memory:    15.5 Mb
 
      Self-consistent Calculation
 
@@ -2397,10 +2398,10 @@ Al       1.430000000   0.830000000   2.171101510    0   0   1
      Total      GaussFluct   0.139951E+02 kcal/mol
 
 
-     total cpu time spent up to now is      118.8 secs
+     total cpu time spent up to now is      126.2 secs
 
-     total energy              =     -12.37481958 Ry
-     Harris-Foulkes estimate   =     -12.37519185 Ry
+     total energy              =     -12.37869095 Ry
+     Harris-Foulkes estimate   =     -12.37906321 Ry
      estimated scf accuracy    <       0.00003731 Ry
 
      iteration #  2     ecut=    25.00 Ry     beta=0.20
@@ -2442,10 +2443,10 @@ Al       1.430000000   0.830000000   2.171101510    0   0   1
      Total      GaussFluct   0.140396E+02 kcal/mol
 
 
-     total cpu time spent up to now is      120.1 secs
+     total cpu time spent up to now is      127.8 secs
 
-     total energy              =     -12.37464306 Ry
-     Harris-Foulkes estimate   =     -12.37443901 Ry
+     total energy              =     -12.37866416 Ry
+     Harris-Foulkes estimate   =     -12.37846011 Ry
      estimated scf accuracy    <       0.00106573 Ry
 
      iteration #  3     ecut=    25.00 Ry     beta=0.20
@@ -2484,7 +2485,7 @@ Al       1.430000000   0.830000000   2.171101510    0   0   1
      Total      GaussFluct   0.140408E+02 kcal/mol
 
 
-     total cpu time spent up to now is      121.1 secs
+     total cpu time spent up to now is      129.0 secs
 
      End of self-consistent calculation
 
@@ -2502,8 +2503,8 @@ Al       1.430000000   0.830000000   2.171101510    0   0   1
 
      the Fermi energy is    -5.7204 ev
 
-!    total energy              =     -12.37468392 Ry
-     Harris-Foulkes estimate   =     -12.37466592 Ry
+!    total energy              =     -12.37871327 Ry
+     Harris-Foulkes estimate   =     -12.37869527 Ry
      estimated scf accuracy    <       0.00000016 Ry
 
      The total energy is the sum of the following terms:
@@ -2512,7 +2513,8 @@ Al       1.430000000   0.830000000   2.171101510    0   0   1
      hartree contribution      =     -79.88941336 Ry
      xc contribution           =      -4.74170072 Ry
      ewald contribution        =     -91.62882633 Ry
-     solvation energy (RISM)   =       0.05283937 Ry
+     solvation energy (RISM)   =       0.04478067 Ry
+     level-shifting contrib.   =       0.00402935 Ry
      smearing contrib. (-TS)   =      -0.00434389 Ry
 
      convergence has been achieved in   3 iterations
@@ -2530,7 +2532,7 @@ Al       1.430000000   0.830000000   2.171101510    0   0   1
 
      End of BFGS Geometry Optimization
 
-     Final energy   =     -12.3746839167 Ry
+     Final energy   =     -12.3787132662 Ry
 Begin final coordinates
 
 ATOMIC_POSITIONS (angstrom)
@@ -2543,64 +2545,63 @@ End final coordinates
 
      Writing output data file Al-NaCl_aq.save
 
-     init_run     :      8.64s CPU      9.28s WALL (       1 calls)
-     electrons    :     91.84s CPU     98.39s WALL (       2 calls)
-     update_pot   :      0.12s CPU      0.13s WALL (       1 calls)
-     forces       :      1.09s CPU      1.09s WALL (       2 calls)
+     init_run     :     11.15s CPU     11.79s WALL (       1 calls)
+     electrons    :     96.53s CPU    103.41s WALL (       2 calls)
+     update_pot   :      0.13s CPU      0.13s WALL (       1 calls)
+     forces       :      1.13s CPU      1.13s WALL (       2 calls)
 
      Called by init_run:
-     wfcinit      :      0.02s CPU      0.03s WALL (       1 calls)
-     potinit      :      8.46s CPU      9.10s WALL (       1 calls)
+     wfcinit      :      0.03s CPU      0.03s WALL (       1 calls)
+     potinit      :     11.00s CPU     11.64s WALL (       1 calls)
 
      Called by electrons:
-     c_bands      :      1.16s CPU      1.19s WALL (      37 calls)
-     sum_band     :      0.31s CPU      0.32s WALL (      37 calls)
-     v_of_rho     :      0.96s CPU      0.97s WALL (      39 calls)
-     mix_rho      :      0.08s CPU      0.08s WALL (      37 calls)
+     c_bands      :      1.22s CPU      1.27s WALL (      37 calls)
+     sum_band     :      0.32s CPU      0.34s WALL (      37 calls)
+     v_of_rho     :      1.01s CPU      1.01s WALL (      39 calls)
+     mix_rho      :      0.09s CPU      0.09s WALL (      37 calls)
 
      Called by c_bands:
      init_us_2    :      0.03s CPU      0.03s WALL (     231 calls)
-     cegterg      :      1.12s CPU      1.14s WALL (     111 calls)
+     cegterg      :      1.18s CPU      1.22s WALL (     111 calls)
 
      Called by sum_band:
 
      Called by *egterg:
-     h_psi        :      0.93s CPU      0.96s WALL (     438 calls)
+     h_psi        :      0.98s CPU      1.02s WALL (     438 calls)
      g_psi        :      0.00s CPU      0.00s WALL (     324 calls)
      cdiaghg      :      0.05s CPU      0.06s WALL (     432 calls)
 
      Called by h_psi:
-     h_psi:pot    :      0.93s CPU      0.95s WALL (     438 calls)
-     h_psi:calbec :      0.06s CPU      0.06s WALL (     438 calls)
-     vloc_psi     :      0.84s CPU      0.86s WALL (     438 calls)
+     h_psi:pot    :      0.98s CPU      1.02s WALL (     438 calls)
+     h_psi:calbec :      0.07s CPU      0.06s WALL (     438 calls)
+     vloc_psi     :      0.88s CPU      0.91s WALL (     438 calls)
      add_vuspsi   :      0.03s CPU      0.04s WALL (     438 calls)
 
      General routines
-     calbec       :      0.06s CPU      0.06s WALL (     462 calls)
-     fft          :      0.29s CPU      0.30s WALL (     666 calls)
+     calbec       :      0.07s CPU      0.07s WALL (     462 calls)
+     fft          :      0.32s CPU      0.34s WALL (     666 calls)
      ffts         :      0.02s CPU      0.02s WALL (      76 calls)
-     fftw         :      0.94s CPU      0.94s WALL (    5548 calls)
-     fftc         :      0.02s CPU      0.02s WALL (      78 calls)
-     interpolate  :      0.05s CPU      0.06s WALL (      76 calls)
+     fftw         :      0.98s CPU      0.99s WALL (    5548 calls)
+     fftc         :      0.03s CPU      0.03s WALL (      78 calls)
+     interpolate  :      0.06s CPU      0.06s WALL (      76 calls)
      davcio       :      0.00s CPU      0.00s WALL (       3 calls)
 
      Parallel routines
-     fft_scatter  :      2.58s CPU      3.80s WALL (   56739 calls)
+     fft_scatter  :      3.28s CPU      4.41s WALL (   56739 calls)
 
      RISM routines
      1DRISM_pre   :      0.00s CPU      0.00s WALL (       1 calls)
-     1DRISM_run   :     11.96s CPU     11.98s WALL (       1 calls)
-     3DRISM_pre   :      0.55s CPU      0.55s WALL (       1 calls)
-     3DRISM_run   :     97.24s CPU    104.39s WALL (      39 calls)
+     1DRISM_run   :     12.36s CPU     12.39s WALL (       1 calls)
+     3DRISM_pre   :      0.56s CPU      0.56s WALL (       1 calls)
+     3DRISM_run   :    104.34s CPU    111.79s WALL (      39 calls)
      3DRISM_ions  :      0.36s CPU      0.36s WALL (       1 calls)
-     3DRISM_for   :      0.95s CPU      0.95s WALL (       2 calls)
+     3DRISM_for   :      0.95s CPU      0.94s WALL (       2 calls)
      3DRISM_vsol  :      0.02s CPU      0.02s WALL (      39 calls)
-     3DRISM_esol  :      0.00s CPU      0.00s WALL (      39 calls)
 
-     PWSCF        :  1m54.46s CPU     2m 1.76s WALL
+     PWSCF        :  2m 2.03s CPU     2m 9.66s WALL
 
 
-   This run was terminated on:  18:53:21   6Apr2017            
+   This run was terminated on:  22:54:17  17Apr2017            
 
 =------------------------------------------------------------------------------=
    JOB DONE.
