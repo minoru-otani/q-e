@@ -628,7 +628,7 @@ CONTAINS
     esol = rism3t%esol
     !
     IF (llaue) THEN
-       ! ... potential shifting (for Laue-RISM)
+       ! ... potential shifting energy (for Laue-RISM)
        vsol = rism3t%vsol
        !
     ELSE

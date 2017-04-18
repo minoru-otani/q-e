@@ -107,7 +107,7 @@ CONTAINS
 #endif
             !
             fcp_neb_nelec(i) = nelec
-            fcp_neb_ef   (i) = 0.0_DP
+            fcp_neb_ef   (i) = ef * e2 ! factor e2: hartree -> Ry.
             !
          END DO
          !

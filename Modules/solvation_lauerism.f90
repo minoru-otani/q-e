@@ -323,8 +323,8 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   !
   CALL mp_sum(rismt%esol, rismt%mp_site%inter_sitg_comm)
   !
-  ! ... make vsol (reference level shifting)
-  rismt%vsol = vsol0
+  ! ... make vsol (contribution of reference level shifting)
+  rismt%vsol = 0.5_DP * vsol0 * charge
   !
   ! ... deallocate memory
   IF (rismt%nrzs * rismt%ngxy * rismt%nsite > 0) THEN

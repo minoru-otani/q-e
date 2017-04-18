@@ -317,10 +317,9 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
     !
     vref = vsolv + vsolu
     !
-    ! >>> do not shift vpot <<<
-    !DO iz = 1, rismt%lfft%nrz
-    !  rismt%vpot(iz + jgxy) = rismt%vpot(iz + jgxy) - CMPLX(vref, 0.0_DP, kind=DP)
-    !END DO
+    DO iz = 1, rismt%lfft%nrz
+      rismt%vpot(iz + jgxy) = rismt%vpot(iz + jgxy) - CMPLX(vref, 0.0_DP, kind=DP)
+    END DO
     !
   END IF
   !
