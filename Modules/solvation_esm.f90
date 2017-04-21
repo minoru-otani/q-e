@@ -108,6 +108,7 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
   vref = 0.0_DP
   !
   ! ... calculate exp(i*gz*zright) and exp(i*gz*zleft)
+!$omp parallel do default(shared) private(igz, gz, phir, phil)
   DO igz = 1, rismt%lfft%ngz_x
     gz   = rismt%lfft%gz_x(igz)
     phir = tpi * gz * zright
@@ -115,6 +116,7 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
     expigzr(igz) = CMPLX(COS(phir), SIN(phir), kind=DP)
     expigzl(igz) = CMPLX(COS(phil), SIN(phil), kind=DP)
   END DO
+!$omp end parallel do
   !
   ! ... 1D-FFT of charge: Laue-rep. -> G-space
   IF (rismt%lfft%ngz_x * rismt%lfft%ngxy > 0) THEN
@@ -129,20 +131,24 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
   !
   DO igxy = rismt%lfft%gxystart, rismt%lfft%ngxy
     ggxy = rismt%lfft%ggxy(igxy)
+!$omp parallel do default(shared) private(igz, gz)
     DO igz = 1, rismt%lfft%ngz_x
       gz = rismt%lfft%gz_x(igz)
       vpott(igz, igxy) = rhogt(igz, igxy) * (fac1 / (gz * gz + ggxy))
     END DO
+!$omp end parallel do
   END DO
   !
   IF (rismt%lfft%gxystart > 1) THEN
     igxy = 1
+!$omp parallel do default(shared) private(igz, gz)
     DO igz = 1, rismt%lfft%ngz_x
       IF (igz /= rismt%lfft%gzzero_x) THEN
         gz = rismt%lfft%gz_x(igz)
         vpott(igz, igxy) = rhogt(igz, igxy) * (fac1 / (gz * gz))
       END IF
     END DO
+!$omp end parallel do
   END IF
   !
   ! ... 1D-FFT of Hartree potential: G-space -> Laue-rep.
@@ -180,11 +186,13 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
     coeffr = C_ZERO
     coeffl = C_ZERO
     !
+!$omp parallel do default(shared) private(igz, gz) reduction(+:coeffr, coeffl)
     DO igz = 1, rismt%lfft%ngz_x
       gz = rismt%lfft%gz_x(igz)
       coeffr = coeffr + rhogz(igz) * expigzr(igz) / CMPLX(-gxy, gz, kind=DP)
       coeffl = coeffl + rhogz(igz) * expigzl(igz) / CMPLX( gxy, gz, kind=DP)
     END DO
+!$omp end parallel do
     !
     ! ... when zleft <= z <= zright, potential is
     !
@@ -198,12 +206,14 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
     !                 2 * gxy            ----              i*gz + gxy
     !                                     gz
     !
+!$omp parallel do default(shared) private(iz, z)
     DO iz = 1, rismt%lfft%nrz
       z = zstart + dz * DBLE(iz - 1)
       rismt%vpot(iz + jgxy) = rismt%vpot(iz + jgxy) + fac1 * ( &
       & + (0.5_DP / gxy) * EXP( tpi * gxy * (z - zright)) * coeffr &
       & - (0.5_DP / gxy) * EXP(-tpi * gxy * (z - zleft )) * coeffl )
     END DO
+!$omp end parallel do
     !
   END DO
   !
@@ -250,6 +260,7 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
     imager = 0.0_DP
     imagel = 0.0_DP
     !
+!$omp parallel do default(shared) private(igz, gz) reduction(+:realr, reall, imager, imagel)
     DO igz = (rismt%lfft%gzzero_x + 1), rismt%lfft%ngz_x
       gz = rismt%lfft%gz_x(igz)
       realr  = realr  + REAL( rhogz(igz) * expigzr(igz)) / gz / gz
@@ -257,6 +268,7 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
       imager = imager + AIMAG(rhogz(igz) * expigzr(igz)) / gz
       imagel = imagel + AIMAG(rhogz(igz) * expigzl(igz)) / gz
     END DO
+!$omp end parallel do
     !
     ! ... when -z0 <= z <= z0, potential is
     !
@@ -282,6 +294,7 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
     !
     !  (-4pi) * ((z-zright)^2 + (z-zleft)^2) * rho(0) / 4
     !
+!$omp parallel do default(shared) private(iz, z)
     DO iz = 1, rismt%lfft%nrz
       z = zstart + dz * DBLE(iz - 1)
       rismt%vpot(iz + jgxy) = rismt%vpot(iz + jgxy) + CMPLX( &
@@ -293,6 +306,7 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
       &            - (z - zleft ) * (z - zleft ) )  &
       & , 0.0_DP, kind=DP)
     END DO
+!$omp end parallel do
     !
     ! ... modify reference of solvation potential
     vsolv = 0.0_DP
@@ -317,9 +331,11 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
     !
     vref = vsolv + vsolu
     !
+!$omp parallel do default(shared) private(iz)
     DO iz = 1, rismt%lfft%nrz
       rismt%vpot(iz + jgxy) = rismt%vpot(iz + jgxy) - CMPLX(vref, 0.0_DP, kind=DP)
     END DO
+!$omp end parallel do
     !
   END IF
   !
@@ -395,6 +411,7 @@ SUBROUTINE solvation_esm_force(rismt, alpha, force, ierr)
   REAL(DP)                 :: rhogi
   REAL(DP)                 :: dvlocr
   REAL(DP)                 :: dvloci
+  REAL(DP)                 :: forctmp(3)
   REAL(DP),    ALLOCATABLE :: forcesm(:,:)
   COMPLEX(DP)              :: ccoeff
   COMPLEX(DP)              :: strf_xy
@@ -475,6 +492,7 @@ SUBROUTINE solvation_esm_force(rismt, alpha, force, ierr)
       !
       dvloc = C_ZERO
       !
+!$omp parallel do default(shared) private(iz, z, rterm1, rterm2)
       DO iz = 1, rismt%lfft%nrz
         z = zstart + dz * DBLE(iz - 1)
         !
@@ -524,26 +542,35 @@ SUBROUTINE solvation_esm_force(rismt, alpha, force, ierr)
         dvloc(2, iz) = CMPLX(0.0_DP, -gy / gxy, kind=DP) * ccoeff * (rterm1 + rterm2)
         dvloc(3, iz) = -ccoeff * (rterm1 - rterm2)
       END DO
+!$omp end parallel do
       !
+      forctmp = 0.0_DP
+!$omp parallel do default(shared) private(iz, ipol, rhogr, rhogi, dvlocr, dvloci) reduction(+:forctmp)
       DO iz = 1, rismt%lfft%izleft_gedge
         rhogr = -DBLE( rhogz(iz))
         rhogi = -AIMAG(rhogz(iz))
         DO ipol = 1, 3
           dvlocr = DBLE( dvloc(ipol, iz))
           dvloci = AIMAG(dvloc(ipol, iz))
-          forcesm(ipol, ia) = forcesm(ipol, ia) - mult * (dvlocr * rhogr + dvloci * rhogi)
+          forctmp(ipol) = forctmp(ipol) - mult * (dvlocr * rhogr + dvloci * rhogi)
         END DO
       END DO
+!$omp end parallel do
+      forcesm(:, ia) = forcesm(:, ia) + forctmp(:)
       !
+      forctmp = 0.0_DP
+!$omp parallel do default(shared) private(iz, ipol, rhogr, rhogi, dvlocr, dvloci) reduction(+:forctmp)
       DO iz = rismt%lfft%izright_gedge, rismt%lfft%nrz
         rhogr = -DBLE( rhogz(iz))
         rhogi = -AIMAG(rhogz(iz))
         DO ipol = 1, 3
           dvlocr = DBLE( dvloc(ipol, iz))
           dvloci = AIMAG(dvloc(ipol, iz))
-          forcesm(ipol, ia) = forcesm(ipol, ia) - mult * (dvlocr * rhogr + dvloci * rhogi)
+          forctmp(ipol) = forctmp(ipol) - mult * (dvlocr * rhogr + dvloci * rhogi)
         END DO
       END DO
+!$omp end parallel do
+      forcesm(:, ia) = forcesm(:, ia) + forctmp(:)
       !
     END DO
     !
@@ -572,6 +599,7 @@ SUBROUTINE solvation_esm_force(rismt, alpha, force, ierr)
       !
       dvloc = C_ZERO
       !
+!$omp parallel do default(shared) private(iz, z)
       DO iz = 1, rismt%lfft%nrz
         z = zstart + dz * DBLE(iz - 1)
         !
@@ -585,22 +613,31 @@ SUBROUTINE solvation_esm_force(rismt, alpha, force, ierr)
         dvloc(2, iz) = C_ZERO
         dvloc(3, iz) = CMPLX((-qa * e2 * tpi) * qe_erf((z - za) / alpha), 0.0_DP, kind=DP)
       END DO
+!$omp end parallel do
       !
+      forctmp = 0.0_DP
+!$omp parallel do default(shared) private(iz, ipol, rhogr, dvlocr) reduction(+:forctmp)
       DO iz = 1, rismt%lfft%izleft_gedge
         rhogr = -DBLE(rhogz(iz))
         DO ipol = 1, 3
           dvlocr = DBLE(dvloc(ipol, iz))
-          forcesm(ipol, ia) = forcesm(ipol, ia) - dvlocr * rhogr
+          forctmp(ipol) = forctmp(ipol) - dvlocr * rhogr
         END DO
       END DO
+!$omp end parallel do
+      forcesm(:, ia) = forcesm(:, ia) + forctmp(:)
       !
+      forctmp = 0.0_DP
+!$omp parallel do default(shared) private(iz, ipol, rhogr, dvlocr) reduction(+:forctmp)
       DO iz = rismt%lfft%izright_gedge, rismt%lfft%nrz
         rhogr = -DBLE(rhogz(iz))
         DO ipol = 1, 3
           dvlocr = DBLE(dvloc(ipol, iz))
-          forcesm(ipol, ia) = forcesm(ipol, ia) - dvlocr * rhogr
+          forctmp(ipol) = forctmp(ipol) - dvlocr * rhogr
         END DO
       END DO
+!$omp end parallel do
+      forcesm(:, ia) = forcesm(:, ia) + forctmp(:)
       !
     END DO
     !

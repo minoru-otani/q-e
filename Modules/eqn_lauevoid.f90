@@ -178,6 +178,7 @@ SUBROUTINE eqn_lauevoid(rismt, expand, ierr)
       !
       ! ... h1(z1)
       IF (rismt%lfft%gxystart > 1) THEN
+!$omp parallel do default(shared) private(iz, izint, izdelt, z, cz, dz)
         DO iz = izsta, izend
           izint  = iz - izsta + 1
           izdelt = ABS(iz - izvoid) + 1
@@ -188,6 +189,7 @@ SUBROUTINE eqn_lauevoid(rismt, expand, ierr)
           & + cz * rismt%xgs0(izdelt, iiq2, iq1) &
           & - dz * rismt%xgs1(izdelt, iiq2, iq1)
         END DO
+!$omp end parallel do
       END IF
     END DO
     !
@@ -198,18 +200,22 @@ SUBROUTINE eqn_lauevoid(rismt, expand, ierr)
     IF (iiq1 > 0 .AND. rismt%lfft%gxystart > 1) THEN
       IF (expand) THEN
         ! ... add h1 -> hsgz
+!$omp parallel do default(shared) private(iz, izint)
         DO iz = izsta, izend
           izint = iz - izsta + 1
           rismt%hsgz(iz, iiq1) = rismt%hsgz(iz, iiq1) + CMPLX(h1(izint), 0.0_DP, kind=DP)
         END DO
+!$omp end parallel do
         !
       ELSE
         ! ... add h1 -> hgz
+!$omp parallel do default(shared) private(iz, iiz, izint)
         DO iz = izsta, izend
           iiz   = iz - rismt%lfft%izcell_start + 1
           izint = iz - izsta + 1
           rismt%hgz(iiz, iiq1) = rismt%hgz(iiz, iiq1) + CMPLX(h1(izint), 0.0_DP, kind=DP)
         END DO
+!$omp end parallel do
       END IF
     END IF
     !

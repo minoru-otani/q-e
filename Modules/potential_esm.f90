@@ -163,6 +163,7 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
     coeff3 = C_ZERO
     coeff4 = C_ZERO
     !
+!$omp parallel do default(shared) private(igz, gz) reduction(+:coeff1, coeff2, coeff3, coeff4)
     DO igz = 1, rismt%lfft%ngz
       gz = rismt%lfft%gz(igz)
       coeff1 = coeff1 + rhogz(igz) *       expigz(igz)  / CMPLX( gxy, gz, kind=DP)
@@ -170,6 +171,7 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
       coeff3 = coeff3 + rhogz(igz) *       expigz(igz)  / CMPLX(-gxy, gz, kind=DP)
       coeff4 = coeff4 + rhogz(igz) * CONJG(expigz(igz)) / CMPLX(-gxy, gz, kind=DP)
     END DO
+!$omp end parallel do
     !
     ! ... when z < zleft, potential is
     !
@@ -199,12 +201,14 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
     !               2 * gxy          ----            i*gz - gxy
     !                                 gz
     !
+!$omp parallel do default(shared) private(iz, z)
     DO iz = 1, (rismt%lfft%izcell_start - 1)
       z = zstart + dz * DBLE(iz - 1)
       vlaue(iz + jgxy) = vlaue(iz + jgxy) + fac1 * ( &
       & + (0.5_DP / gxy) * EXP( tpi * gxy * (z - z0)) * coeff3 &
       & - (0.5_DP / gxy) * EXP( tpi * gxy * (z + z0)) * coeff4 )
     END DO
+!$omp end parallel do
     !
     ! ... when -z0 <= z <= z0, potential is
     !
@@ -218,12 +222,14 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
     !               2 * gxy          ----            i*gz + gxy
     !                                 gz
     !
+!$omp parallel do default(shared) private(iz, z)
     DO iz = rismt%lfft%izcell_start, rismt%lfft%izcell_end
       z = zstart + dz * DBLE(iz - 1)
       vlaue(iz + jgxy) = vlaue(iz + jgxy) + fac1 * ( &
       & + (0.5_DP / gxy) * EXP( tpi * gxy * (z - z0)) * coeff3 &
       & - (0.5_DP / gxy) * EXP(-tpi * gxy * (z + z0)) * coeff2 )
     END DO
+!$omp end parallel do
     !
     ! ... when z0 < z <= zright, potential is
     !
@@ -237,12 +243,14 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
     !               2 * gxy          ----            i*gz + gxy
     !                                 gz
     !
+!$omp parallel do default(shared) private(iz, z)
     DO iz = (rismt%lfft%izcell_end + 1), rismt%lfft%nrz
       z = zstart + dz * DBLE(iz - 1)
       vlaue(iz + jgxy) = vlaue(iz + jgxy) + fac1 * ( &
       & + (0.5_DP / gxy) * EXP(-tpi * gxy * (z - z0)) * coeff1 &
       & - (0.5_DP / gxy) * EXP(-tpi * gxy * (z + z0)) * coeff2 )
     END DO
+!$omp end parallel do
     !
     ! ... when zright < z, potential is
     !
@@ -305,6 +313,7 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
     cos2 = 0.0_DP
     sin2 = 0.0_DP
     !
+!$omp parallel do default(shared) private(igz, gz) reduction(+:cos1, sin1, cos2, sin2)
     DO igz = (rismt%lfft%gzzero + 1), rismt%lfft%ngz
       gz = rismt%lfft%gz(igz)
       cos1 = cos1 + 2.0_DP * AIMAG(rhogz(igz)) * DBLE( expigz(igz)) / gz
@@ -312,6 +321,7 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
       cos2 = cos2 + 2.0_DP * DBLE( rhogz(igz)) * DBLE( expigz(igz)) / gz / gz
       sin2 = sin2 + 2.0_DP * AIMAG(rhogz(igz)) * AIMAG(expigz(igz)) / gz / gz
     END DO
+!$omp end parallel do
     !
     ! ... when z < -z0, potential is
     !
@@ -332,6 +342,7 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
     !
     !  (+4pi) * z*z0 * rho(0)
     !
+!$omp parallel do default(shared) private(iz, z)
     DO iz = 1, (rismt%lfft%izcell_start - 1)
       z = zstart + dz * DBLE(iz - 1)
       vlaue(iz + jgxy) = vlaue(iz + jgxy) + CMPLX( &
@@ -341,6 +352,7 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
       & + fac3 * ( + z  * z0  * rho0 )    &
       & , 0.0_DP, kind=DP)
     END DO
+!$omp end parallel do
     !
     vleft(igxy) = vleft(igxy) + &
     CMPLX(fac2 * sin1 + fac3 * z0 * rho0, -fac1 * sin2 - fac2 * z0 * cos1, kind=DP)
@@ -366,6 +378,7 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
     !
     !  (-4pi) * z^2  / 2 * rho(0)
     !
+!$omp parallel do default(shared) private(iz, z)
     DO iz = rismt%lfft%izcell_start, rismt%lfft%izcell_end
       z = zstart + dz * DBLE(iz - 1)
       vlaue(iz + jgxy) = vlaue(iz + jgxy) + CMPLX( &
@@ -376,6 +389,7 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
       &            - z  * z  * 0.5_DP * rho0 )     &
       & , 0.0_DP, kind=DP)
     END DO
+!$omp end parallel do
     !
     ! ... when z0 < z, potential is
     !
@@ -396,6 +410,7 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
     !
     !  (-4pi) * z*z0 * rho(0)
     !
+!$omp parallel do default(shared) private(iz, z)
     DO iz = (rismt%lfft%izcell_end + 1), rismt%lfft%nrz
       z = zstart + dz * DBLE(iz - 1)
       vlaue(iz + jgxy) = vlaue(iz + jgxy) + CMPLX( &
@@ -405,6 +420,7 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
       & + fac3 * ( - z  * z0  * rho0 )    &
       & , 0.0_DP, kind=DP)
     END DO
+!$omp end parallel do
     !
     vright(igxy) = vright(igxy) + &
     CMPLX(-fac2 * sin1 - fac3 * z0 * rho0, fac1 * sin2 + fac2 * z0 * cos1, kind=DP)
@@ -549,12 +565,14 @@ SUBROUTINE potential_esm_local(rismt, alpha, vlaue, vright, vleft, ierr)
       ! ... NOTE: to avoid overflows,
       ! ...       exp(var1)*erfc(var2) = exp(var1 + log(erfc(var2))) .
       !
+!$omp parallel do default(shared) private(iz, z)
       DO iz = 1, rismt%lfft%nrz
         z = zstart + dz * DBLE(iz - 1)
         vlaue(iz + jgxy) = vlaue(iz + jgxy) + ccoeff * ( &
         &   EXP( tpi * gxy * (z - za) + LOG(qe_erfc(0.5_DP * tpi * gxy * alpha + (z - za) / alpha))) &
         & + EXP(-tpi * gxy * (z - za) + LOG(qe_erfc(0.5_DP * tpi * gxy * alpha - (z - za) / alpha))) )
       END DO
+!$omp end parallel do
       !
       ! ... when zright < z, potential is
       !
@@ -592,12 +610,14 @@ SUBROUTINE potential_esm_local(rismt, alpha, vlaue, vright, vleft, ierr)
       !   ----- [ - ---------- exp(- ----------) - (z-za) * erf(-------) ]
       !     S   [    pi^(1/2)         alpha^2                    alpha   ]
       !
+!$omp parallel do default(shared) private(iz, z)
       DO iz = 1, rismt%lfft%nrz
         z = zstart + dz * DBLE(iz - 1)
         vlaue(iz + jgxy) = vlaue(iz + jgxy) + ccoeff * ( &
         & - (alpha / sqrtpi) * EXP(-(z - za) * (z - za) / alpha / alpha) &
         & - (z - za) * qe_erf((z - za) / alpha)                          )
       END DO
+!$omp end parallel do
       !
       vright(igxy) = vright(igxy) + CMPLX(-rcoeff,  rcoeff * za, kind=DP)
       !

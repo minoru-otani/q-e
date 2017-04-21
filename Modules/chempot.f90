@@ -56,10 +56,12 @@ SUBROUTINE chempot(rismt, ierr)
     IF (rismt%itype == ITYPE_1DRISM) THEN
       ALLOCATE(weight(rismt%nr))
       dr = rismt%rfft%rgrid(2) - rismt%rfft%rgrid(1)
+!$omp parallel do default(shared) private(ir, r)
       DO ir = 1, rismt%nr
         r = rismt%rfft%rgrid(rismt%mp_task%ivec_start + ir - 1)
         weight(ir) = fpi * r * r * dr
       END DO
+!$omp end parallel do
       lweight = .TRUE.
     ELSE
       ALLOCATE(weight(1))
@@ -148,9 +150,11 @@ SUBROUTINE chempot_for_a_site(nr, ichempot, beta, hr, csr, ulr, wr, lweight, uso
     usol = ddot(nr, tr, 1, wr, 1)
   ELSE
     usol = 0.0_DP
+!$omp parallel do default(shared) private(ir) reduction(+:usol)
     DO ir = 1, nr
       usol = usol + tr(ir)
     END DO
+!$omp end parallel do
   END IF
   !
   usol = usol / beta
@@ -185,12 +189,14 @@ SUBROUTINE chempot_HNC_x(nr, beta, hr, csr, ulr, tr)
   REAL(DP) :: cr0
   REAL(DP) :: hr0
   !
+!$omp parallel do default(shared) private(ir, hr0, cr0)
   DO ir = 1, nr
     hr0 = hr(ir)
     cr0 = csr(ir) - beta * ulr(ir)
     !
     tr(ir) = 0.5_DP * hr0 * hr0 - cr0 - 0.5_DP * hr0 * cr0
   END DO
+!$omp end parallel do
   !
 END SUBROUTINE chempot_HNC_x
 !
@@ -220,6 +226,7 @@ SUBROUTINE chempot_KH_x(nr, beta, hr, csr, ulr, tr)
   REAL(DP) :: cr0
   REAL(DP) :: hr0
   !
+!$omp parallel do default(shared) private(ir, hr0, cr0)
   DO ir = 1, nr
     hr0 = hr(ir)
     cr0 = csr(ir) - beta * ulr(ir)
@@ -230,6 +237,7 @@ SUBROUTINE chempot_KH_x(nr, beta, hr, csr, ulr, tr)
       tr(ir) = -cr0 - 0.5_DP * hr0 * cr0
     END IF
   END DO
+!$omp end parallel do
   !
 END SUBROUTINE chempot_KH_x
 !
@@ -259,11 +267,13 @@ SUBROUTINE chempot_GF_x(nr, beta, hr, csr, ulr, tr)
   REAL(DP) :: cr0
   REAL(DP) :: hr0
   !
+!$omp parallel do default(shared) private(ir, hr0, cr0)
   DO ir = 1, nr
     hr0 = hr(ir)
     cr0 = csr(ir) - beta * ulr(ir)
     !
     tr(ir) = -cr0 - 0.5_DP * hr0 * cr0
   END DO
+!$omp end parallel do
   !
 END SUBROUTINE chempot_GF_x

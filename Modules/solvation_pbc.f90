@@ -79,10 +79,12 @@ SUBROUTINE solvation_pbc(rismt, ierr)
   ! ... copy rhog -> rhog_pbcl
   DO igxy = 1, rismt%lfft%ngxy
     jgxy = rismt%nrzl * (igxy - 1)
+!$omp parallel do default(shared) private(iz, jz)
     DO iz = 1, rismt%cfft%dfftt%nr3
       jz = rismt%lfft%izcell_start + iz - 1
       rhog_pbcl(iz, igxy) = rismt%rhog(jz + jgxy)
     END DO
+!$omp end parallel do
   END DO
   !
   ! ... correct around z=+-z0
@@ -101,9 +103,11 @@ SUBROUTINE solvation_pbc(rismt, ierr)
   IF (rismt%ng > 0) THEN
     rismt%rhog_pbc = CMPLX(0.0_DP, 0.0_DP, kind=DP)
   END IF
+!$omp parallel do default(shared) private(ig)
   DO ig = 1, rismt%cfft%ngmt
     rismt%rhog_pbc(ig) = aux(rismt%cfft%nlt(ig))
   END DO
+!$omp end parallel do
   !
   ! ...
   ! ... fitting Vpot
@@ -111,10 +115,12 @@ SUBROUTINE solvation_pbc(rismt, ierr)
   ! ... copy vpot -> vpot_pbcl
   DO igxy = 1, rismt%lfft%ngxy
     jgxy = rismt%nrzl * (igxy - 1)
+!$omp parallel do default(shared) private(iz, jz)
     DO iz = 1, rismt%cfft%dfftt%nr3
       jz = rismt%lfft%izcell_start + iz - 1
       vpot_pbcl(iz, igxy) = rismt%vpot(jz + jgxy)
     END DO
+!$omp end parallel do
   END DO
   !
   ! ... correct around z=+-z0

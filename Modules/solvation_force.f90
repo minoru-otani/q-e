@@ -111,6 +111,7 @@ SUBROUTINE solvation_force_ion(rismt, force, vloc, ierr)
   REAL(DP)                 :: rhogi
   REAL(DP)                 :: vrho
   REAL(DP)                 :: fact
+  REAL(DP)                 :: forc1(3)
   REAL(DP),    ALLOCATABLE :: forcesm(:,:)
   COMPLEX(DP), POINTER     :: rhogt(:)
   LOGICAL                  :: laue
@@ -154,10 +155,11 @@ SUBROUTINE solvation_force_ion(rismt, force, vloc, ierr)
   ! ... calculate forces for each atom
   DO na = 1, nat
     DO ipol = 1, 3
-      force(ipol, na) = 0.0_DP
+      forc1(ipol) = 0.0_DP
     END DO
     !
     ! ... contribution from G=0 is zero
+!$omp parallel do default(shared) private(ig, ipol, arg, rhogr, rhogi, vrho) reduction(+:forc1)
     DO ig = rismt%cfft%gstart_t, rismt%cfft%ngmt
       arg = (rismt%cfft%gt(1, ig) * tau(1, na) &
         & +  rismt%cfft%gt(2, ig) * tau(2, na) &
@@ -167,12 +169,13 @@ SUBROUTINE solvation_force_ion(rismt, force, vloc, ierr)
       vrho = vloc(igtongl(ig), ityp(na)) * (SIN(arg) * rhogr + COS(arg) * rhogi)
       !
       DO ipol = 1, 3
-        force(ipol, na) = force(ipol, na) + rismt%cfft%gt(ipol, ig) * vrho
+        forc1(ipol) = forc1(ipol) + rismt%cfft%gt(ipol, ig) * vrho
       END DO
     END DO
+!$omp end parallel do
     !
     DO ipol = 1, 3
-      force(ipol, na) = fact * force(ipol, na) * omega * tpi / alat
+      force(ipol, na) = fact * forc1(ipol) * omega * tpi / alat
     END DO
   END DO
   !

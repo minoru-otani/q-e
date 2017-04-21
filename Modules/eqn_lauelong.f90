@@ -232,6 +232,7 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
           ! ... susceptibility matrix of one-hand calculation, which is symmetric
           xz(1:rismt%nrzl) = xgz((1 + jglxy):(rismt%nrzl + jglxy))
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izleft_sta, izleft_end
             izint1 = iz1 - izleft_sta + 1
             DO iz2 = izleft_sta, iz1
@@ -240,7 +241,9 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21(izint2, izint1) = CMPLX(xz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izright_sta, izright_end
             izint1 = nzleft + iz1 - izright_sta + 1
             DO iz2 = izright_sta, iz1
@@ -249,7 +252,9 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21(izint2, izint1) = CMPLX(xz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izright_sta, izright_end
             izint1 = nzleft + iz1 - izright_sta + 1
             DO iz2 = izleft_sta, izleft_end
@@ -258,18 +263,22 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21(izint2, izint1) = CMPLX(xz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
+!$omp parallel do default(shared) private(izint1, izint2)
           DO izint1 = 1, nzint
             DO izint2 = 1, (izint1 - 1)
               x21(izint1, izint2) = x21(izint2, izint1)
             END DO
           END DO
+!$omp end parallel do
           !
         ELSE !IF (lboth) THEN
           ! ... susceptibility matrix of both-hands calculation
           xz(1:rismt%nrzl) = xgz((1 + jglxy):(rismt%nrzl + jglxy))
           yz(1:rismt%nrzl) = ygz((1 + jglxy):(rismt%nrzl + jglxy))
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izleft_sta, izleft_end
             izint1 = iz1 - izleft_sta + 1
             DO iz2 = izleft_sta, izleft_end
@@ -278,7 +287,9 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21(izint2, izint1) = CMPLX(yz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izright_sta, izright_end
             izint1 = nzleft + iz1 - izright_sta + 1
             DO iz2 = izright_sta, izright_end
@@ -287,7 +298,9 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21(izint2, izint1) = CMPLX(xz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izleft_sta, izleft_end
             izint1 = iz1 - izleft_sta + 1
             DO iz2 = izright_sta, izright_end
@@ -296,7 +309,9 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21(izint2, izint1) = CMPLX(yz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izright_sta, izright_end
             izint1 = nzleft + iz1 - izright_sta + 1
             DO iz2 = izleft_sta, izleft_end
@@ -305,20 +320,26 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21(izint2, izint1) = CMPLX(xz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
         END IF
         !
       END IF
       !
       ! ... vl(z2)
+!$omp parallel do default(shared) private(iz2, izint2)
       DO iz2 = izleft_sta, izleft_end
         izint2 = iz2 - izleft_sta + 1
         vl2(izint2) = rismt%vlgz(iz2 + jgxy)
       END DO
+!$omp end parallel do
+      !
+!$omp parallel do default(shared) private(iz2, izint2)
       DO iz2 = izright_sta, izright_end
         izint2 = nzleft + iz2 - izright_sta + 1
         vl2(izint2) = rismt%vlgz(iz2 + jgxy)
       END DO
+!$omp end parallel do
       !
       ! ... hl(z1)
       IF (nzint > 0) THEN
@@ -360,6 +381,7 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
             yz(1:rismt%nrzl) = ygz((1 + jglxy):(rismt%nrzl + jglxy))
           END IF
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izleft_sta, izleft_end
             izint1 = iz1 - izleft_sta + 1
             DO iz2 = (iz1 - rismt%lfft%nrz + 1), 0
@@ -368,7 +390,9 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21out(izint2, izint1) = CMPLX(yz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izright_sta, izright_end
             izint1 = nzleft + iz1 - izright_sta + 1
             DO iz2 = (iz1 - rismt%lfft%nrz + 1), 0
@@ -377,26 +401,31 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21out(izint2, izint1) = CMPLX(xz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
         END IF
         !
         ! ... vl(z2)
         IF (rismt%lfft%gxystart > 1 .AND. igxy == 1) THEN
           ! ... Gxy = 0
+!$omp parallel do default(shared) private(iz2, izint2, z)
           DO iz2 = (-rismt%lfft%nrz + 1), 0
             izint2 = iz2 + rismt%lfft%nrz
             z = rismt%lfft%zleft + rismt%lfft%zoffset + rismt%lfft%zstep * DBLE(iz2 - 1)
             vl2(izint2) = CMPLX(DBLE(rismt%vleft(igxy)) * z &
                            & + AIMAG(rismt%vleft(igxy)), 0.0_DP, kind=DP)
           END DO
+!$omp end parallel do
           !
         ELSE
           ! ... Gxy /= 0
+!$omp parallel do default(shared) private(iz2, izint2, z)
           DO iz2 = (-rismt%lfft%nrz + 1), 0
             izint2 = iz2 + rismt%lfft%nrz
             z = rismt%lfft%zleft + rismt%lfft%zoffset + rismt%lfft%zstep * DBLE(iz2 - 1)
             vl2(izint2) = EXP( tpi * gxy * (z - rismt%lfft%zleft)) * rismt%vleft(igxy)
           END DO
+!$omp end parallel do
           !
         END IF
         !
@@ -442,6 +471,7 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
             yz(1:rismt%nrzl) = ygz((1 + jglxy):(rismt%nrzl + jglxy))
           END IF
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izleft_sta, izleft_end
             izint1 = iz1 - izleft_sta + 1
             DO iz2 = (rismt%lfft%nrz + 1), (iz1 + rismt%lfft%nrz - 1)
@@ -450,7 +480,9 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21out(izint2, izint1) = CMPLX(yz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izright_sta, izright_end
             izint1 = nzleft + iz1 - izright_sta + 1
             DO iz2 = (rismt%lfft%nrz + 1), (iz1 + rismt%lfft%nrz - 1)
@@ -459,26 +491,31 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
               x21out(izint2, izint1) = CMPLX(xz(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
         END IF
         !
         ! ... vl(z2)
         IF (rismt%lfft%gxystart > 1 .AND. igxy == 1) THEN
           ! ... Gxy = 0
+!$omp parallel do default(shared) private(iz2, izint2, z)
           DO iz2 = (rismt%lfft%nrz + 1), (2 * rismt%lfft%nrz)
             izint2 = iz2 - rismt%lfft%nrz
             z = rismt%lfft%zleft + rismt%lfft%zoffset + rismt%lfft%zstep * DBLE(iz2 - 1)
             vl2(izint2) = CMPLX(DBLE(rismt%vright(igxy)) * z &
                            & + AIMAG(rismt%vright(igxy)), 0.0_DP, kind=DP)
           END DO
+!$omp end parallel do
           !
         ELSE
           ! ... Gxy /= 0
+!$omp parallel do default(shared) private(iz2, izint2, z)
           DO iz2 = (rismt%lfft%nrz + 1), (2 * rismt%lfft%nrz)
             izint2 = iz2 - rismt%lfft%nrz
             z = rismt%lfft%zleft + rismt%lfft%zoffset + rismt%lfft%zstep * DBLE(iz2 - 1)
             vl2(izint2) = EXP(-tpi * gxy * (z - rismt%lfft%zright)) * rismt%vright(igxy)
           END DO
+!$omp end parallel do
           !
         END IF
         !
@@ -498,14 +535,20 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
     !
     DO igxy = 1, rismt%lfft%ngxy
       jgxy = rismt%nrzl * (igxy - 1)
+      !
+!$omp parallel do default(shared) private(iz1, izint1)
       DO iz1 = izleft_sta, izleft_end
         izint1 = iz1 - izleft_sta + 1
         rismt%hlgz(iz1 + jgxy, iiq1) = -beta * hl1(izint1, igxy)
       END DO
+!$omp end parallel do
+      !
+!$omp parallel do default(shared) private(iz1, izint1)
       DO iz1 = izright_sta, izright_end
         izint1 = nzleft + iz1 - izright_sta + 1
         rismt%hlgz(iz1 + jgxy, iiq1) = -beta * hl1(izint1, igxy)
       END DO
+!$omp end parallel do
     END DO
     !
   END DO
@@ -583,13 +626,19 @@ CONTAINS
     !
     ! ... correct at G = 0
     IF (rismt%lfft%gxystart > 1) THEN
-      xg_int = rstep * xgz(1)
+      xg_int = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:xg_int)
       DO irz = 2, rismt%lfft%nrz
         xg_int = xg_int + 2.0_DP * rstep * xgz(irz)
       END DO
+!$omp end parallel do
+      xg_int = xg_int + rstep * xgz(1)
+      !
+!$omp parallel do default(shared) private(irz)
       DO irz = 1, rismt%lfft%nrz
         xgz(irz) = xgz(irz) - xg_int / rstep / DBLE(2 * (rismt%lfft%nrz - 1) + 1)
       END DO
+!$omp end parallel do
     END IF
     !
   END SUBROUTINE reduce_xgs

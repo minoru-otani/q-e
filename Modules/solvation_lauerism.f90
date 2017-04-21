@@ -62,6 +62,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   REAL(DP)                 :: rhov1
   REAL(DP)                 :: rhov2
   REAL(DP)                 :: qv
+  REAL(DP)                 :: qtmp
   REAL(DP)                 :: dz
   REAL(DP)                 :: area_xy
   REAL(DP)                 :: fac
@@ -142,24 +143,40 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
       fac1 = qv * rhov1 * area_xy * dz
       fac2 = qv * rhov2 * area_xy * dz
       !
+      qtmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:qtmp)
       DO irz = 1, (rismt%lfft%izleft_start - 1)
-        rismt%qsol(iiq) = rismt%qsol(iiq) + &
-        & fac2 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)))
+        qtmp = qtmp + fac2 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)))
       END DO
+!$omp end parallel do
+      rismt%qsol(iiq) = rismt%qsol(iiq) + qtmp
+      !
+      qtmp = 0.0_DP
+!$omp parallel do default(shared) private(irz, iirz) reduction(+:qtmp)
       DO irz = rismt%lfft%izleft_start, rismt%lfft%izleft_gedge
         iirz = irz - rismt%lfft%izcell_start + 1
-        rismt%qsol(iiq) = rismt%qsol(iiq) + &
-        & fac2 * DBLE(ggz(iirz, iiq))
+        qtmp = qtmp + fac2 * DBLE(ggz(iirz, iiq))
       END DO
+!$omp end parallel do
+      rismt%qsol(iiq) = rismt%qsol(iiq) + qtmp
+      !
+      qtmp = 0.0_DP
+!$omp parallel do default(shared) private(irz, iirz) reduction(+:qtmp)
       DO irz = rismt%lfft%izright_gedge, rismt%lfft%izright_end
         iirz = irz - rismt%lfft%izcell_start + 1
-        rismt%qsol(iiq) = rismt%qsol(iiq) + &
-        & fac1 * DBLE(ggz(iirz, iiq))
+        qtmp = qtmp + fac1 * DBLE(ggz(iirz, iiq))
       END DO
+!$omp end parallel do
+      rismt%qsol(iiq) = rismt%qsol(iiq) + qtmp
+      !
+      qtmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:qtmp)
       DO irz = (rismt%lfft%izright_end + 1), rismt%lfft%nrz
-        rismt%qsol(iiq) = rismt%qsol(iiq) + &
-        & fac1 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)))
+        qtmp = qtmp + fac1 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)))
       END DO
+!$omp end parallel do
+      rismt%qsol(iiq) = rismt%qsol(iiq) + qtmp
+      !
     END IF
   END DO
   !
@@ -194,24 +211,37 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
     DO igxy = 1, rismt%ngxy
       jgxy = (igxy - 1) * rismt%nrzl
       kgxy = (igxy - 1) * rismt%nrzs
+      !
+!$omp parallel do default(shared) private(irz)
       DO irz = 1, (rismt%lfft%izleft_start - 1)
         rismt%rhog(irz + jgxy) = rismt%rhog(irz + jgxy) &
         & + qv * rhov2 * (rismt%hsgz(irz + jgxy, iiq) + rismt%hlgz(irz + jgxy, iiq))
       END DO
+!$omp end parallel do
+      !
+!$omp parallel do default(shared) private(irz, iirz)
       DO irz = rismt%lfft%izleft_start, rismt%lfft%izleft_gedge
         iirz = irz - rismt%lfft%izcell_start + 1
         rismt%rhog(irz + jgxy) = rismt%rhog(irz + jgxy) &
         & + qv * rhov2 * ggz(iirz + kgxy, iiq)
       END DO
+!$omp end parallel do
+      !
+!$omp parallel do default(shared) private(irz, iirz)
       DO irz = rismt%lfft%izright_gedge, rismt%lfft%izright_end
         iirz = irz - rismt%lfft%izcell_start + 1
         rismt%rhog(irz + jgxy) = rismt%rhog(irz + jgxy) &
         & + qv * rhov1 * ggz(iirz + kgxy, iiq)
       END DO
+!$omp end parallel do
+      !
+!$omp parallel do default(shared) private(irz)
       DO irz = (rismt%lfft%izright_end + 1), rismt%lfft%nrz
         rismt%rhog(irz + jgxy) = rismt%rhog(irz + jgxy) &
         & + qv * rhov1 * (rismt%hsgz(irz + jgxy, iiq) + rismt%hlgz(irz + jgxy, iiq))
       END DO
+!$omp end parallel do
+      !
     END DO
   END DO
   !
@@ -265,12 +295,19 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   IF (ABS(charge0 - charge) > eps6) THEN
     IF (ABS(charge0) > eps6 .AND. ABS(charge) > eps6) THEN
       IF (rismt%lfft%gxystart > 1) THEN
+        !
+!$omp parallel do default(shared) private(irz)
         DO irz = izleft_tail, rismt%lfft%izleft_gedge
           rismt%rhog(irz) = rismt%rhog(irz) / charge0 * charge
         END DO
+!$omp end parallel do
+        !
+!$omp parallel do default(shared) private(irz)
         DO irz = rismt%lfft%izright_gedge, izright_tail
           rismt%rhog(irz) = rismt%rhog(irz) / charge0 * charge
         END DO
+!$omp end parallel do
+        !
       END IF
       !
     ELSE
@@ -278,12 +315,19 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
         nright = MAX(0, izright_tail - rismt%lfft%izright_gedge + 1)
         nleft  = MAX(0, rismt%lfft%izleft_gedge - izleft_tail + 1)
         fac    = area_xy * dz * DBLE(nright + nleft)
+        !
+!$omp parallel do default(shared) private(irz)
         DO irz = izleft_tail, rismt%lfft%izleft_gedge
           rismt%rhog(irz) = rismt%rhog(irz) - (charge0 - charge) / fac
         END DO
+!$omp end parallel do
+        !
+!$omp parallel do default(shared) private(irz)
         DO irz = rismt%lfft%izright_gedge, izright_tail
           rismt%rhog(irz) = rismt%rhog(irz) - (charge0 - charge) / fac
         END DO
+!$omp end parallel do
+        !
       END IF
     END IF
     !

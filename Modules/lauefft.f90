@@ -305,6 +305,7 @@ CONTAINS
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = (igxy - 1) * nx3
+!$omp parallel do default(shared) private(irz, jrz1, jrz2)
       DO irz = 1, n3
         jrz1 = irz + irz_start - 1
         IF (irz <= (n3 / 2)) THEN
@@ -314,6 +315,7 @@ CONTAINS
         END IF
         cinp(jrz2 + jgxy2) = cl(jrz1 + jgxy1)
       END DO
+!$omp end parallel do
     END DO
     !
     CALL cft_1z(cinp, lauefft0%ngxy, n3, nx3, -1, cout)
@@ -322,6 +324,7 @@ CONTAINS
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = lauefft0%nlxy(igxy)
       jgxy2 = (igxy - 1) * nx3
+!$omp parallel do default(shared) private(igz)
       DO igz = 1, lauefft0%ngz
 #if defined (__MPI) && !defined (__USE_3D_FFT)
         cg(lauefft0%nlz(igz) + jgxy1) = cout(lauefft0%nlz(igz) + jgxy2)
@@ -329,12 +332,14 @@ CONTAINS
         cg(nx1 * nx2 * (lauefft0%nlz(igz) - 1) + jgxy1) = cout(lauefft0%nlz(igz) + jgxy2)
 #endif
       END DO
+!$omp end parallel do
     END DO
     !
     IF (gamma_only) THEN
       DO igxy = lauefft0%gxystart, lauefft0%ngxy
         jgxy1 = lauefft0%nlxy( igxy)
         jgxy2 = lauefft0%nlmxy(igxy)
+!$omp parallel do default(shared) private(igz, jgz1, jgz2)
         DO igz = 1, lauefft0%ngz
 #if defined (__MPI) && !defined (__USE_3D_FFT)
           jgz1 = lauefft0%nlz(igz)
@@ -345,6 +350,7 @@ CONTAINS
 #endif
           cg(jgz2 + jgxy2) = CONJG(cg(jgz1 + jgxy1))
         END DO
+!$omp end parallel do
       END DO
     END IF
     !
@@ -392,6 +398,7 @@ CONTAINS
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = lauefft0%nlxy(igxy)
       jgxy2 = (igxy - 1) * nx3
+!$omp parallel do default(shared) private(igz)
       DO igz = 1, lauefft0%ngz
 #if defined (__MPI) && !defined (__USE_3D_FFT)
         cinp(lauefft0%nlz(igz) + jgxy2) = cg(lauefft0%nlz(igz) + jgxy1)
@@ -399,6 +406,7 @@ CONTAINS
         cinp(lauefft0%nlz(igz) + jgxy2) = cg(nx1 * nx2 * (lauefft0%nlz(igz) - 1) + jgxy1)
 #endif
       END DO
+!$omp end parallel do
     END DO
     !
     CALL cft_1z(cinp, lauefft0%ngxy, n3, nx3, +1, cout)
@@ -406,6 +414,7 @@ CONTAINS
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = (igxy - 1) * nx3
+!$omp parallel do default(shared) private(irz, jrz1, jrz2)
       DO irz = 1, n3
         jrz1 = irz + irz_start - 1
         IF (irz <= (n3 / 2)) THEN
@@ -415,6 +424,7 @@ CONTAINS
         END IF
         cl(jrz1 + jgxy1) = cout(jrz2 + jgxy2)
       END DO
+!$omp end parallel do
     END DO
     !
     DEALLOCATE(cinp)
@@ -459,6 +469,7 @@ CONTAINS
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = (igxy - 1) * nx3
+!$omp parallel do default(shared) private(irz, jrz1, jrz2)
       DO irz = 1, n3
         jrz1 = irz
         IF (irz <= irz0) THEN
@@ -468,6 +479,7 @@ CONTAINS
         END IF
         cinp(jrz2 + jgxy2) = cl(jrz1 + jgxy1)
       END DO
+!$omp end parallel do
     END DO
     !
     CALL cft_1z(cinp, lauefft0%ngxy, n3, nx3, -1, cout)
@@ -476,9 +488,11 @@ CONTAINS
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * ngz
       jgxy2 = (igxy - 1) * nx3
+!$omp parallel do default(shared) private(igz)
       DO igz = 1, lauefft0%ngz_x
         cg(igz + jgxy1) = cout(lauefft0%nlz_x(igz) + jgxy2)
       END DO
+!$omp end parallel do
     END DO
     !
     DEALLOCATE(cinp)
@@ -523,9 +537,11 @@ CONTAINS
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * ngz
       jgxy2 = (igxy - 1) * nx3
+!$omp parallel do default(shared) private(igz)
       DO igz = 1, lauefft0%ngz_x
         cinp(lauefft0%nlz_x(igz) + jgxy2) = cg(igz + jgxy1)
       END DO
+!$omp end parallel do
     END DO
     !
     CALL cft_1z(cinp, lauefft0%ngxy, n3, nx3, +1, cout)
@@ -534,6 +550,7 @@ CONTAINS
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = (igxy - 1) * nx3
+!$omp parallel do default(shared) private(irz, jrz1, jrz2)
       DO irz = 1, n3
         jrz1 = irz
         IF (irz <= irz0) THEN
@@ -543,6 +560,7 @@ CONTAINS
         END IF
         cl(jrz1 + jgxy1) = cout(jrz2 + jgxy2)
       END DO
+!$omp end parallel do
     END DO
     !
     DEALLOCATE(cinp)
@@ -589,9 +607,11 @@ CONTAINS
     ALLOCATE(cinp(lauefft0%dfft%nnr))
     ALLOCATE(cout(lauefft0%dfft%nnr))
     !
+!$omp parallel do default(shared) private(ir)
     DO ir = 1, lauefft0%dfft%nnr
       cinp(ir) = CMPLX(cr(ir), 0.0_DP, kind=DP)
     END DO
+!$omp end parallel do
     !
     me_p = lauefft0%dfft%mype + 1
     !
@@ -609,6 +629,7 @@ CONTAINS
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = lauefft0%nlxy(igxy)
+!$omp parallel do default(shared) private(irz, jrz1, jrz2)
       DO irz = 1, n3
         jrz1 = irz + irz_start - 1
         IF (irz <= (n3 / 2)) THEN
@@ -622,6 +643,7 @@ CONTAINS
         cl(jrz1 + jgxy1) = cout(nx1 * nx2 * (jrz2 - 1) + jgxy2)
 #endif
       END DO
+!$omp end parallel do
     END DO
     !
     DEALLOCATE(cinp)
@@ -672,6 +694,7 @@ CONTAINS
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = lauefft0%nlxy(igxy)
+!$omp parallel do default(shared) private(irz, jrz1, jrz2)
       DO irz = 1, n3
         jrz1 = irz + irz_start - 1
         IF (irz <= (n3 / 2)) THEN
@@ -685,12 +708,14 @@ CONTAINS
         cinp(nx1 * nx2 * (jrz2 - 1) + jgxy2) = cl(jrz1 + jgxy1)
 #endif
       END DO
+!$omp end parallel do
     END DO
     !
     IF (gamma_only) THEN
       DO igxy = lauefft0%gxystart, lauefft0%ngxy
         jgxy1 = lauefft0%nlxy( igxy)
         jgxy2 = lauefft0%nlmxy(igxy)
+!$omp parallel do default(shared) private(irz)
         DO irz = 1, n3
 #if defined (__MPI) && !defined (__USE_3D_FFT)
           cinp(irz + jgxy2) = CONJG(cinp(irz + jgxy1))
@@ -698,6 +723,7 @@ CONTAINS
           cinp(nx1 * nx2 * (irz - 1) + jgxy2) = CONJG(cinp(nx1 * nx2 * (irz - 1) + jgxy1))
 #endif
         END DO
+!$omp end parallel do
       END DO
     END IF
     !
@@ -714,9 +740,11 @@ CONTAINS
     !
     CALL cft_2xy(cout, lauefft0%dfft%npp(me_p), n1, n2, nx1, nx2, +1, planes)
     !
+!$omp parallel do default(shared) private(ir)
     DO ir = 1, lauefft0%dfft%nnr
       cr(ir) = DBLE(cout(ir))
     END DO
+!$omp end parallel do
     !
     DEALLOCATE(cinp)
     DEALLOCATE(cout)
@@ -788,11 +816,13 @@ CONTAINS
       !
       jgxy1 = nrz * (igxy - 1)
       jgxy2 = igx + (igy - 1) * nx1
+!$omp parallel do default(shared) private(irz, creal, cimag)
       DO irz = 1, n3
         creal = DBLE( cl(irz + jgxy1))
         cimag = AIMAG(cl(irz + jgxy1))
         cltmp(nx1 * nx2 * (irz - 1) + jgxy2) = CMPLX(creal, DBLE(isign) * cimag, kind=DP)
       END DO
+!$omp end parallel do
       !
       IF (gamma_only .AND. isign > 0 .AND. igxy >= lauefft0%gxystart) THEN
         isign = -1

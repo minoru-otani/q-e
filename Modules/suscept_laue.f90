@@ -213,12 +213,14 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
   ! ... calculate list of gs
   DO igxy = 1, rismlt%lfft%nglxy
     ggxy = tpiba2 * rismlt%lfft%glxy(igxy)
+!$omp parallel do default(shared) private(igz, gz, ggz, gs)
     DO igz = 1, rism1t%rfft%ngrid
       gz  = rism1t%rfft%ggrid(igz)
       ggz = gz * gz
       gs  = SQRT(ggxy + ggz)
       gs_t(igz, igxy) = gs
     END DO
+!$omp end parallel do
   END DO
   !
   ! ... calculate cos(gz*rz)
@@ -308,6 +310,7 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
           !
           ! ... perform spline correction fitting h21(g) or x21(g) from 1D-RISM to Laue-RISM
           DO igxy = 1, rismlt%lfft%nglxy
+!$omp parallel do default(shared) private(igz, gs, xgs)
             DO igz = 1, rism1t%rfft%ngrid
               gs = gs_t(igz, igxy)
               IF (gs <= (gsmax + eps12)) THEN
@@ -317,6 +320,7 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
                 xg_t(igz, igxy) = 0.0_DP
               END IF
             END DO
+!$omp end parallel do
           END DO
           !
           ! ... calculate x21(rz,gxy)
@@ -338,11 +342,13 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
             DO igxy = 1, rismlt%lfft%nglxy
               jgxy = (igxy - 1) * rismlt%nrzl
               ggxy = tpiba2 * rismlt%lfft%glxy(igxy)
+!$omp parallel do default(shared) private(irz, rz)
               DO irz = 1, rismlt%lfft%nrz
                 rz = alat * DBLE(irz - 1) * rismlt%lfft%zstep
                 xgs21(irz + jgxy) = xgs21(irz + jgxy) + &
                 & EXP(-rz * rz / alpha / alpha - 0.25_DP * alpha * alpha * ggxy) / alpha / sqrtpi
               END DO
+!$omp end parallel do
             END DO
           END IF
         END IF
@@ -413,28 +419,38 @@ CONTAINS
           !
           ! ... integrate at Gxy = 0
           IF (lhand) THEN
-            xg_int = dz * rismlt%xgs(1, iiq2, iq1)
+            xg_int = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:xg_int)
             DO irz = 2, rismlt%lfft%nrz
               xg_int = xg_int + 2.0_DP * dz * rismlt%xgs(irz, iiq2, iq1)
             END DO
+!$omp end parallel do
+            xg_int = xg_int + dz * rismlt%xgs(1, iiq2, iq1)
           ELSE
-            xg_int = dz * rismlt%ygs(1, iiq2, iq1)
+            xg_int = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:xg_int)
             DO irz = 2, rismlt%lfft%nrz
               xg_int = xg_int + 2.0_DP * dz * rismlt%ygs(irz, iiq2, iq1)
             END DO
+!$omp end parallel do
+            xg_int = xg_int + dz * rismlt%ygs(1, iiq2, iq1)
           END IF
           !
           ! ... rescale x21 at Gxy = 0
           IF (ABS(xg_int) > eps12) THEN
             xg_scale = xg_0(iiq2, iq1) / xg_int
             IF (lhand) THEN
+!$omp parallel do default(shared) private(irz)
               DO irz = 1, rismlt%lfft%nrz
                 rismlt%xgs(irz, iiq2, iq1) = rismlt%xgs(irz, iiq2, iq1) * xg_scale
               END DO
+!$omp end parallel do
             ELSE
+!$omp parallel do default(shared) private(irz)
               DO irz = 1, rismlt%lfft%nrz
                 rismlt%ygs(irz, iiq2, iq1) = rismlt%ygs(irz, iiq2, iq1) * xg_scale
               END DO
+!$omp end parallel do
             END IF
           END IF
           !

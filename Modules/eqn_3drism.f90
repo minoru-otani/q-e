@@ -87,12 +87,14 @@ SUBROUTINE eqn_3drism(rismt, ierr)
       iiq2 = iq2 - rismt%mp_site%isite_start + 1
       !
       ! ... solve 3D-RISM equation for each ig
+!$omp parallel do default(shared) private(ig, igs, xg21, cgz2)
       DO ig = rismt%cfft%gstart_t, rismt%cfft%ngmt
         igs      = rismt%cfft%igtonglt(ig)
         xg21     = rismt%xgs(igs, iiq2, iq1)
         cgz2     = rismt%csgz(ig, iiq2) - beta * rismt%ulgz(ig, iiq2)
         hgz1(ig) = hgz1(ig) + cgz2 * xg21
       END DO
+!$omp end parallel do
       !
     END DO
     !

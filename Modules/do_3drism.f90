@@ -283,16 +283,20 @@ CONTAINS
         rismt%csgz(:, jsite) = CMPLX(0.0_DP, 0.0_DP, kind=DP)
       END IF
       !
+!$omp parallel do default(shared) private(ir)
       DO ir = 1, rismt%cfft%dfftt%nnr
         aux(ir) = CMPLX(rismt%csr(ir, jsite), 0.0_DP, kind=DP)
       END DO
+!$omp end parallel do
       IF (rismt%cfft%dfftt%nnr > 0) THEN
         CALL fwfft('Custom', aux, rismt%cfft%dfftt)
       END IF
       !
+!$omp parallel do default(shared) private(ig)
       DO ig = 1, rismt%cfft%ngmt
         rismt%csgz(ig, jsite) = aux(rismt%cfft%nlt(ig))
       END DO
+!$omp end parallel do
     END DO
     !
   END SUBROUTINE fft_csr_to_csg
@@ -313,21 +317,27 @@ CONTAINS
       IF (rismt%cfft%dfftt%nnr > 0) THEN
         aux = CMPLX(0.0_DP, 0.0_DP, kind=DP)
       END IF
+!$omp parallel do default(shared) private(ig)
       DO ig = 1, rismt%cfft%ngmt
         aux(rismt%cfft%nlt(ig)) = rismt%hgz(ig, jsite)
       END DO
+!$omp end parallel do
       IF (gamma_only) THEN
+!$omp parallel do default(shared) private(ig)
         DO ig = 1, rismt%cfft%ngmt
           aux(rismt%cfft%nltm(ig)) = CONJG(rismt%hgz(ig, jsite))
         END DO
+!$omp end parallel do
       END IF
       IF (rismt%cfft%dfftt%nnr > 0) THEN
         CALL invfft('Custom', aux, rismt%cfft%dfftt)
       END IF
       !
+!$omp parallel do default(shared) private(ir)
       DO ir = 1, rismt%cfft%dfftt%nnr
         rismt%hr(ir, jsite) = DBLE(aux(ir))
       END DO
+!$omp end parallel do
     END DO
     !
   END SUBROUTINE fft_hg_to_hr
@@ -351,6 +361,7 @@ CONTAINS
     i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
     i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
     !
+!$omp parallel do default(shared) private(ir, idx, i1, i2, i3)
     DO ir = 1, rismt%cfft%dfftt%nnr
       !
       idx = idx0 + ir - 1
@@ -384,6 +395,7 @@ CONTAINS
       END IF
       !
     END DO
+!$omp end parallel do
     !
   END SUBROUTINE clean_out_of_range
   !

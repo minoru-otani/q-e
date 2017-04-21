@@ -201,11 +201,13 @@ SUBROUTINE suscept_vv(rism1t, rism3t, ierr)
           CALL mp_bcast(xg_d2y, rism3t%mp_site%root_sitg, rism3t%mp_site%intra_sitg_comm)
           !
           ! ... perform spline correction fitting x21(g) from 1D-RISM to 3D-RISM
+!$omp parallel do default(shared) private(igs, gs, xgs)
           DO igs = 1, rism3t%cfft%nglt
             gs  = gs_t(igs)
             xgs = splint(rism1t%rfft%ggrid(1:rism1t%mp_task%nvec), xg_spl, xg_d2y, gs)
             rism3t%xgs(igs, iiq2, iq1) = rism3t%xgs(igs, iiq2, iq1) + xgs
           END DO
+!$omp end parallel do
         END IF
         !
         CALL mp_barrier(rism3t%intra_comm)

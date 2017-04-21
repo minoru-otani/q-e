@@ -374,6 +374,7 @@ CONTAINS
     i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
     i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
     !
+!$omp parallel do default(shared) private(ir, idx, i1, i2, i3, iz) reduction(+:mgrid)
     DO ir = 1, rismt%cfft%dfftt%nnr
       !
       idx = idx0 + ir - 1
@@ -450,6 +451,7 @@ CONTAINS
       mgrid = mgrid + 1
       !
     END DO
+!$omp end parallel do
     !
     ngrid = mgrid
     !
@@ -476,6 +478,7 @@ CONTAINS
     i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
     i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
     !
+!$omp parallel do default(shared) private(ir, idx, i1, i2, i3, iz)
     DO ir = 1, rismt%cfft%dfftt%nnr
       !
       idx = idx0 + ir - 1
@@ -512,6 +515,7 @@ CONTAINS
       END IF
       !
     END DO
+!$omp end parallel do
     !
   END SUBROUTINE barrier_gr
   !
@@ -541,6 +545,7 @@ CONTAINS
     i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
     i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
     !
+!$omp parallel do default(shared) private(ir, idx, i1, i2, i3, iz, erf0)
     DO ir = 1, rismt%cfft%dfftt%nnr
       !
       idx = idx0 + ir - 1
@@ -579,6 +584,7 @@ CONTAINS
       END IF
       !
     END DO
+!$omp end parallel do
     !
   END SUBROUTINE modify_edge_dcsr
   !

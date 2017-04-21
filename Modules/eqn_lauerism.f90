@@ -163,6 +163,7 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
             ! ... susceptibility matrix of one-hand calculation, which is symmetric
             xgt(1:rismt%nrzl) = rismt%xgs((1 + jglxy):(rismt%nrzl + jglxy), iiq2, iq1)
             !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
             DO iz1 = izleft_sta, izleft_end
               izint1 = iz1 - izleft_sta + 1
               DO iz2 = izleft_sta, iz1
@@ -171,7 +172,9 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
                 x21(izint2, izint1) = CMPLX(xgt(izdelt), 0.0_DP, kind=DP)
               END DO
             END DO
+!$omp end parallel do
             !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
             DO iz1 = izright_sta, izright_end
               izint1 = nzleft + iz1 - izright_sta + 1
               DO iz2 = izright_sta, iz1
@@ -180,7 +183,9 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
                 x21(izint2, izint1) = CMPLX(xgt(izdelt), 0.0_DP, kind=DP)
               END DO
             END DO
+!$omp end parallel do
             !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
             DO iz1 = izright_sta, izright_end
               izint1 = nzleft + iz1 - izright_sta + 1
               DO iz2 = izleft_sta, izleft_end
@@ -189,18 +194,22 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
                 x21(izint2, izint1) = CMPLX(xgt(izdelt), 0.0_DP, kind=DP)
               END DO
             END DO
+!$omp end parallel do
             !
+!$omp parallel do default(shared) private(izint1, izint2)
             DO izint1 = 1, nzint
               DO izint2 = 1, (izint1 - 1)
                 x21(izint1, izint2) = x21(izint2, izint1)
               END DO
             END DO
+!$omp end parallel do
             !
           ELSE !IF (lboth) THEN
             ! ... susceptibility matrix of both-hands calculation
             xgt(1:rismt%nrzl) = rismt%xgs((1 + jglxy):(rismt%nrzl + jglxy), iiq2, iq1)
             ygt(1:rismt%nrzl) = rismt%ygs((1 + jglxy):(rismt%nrzl + jglxy), iiq2, iq1)
             !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
             DO iz1 = izleft_sta, izleft_end
               izint1 = iz1 - izleft_sta + 1
               DO iz2 = izleft_sta, izleft_end
@@ -209,7 +218,9 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
                 x21(izint2, izint1) = CMPLX(ygt(izdelt), 0.0_DP, kind=DP)
               END DO
             END DO
+!$omp end parallel do
             !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
             DO iz1 = izright_sta, izright_end
               izint1 = nzleft + iz1 - izright_sta + 1
               DO iz2 = izright_sta, izright_end
@@ -218,7 +229,9 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
                 x21(izint2, izint1) = CMPLX(xgt(izdelt), 0.0_DP, kind=DP)
               END DO
             END DO
+!$omp end parallel do
             !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
             DO iz1 = izleft_sta, izleft_end
               izint1 = iz1 - izleft_sta + 1
               DO iz2 = izright_sta, izright_end
@@ -227,7 +240,9 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
                 x21(izint2, izint1) = CMPLX(ygt(izdelt), 0.0_DP, kind=DP)
               END DO
             END DO
+!$omp end parallel do
             !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
             DO iz1 = izright_sta, izright_end
               izint1 = nzleft + iz1 - izright_sta + 1
               DO iz2 = izleft_sta, izleft_end
@@ -236,20 +251,26 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
                 x21(izint2, izint1) = CMPLX(xgt(izdelt), 0.0_DP, kind=DP)
               END DO
             END DO
+!$omp end parallel do
             !
           END IF
           !
         END IF
         !
         ! ... cs(z2)
+!$omp parallel do default(shared) private(iz2, izint2)
         DO iz2 = izleft_sta, izleft_end
           izint2 = iz2 - izleft_sta + 1
           cs2(izint2) = rismt%csgz(iz2 + jgxy, iiq2)
         END DO
+!$omp end parallel do
+        !
+!$omp parallel do default(shared) private(iz2, izint2)
         DO iz2 = izright_sta, izright_end
           izint2 = nzleft + iz2 - izright_sta + 1
           cs2(izint2) = rismt%csgz(iz2 + jgxy, iiq2)
         END DO
+!$omp end parallel do
         !
         ! ... hs(z1)
         IF (nzint > 0) THEN
@@ -271,14 +292,20 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
       !
       DO igxy = 1, rismt%lfft%ngxy
         jgxy  = rismt%nrzs * (igxy - 1)
+        !
+!$omp parallel do default(shared) private(iz1, izint1)
         DO iz1 = izleft_sta, izleft_end
           izint1 = iz1 - izleft_sta + 1
           rismt%hgz(iz1 + jgxy, iiq1) = hs1(izint1, igxy)
         END DO
+!$omp end parallel do
+        !
+!$omp parallel do default(shared) private(iz1, izint1)
         DO iz1 = izright_sta, izright_end
           izint1 = nzleft + iz1 - izright_sta + 1
           rismt%hgz(iz1 + jgxy, iiq1) = hs1(izint1, igxy)
         END DO
+!$omp end parallel do
       END DO
     END IF
     !
@@ -290,14 +317,20 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
     DO igxy = 1, rismt%lfft%ngxy
       jgxy = rismt%nrzs * (igxy - 1)
       kgxy = rismt%nrzl * (igxy - 1)
+      !
+!$omp parallel do default(shared) private(iz1, iiz1)
       DO iz1 = izleft_sta, izleft_end
         iiz1 = iz1 + rismt%lfft%izcell_start - 1
         rismt%hgz(iz1 + jgxy, iiq1) = rismt%hgz(iz1 + jgxy, iiq1) + rismt%hlgz(iiz1 + kgxy, iiq1)
       END DO
+!$omp end parallel do
+      !
+!$omp parallel do default(shared) private(iz1, iiz1)
       DO iz1 = izright_sta, izright_end
         iiz1 = iz1 + rismt%lfft%izcell_start - 1
         rismt%hgz(iz1 + jgxy, iiq1) = rismt%hgz(iz1 + jgxy, iiq1) + rismt%hlgz(iiz1 + kgxy, iiq1)
       END DO
+!$omp end parallel do
     END DO
   END DO
   !

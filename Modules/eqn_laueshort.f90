@@ -183,6 +183,7 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
             ygt(1:rismt%nrzl) = rismt%ygs((1 + jglxy):(rismt%nrzl + jglxy), iiq2, iq1)
           END IF
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izleft1_sta, izleft1_end
             izint1 = iz1 - izleft1_sta + 1
             DO iz2 = izleft2_sta, izleft2_end
@@ -196,7 +197,9 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
               x21(izint2, izint1) = CMPLX(ygt(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
+!$omp parallel do default(shared) private(iz1, izint1, iz2, izint2, izdelt)
           DO iz1 = izright1_sta, izright1_end
             izint1 = nzleft1 + iz1 - izright1_sta + 1
             DO iz2 = izleft2_sta, izleft2_end
@@ -210,20 +213,26 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
               x21(izint2, izint1) = CMPLX(xgt(izdelt), 0.0_DP, kind=DP)
             END DO
           END DO
+!$omp end parallel do
           !
         END IF
         !
         ! ... cs(z2)
+!$omp parallel do default(shared) private(iz2, izint2, iiz2)
         DO iz2 = izleft2_sta, izleft2_end
           izint2 = iz2 - izleft2_sta + 1
           iiz2 = iz2 - rismt%lfft%izcell_start + 1
           cs2(izint2) = rismt%csgz(iiz2 + jgxy, iiq2)
         END DO
+!$omp end parallel do
+        !
+!$omp parallel do default(shared) private(iz2, izint2, iiz2)
         DO iz2 = izright2_sta, izright2_end
           izint2 = nzleft2 + iz2 - izright2_sta + 1
           iiz2 = iz2 - rismt%lfft%izcell_start + 1
           cs2(izint2) = rismt%csgz(iiz2 + jgxy, iiq2)
         END DO
+!$omp end parallel do
         !
         ! ... hs(z1)
         IF (nzint2 * nzint1 > 0) THEN
@@ -250,14 +259,20 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
       !
       DO igxy = 1, rismt%lfft%ngxy
         jgxy = rismt%nrzl * (igxy - 1)
+        !
+!$omp parallel do default(shared) private(iz1, izint1)
         DO iz1 = izleft1_sta, izleft1_end
           izint1 = iz1 - izleft1_sta + 1
           rismt%hsgz(iz1 + jgxy, iiq1) = hs1(izint1, igxy)
         END DO
+!$omp end parallel do
+        !
+!$omp parallel do default(shared) private(iz1, izint1)
         DO iz1 = izright1_sta, izright1_end
           izint1 = nzleft1 + iz1 - izright1_sta + 1
           rismt%hsgz(iz1 + jgxy, iiq1) = hs1(izint1, igxy)
         END DO
+!$omp end parallel do
       END DO
     END IF
     !

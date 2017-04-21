@@ -299,9 +299,11 @@ CONTAINS
     tt0 = rismt%tau * rismt%tau
     !
     ! ... vrs -> aux
+!$omp parallel do default(shared) private(ir)
     DO ir = 1, dfftp%nnr
       aux(ir) = CMPLX(vrs(ir), 0.0_DP, kind=DP)
     END DO
+!$omp end parallel do
     IF (dfftp%nnr > 0) THEN
       CALL fwfft('Dense', aux, dfftp)
     END IF
@@ -310,37 +312,47 @@ CONTAINS
     IF (rismt%cfft%dfftt%nnr > 0) THEN
       auxs = CMPLX(0.0_DP, 0.0_DP, kind=DP)
     END IF
+!$omp parallel do default(shared) private(ig)
     DO ig = 1, rismt%cfft%ngmt
       auxs(rismt%cfft%nlt(ig)) = aux(nl(ig))
     END DO
+!$omp end parallel do
     IF (gamma_only) THEN
+!$omp parallel do default(shared) private(ig)
       DO ig = rismt%cfft%gstart_t, rismt%cfft%ngmt
         auxs(rismt%cfft%nltm(ig)) = CONJG(auxs(rismt%cfft%nlt(ig)))
       END DO
+!$omp end parallel do
     END IF
     !
     ! ... auxs -> vrss
     IF (rismt%cfft%dfftt%nnr > 0) THEN
       CALL invfft('Custom', auxs, rismt%cfft%dfftt)
     END IF
+!$omp parallel do default(shared) private(ir)
     DO ir = 1, rismt%cfft%dfftt%nnr
       vrss(ir) = DBLE(auxs(ir))
     END DO
+!$omp end parallel do
     !
     ! ... aux -> auxs, vgss_l
     IF (rismt%cfft%dfftt%nnr > 0) THEN
       auxs = CMPLX(0.0_DP, 0.0_DP, kind=DP)
     END IF
+!$omp parallel do default(shared) private(ig, gg0, exp0)
     DO ig = 1, rismt%cfft%ngmt
       gg0  = rismt%cfft%ggt(ig) * tpiba2
       exp0 = EXP(-0.25_DP * gg0 * tt0)
       auxs(rismt%cfft%nlt(ig)) = exp0 * aux(nl(ig))
       vgss_l(ig) = auxs(rismt%cfft%nlt(ig))
     END DO
+!$omp end parallel do
     IF (gamma_only) THEN
+!$omp parallel do default(shared) private(ig)
       DO ig = rismt%cfft%gstart_t, rismt%cfft%ngmt
         auxs(rismt%cfft%nltm(ig)) = CONJG(auxs(rismt%cfft%nlt(ig)))
       END DO
+!$omp end parallel do
     END IF
     !
     ! ... modify auxs, vgss_l
@@ -356,10 +368,12 @@ CONTAINS
     IF (rismt%cfft%dfftt%nnr > 0) THEN
       CALL invfft('Custom', auxs, rismt%cfft%dfftt)
     END IF
+!$omp parallel do default(shared) private(ir)
     DO ir = 1, rismt%cfft%dfftt%nnr
       vrss_s(ir) = vrss(ir) - DBLE(auxs(ir))
       vrss_l(ir) = DBLE(auxs(ir))
     END DO
+!$omp end parallel do
     !
   END SUBROUTINE interpolate_potential
   !
@@ -371,9 +385,11 @@ CONTAINS
     !
     INTEGER  :: ig
     !
+!$omp parallel do default(shared) private(ig)
     DO ig = 1, rismt%cfft%ngmt
       rhogss(ig) = rhog(ig)
     END DO
+!$omp end parallel do
     !
   END SUBROUTINE interpolate_density
   !
@@ -401,13 +417,17 @@ CONTAINS
       IF (rismt%cfft%dfftt%nnr > 0) THEN
         auxs = CMPLX(0.0_DP, 0.0_DP, kind=DP)
       END IF
+!$omp parallel do default(shared) private(ig)
       DO ig = 1, rismt%cfft%ngmt
         auxs(rismt%cfft%nlt(ig)) = vgss_l(ig)
       END DO
+!$omp end parallel do
       IF (gamma_only) THEN
+!$omp parallel do default(shared) private(ig)
         DO ig = 1, rismt%cfft%ngmt
           auxs(rismt%cfft%nltm(ig)) = CONJG(vgss_l(ig))
         END DO
+!$omp end parallel do
       END IF
       !
       IF (rismt%cfft%dfftt%nnr > 0) THEN

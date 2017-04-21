@@ -40,6 +40,7 @@ SUBROUTINE solvation_3drism(rismt, ierr)
   INTEGER                  :: ig
   REAL(DP)                 :: rhov
   REAL(DP)                 :: qv
+  REAL(DP)                 :: qtmp
   REAL(DP)                 :: gg0
   REAL(DP)                 :: domega
   REAL(DP)                 :: fac
@@ -93,10 +94,13 @@ SUBROUTINE solvation_3drism(rismt, ierr)
     qv    = solVs(isolV)%charge(iatom)
     fac   = qv * rhov * domega
     !
-    rismt%qsol(iiq) = 0.0_DP
+    qtmp = 0.0_DP
+!$omp parallel do default(shared) private(ir) reduction(+:qtmp)
     DO ir = 1, rismt%cfft%dfftt%nnr
-      rismt%qsol(iiq) = rismt%qsol(iiq) + fac * rismt%gr(ir, iiq)
+      qtmp = qtmp + fac * rismt%gr(ir, iiq)
     END DO
+!$omp end parallel do
+    rismt%qsol(iiq) = qtmp
   END DO
   !
   IF (rismt%nsite > 0) THEN
@@ -139,17 +143,21 @@ SUBROUTINE solvation_3drism(rismt, ierr)
   END IF
   !
   ! ... make rhog
+!$omp parallel do default(shared) private(ir)
   DO ir = 1, rismt%cfft%dfftt%nnr
     aux(ir) = CMPLX(rhor(ir), 0.0_DP, kind=DP)
   END DO
+!$omp end parallel do
   !
   IF (rismt%cfft%dfftt%nnr > 0) THEN
     CALL fwfft('Custom', aux, rismt%cfft%dfftt)
   END IF
   !
+!$omp parallel do default(shared) private(ig)
   DO ig = 1, rismt%cfft%ngmt
     rismt%rhog(ig) = aux(rismt%cfft%nlt(ig))
   END DO
+!$omp end parallel do
   !
   ! ... renormalize rhog
   IF (rismt%cfft%gstart_t > 1) THEN
@@ -164,10 +172,12 @@ SUBROUTINE solvation_3drism(rismt, ierr)
     rismt%vpot = CMPLX(0.0_DP, 0.0_DP, kind=DP)
   END IF
   !
+!$omp parallel do default(shared) private(ig, gg0)
   DO ig = rismt%cfft%gstart_t, rismt%cfft%ngmt
     gg0 = rismt%cfft%ggt(ig)
     rismt%vpot(ig) = fac * rismt%rhog(ig) / gg0
   END DO
+!$omp end parallel do
   !
   ! ... make esol
   rismt%esol = 0.0_DP

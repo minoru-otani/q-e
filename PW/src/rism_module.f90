@@ -572,30 +572,40 @@ CONTAINS
     aux = CMPLX(0.0_DP, 0.0_DP, kind=DP)
     !
     IF (llaue) THEN
+!$omp parallel do default(shared) private(ig)
       DO ig = 1, rism3t%cfft%ngmt
         aux(nl(ig)) = rism3t%vpot_pbc(ig)
       END DO
+!$omp end parallel do
     ELSE
+!$omp parallel do default(shared) private(ig)
       DO ig = 1, rism3t%cfft%ngmt
         aux(nl(ig)) = rism3t%vpot(ig)
       END DO
+!$omp end parallel do
     END IF
     !
     IF (gamma_only) THEN
+!$omp parallel do default(shared) private(ig)
       DO ig = 1, rism3t%cfft%ngmt
         aux(nlm(ig)) = CONJG(aux(nl(ig)))
       END DO
+!$omp end parallel do
     END IF
     !
+!$omp parallel do default(shared) private(ig)
     DO ig = 1, ngm
       vpog(ig) = -aux(nl(ig))    ! electron has negative charge
     END DO
+!$omp end parallel do
     !
     CALL invfft('Dense', aux, dfftp)
     !
+!$omp parallel do default(shared) private(ir)
     DO ir = 1, dfftp%nnr
       vpot(ir) = -DBLE(aux(ir))  ! electron has negative charge
     END DO
+!$omp end parallel do
     !
     DEALLOCATE(aux)
     !

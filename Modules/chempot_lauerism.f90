@@ -236,6 +236,7 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
   INTEGER  :: kgxy
   REAL(DP) :: usol1
   REAL(DP) :: usol2
+  REAL(DP) :: usol_
   REAL(DP) :: area_xy
   REAL(DP) :: zstep
   REAL(DP) :: csr, csi
@@ -251,6 +252,8 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
     jgxy = rismt%nrzs * (igxy - 1)
     kgxy = rismt%nrzl * (igxy - 1)
     !
+    usol_ = 0.0_DP
+!$omp parallel do default(shared) private(iz, jz, csr, clr, cr, hr) reduction(+:usol_)
     DO iz = 1, rismt%lfft%izleft_gedge
       jz = iz - rismt%lfft%izcell_start + 1
       IF (jz > 0) THEN
@@ -261,9 +264,13 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
       clr = -beta * qv * DBLE(rismt%vlgz(iz + kgxy))
       cr  = csr + clr
       hr  = DBLE(rismt%hsgz(iz + kgxy, isite) + rismt%hlgz(iz + kgxy, isite))
-      usol1 = usol1 - rate * (cr + 0.5_DP * hr * cr)
+      usol_ = usol_ - rate * (cr + 0.5_DP * hr * cr)
     END DO
+!$omp end parallel do
+    usol1 = usol1 + usol_
     !
+    usol_ = 0.0_DP
+!$omp parallel do default(shared) private(iz, jz, csr, clr, cr, hr) reduction(+:usol_)
     DO iz = rismt%lfft%izright_gedge, rismt%lfft%nrz
       jz = iz - rismt%lfft%izcell_start + 1
       IF (jz <= rismt%cfft%dfftt%nr3) THEN
@@ -274,8 +281,10 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
       clr = -beta * qv * DBLE(rismt%vlgz(iz + kgxy))
       cr  = csr + clr
       hr  = DBLE(rismt%hsgz(iz + kgxy, isite) + rismt%hlgz(iz + kgxy, isite))
-      usol1 = usol1 - (cr + 0.5_DP * hr * cr)
+      usol_ = usol_ - (cr + 0.5_DP * hr * cr)
     END DO
+!$omp end parallel do
+    usol1 = usol1 + usol_
     !
   END IF
   !
@@ -283,6 +292,9 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
     jgxy = rismt%nrzs * (igxy - 1)
     kgxy = rismt%nrzl * (igxy - 1)
     !
+    usol_ = 0.0_DP
+!$omp parallel do default(shared) private(iz, jz, csr, csi, clr, cli, cr, ci, hr, hi) &
+!$omp                             reduction(+:usol_)
     DO iz = 1, rismt%lfft%izleft_gedge
       jz = iz - rismt%lfft%izcell_start + 1
       IF (jz > 0) THEN
@@ -298,9 +310,14 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
       ci  = csi + cli
       hr  = DBLE( rismt%hsgz(iz + kgxy, isite) + rismt%hlgz(iz + kgxy, isite))
       hi  = AIMAG(rismt%hsgz(iz + kgxy, isite) + rismt%hlgz(iz + kgxy, isite))
-      usol2 = usol2 - rate * 0.5_DP * (hr * cr + hi * ci)
+      usol_ = usol_ - rate * 0.5_DP * (hr * cr + hi * ci)
     END DO
+!$omp end parallel do
+    usol2 = usol2 + usol_
     !
+    usol_ = 0.0_DP
+!$omp parallel do default(shared) private(iz, jz, csr, csi, clr, cli, cr, ci, hr, hi) &
+!$omp                             reduction(+:usol_)
     DO iz = rismt%lfft%izright_gedge, rismt%lfft%nrz
       jz = iz - rismt%lfft%izcell_start + 1
       IF (jz <= rismt%cfft%dfftt%nr3) THEN
@@ -316,8 +333,10 @@ SUBROUTINE chempot_laue_GF_x(rismt, isite, rate, qv, beta, usol)
       ci  = csi + cli
       hr  = DBLE( rismt%hsgz(iz + kgxy, isite) + rismt%hlgz(iz + kgxy, isite))
       hi  = AIMAG(rismt%hsgz(iz + kgxy, isite) + rismt%hlgz(iz + kgxy, isite))
-      usol2 = usol2 - 0.5_DP * (hr * cr + hi * ci)
+      usol_ = usol_ - 0.5_DP * (hr * cr + hi * ci)
     END DO
+!$omp end parallel do
+    usol2 = usol2 + usol_
     !
   END DO
   !
