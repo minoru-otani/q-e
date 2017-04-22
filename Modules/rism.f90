@@ -77,6 +77,7 @@ MODULE rism
     REAL(DP),    POINTER :: csg (:,:)    ! short-range direct correlations in G-space
     COMPLEX(DP), POINTER :: csgz(:,:)    ! short-range direct correlations in G-space or Laue-rep. (complex)
     REAL(DP),    POINTER :: uljr(:,:)    ! Lennard-Jones potential functions in R-space
+    REAL(DP),    POINTER :: uwr (:,:)    ! repulsive-wall potential functions in R-space (Laue-RISM)
     REAL(DP),    POINTER :: usr (:,:)    ! short-range potential functions in R-space
     REAL(DP),    POINTER :: vsr (:)      ! short-range coulomb potential in R-space
     REAL(DP),    POINTER :: ulr (:,:)    ! long-range potential functions in R-space
@@ -485,6 +486,7 @@ CONTAINS
         ALLOCATE(rismt%hr(  nr, nsite))
         ALLOCATE(rismt%gr(  nr, nsite))
         ALLOCATE(rismt%uljr(nr, nsite))
+        ALLOCATE(rismt%uwr( nr, nsite))
       END IF
       IF (nr > 0) THEN
         ALLOCATE(rismt%vsr(nr))
@@ -780,6 +782,7 @@ CONTAINS
     IF (ASSOCIATED(rismt%csg))       DEALLOCATE(rismt%csg)
     IF (ASSOCIATED(rismt%csgz))      DEALLOCATE(rismt%csgz)
     IF (ASSOCIATED(rismt%uljr))      DEALLOCATE(rismt%uljr)
+    IF (ASSOCIATED(rismt%uwr))       DEALLOCATE(rismt%uwr)
     IF (ASSOCIATED(rismt%usr))       DEALLOCATE(rismt%usr)
     IF (ASSOCIATED(rismt%vsr))       DEALLOCATE(rismt%vsr)
     IF (ASSOCIATED(rismt%ulr))       DEALLOCATE(rismt%ulr)

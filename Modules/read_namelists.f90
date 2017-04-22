@@ -736,6 +736,12 @@ MODULE read_namelists_module
        !
        ! ... ( 'none' | 'average' | 'right' | 'left' )
        !
+       laue_wall             = .FALSE.
+       laue_wall_z           = 0.0_DP
+       laue_wall_rho         = 0.01_DP
+       laue_wall_epsilon     = 0.1_DP
+       laue_wall_sigma       = 4.0_DP
+       !
        RETURN
        !
      END SUBROUTINE
@@ -1369,6 +1375,11 @@ MODULE read_namelists_module
        CALL mp_bcast( laue_buffer_left,      ionode_id, intra_image_comm )
        CALL mp_bcast( laue_both_hands,       ionode_id, intra_image_comm )
        CALL mp_bcast( laue_reference,        ionode_id, intra_image_comm )
+       CALL mp_bcast( laue_wall,             ionode_id, intra_image_comm )
+       CALL mp_bcast( laue_wall_z,           ionode_id, intra_image_comm )
+       CALL mp_bcast( laue_wall_rho,         ionode_id, intra_image_comm )
+       CALL mp_bcast( laue_wall_epsilon,     ionode_id, intra_image_comm )
+       CALL mp_bcast( laue_wall_sigma,       ionode_id, intra_image_comm )
        !
        RETURN
        !
@@ -1895,20 +1906,47 @@ MODULE read_namelists_module
           CALL errore( sub_name,' rism1d_nproc out of range ', 1 )
        !
        IF( TRIM(assume_isolated) == 'esm' ) THEN
+          !
           IF( laue_nfit < 0 ) &
              CALL errore( sub_name,' laue_nfit out of range ', 1 )
           !
           IF( laue_expand_right <= 0.0_DP .AND. laue_expand_left <= 0.0_DP ) &
              CALL errore( sub_name,' laue_expand_right and/or laue_expand_left must be positive ', 1 )
           !
+          allowed = .FALSE.
+          DO i = 1, SIZE(laue_reference_allowed)
+             IF( TRIM(laue_reference) == laue_reference_allowed(i) ) allowed = .TRUE.
+          END DO
+          IF( .NOT. allowed ) &
+             CALL errore( sub_name, ' laue_reference '''//TRIM(laue_reference)//''' not allowed ', 1 )
+          !
+          IF ( laue_wall ) THEN
+             !
+             IF( laue_expand_right > 0.0_DP .AND. laue_expand_left > 0.0_DP ) THEN
+                CALL errore( sub_name,' cannot use laue_wall with Solvent/Slab/Solvent ', 1 )
+                !
+             ELSE IF( laue_expand_right > 0.0_DP ) THEN
+                IF( laue_wall_z < laue_starting_right ) &
+                   CALL errore( sub_name,' laue_wall_z < laue_starting_right ', 1 )
+                !
+             ELSE IF( laue_expand_left > 0.0_DP ) THEN
+                IF( laue_wall_z > laue_starting_left ) &
+                   CALL errore( sub_name,' laue_wall_z > laue_starting_left ', 1 )
+                !
+             END IF
+             !
+             IF( laue_wall_rho <= 0.0_DP ) &
+                CALL errore( sub_name,' laue_wall_rho out of range ', 1 )
+             !
+             IF( laue_wall_epsilon <= 0.0_DP ) &
+                CALL errore( sub_name,' laue_wall_epsilon out of range ', 1 )
+             !
+             IF( laue_wall_sigma <= 0.0_DP ) &
+                CALL errore( sub_name,' laue_wall_sigma out of range ', 1 )
+             !
+          END IF
+          !
        END IF
-       !
-       allowed = .FALSE.
-       DO i = 1, SIZE(laue_reference_allowed)
-          IF( TRIM(laue_reference) == laue_reference_allowed(i) ) allowed = .TRUE.
-       END DO
-       IF( .NOT. allowed ) &
-          CALL errore( sub_name, ' laue_reference '''//TRIM(laue_reference)//''' not allowed ', 1 )
        !
        RETURN
        !

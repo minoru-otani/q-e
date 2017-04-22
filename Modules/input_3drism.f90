@@ -14,7 +14,7 @@ SUBROUTINE iosys_3drism(laue, linit)
   ! ...  stored in modules input_parameters into internal modules
   ! ...  Note: this subroutine requires nsp(ions_base), ecutrho(gvect), dual(gvecs), alat(cell_base).
   !
-  USE cell_base,        ONLY : alat
+  USE cell_base,        ONLY : alat, at
   USE gvecs,            ONLY : dual
   USE gvect,            ONLY : ecutrho
   USE ions_base,        ONLY : nsp
@@ -26,7 +26,7 @@ SUBROUTINE iosys_3drism(laue, linit)
                              & expand_r, expand_l, starting_r, starting_l, buffer_r, buffer_l, &
                              & both_hands, ireference, IREFERENCE_NULL, IREFERENCE_AVERAGE, &
                              & IREFERENCE_RIGHT, IREFERENCE_LEFT
-  USE solute,           ONLY : rmax_lj_ => rmax_lj, allocate_solU, set_solU_LJ_param
+  USE solute,           ONLY : rmax_lj_ => rmax_lj, allocate_solU, set_solU_LJ_param, set_wall_param
   USE solvmol,          ONLY : get_nuniq_in_solVs
   !
   ! ... CONTROL namelist
@@ -42,7 +42,9 @@ SUBROUTINE iosys_3drism(laue, linit)
                                laue_nfit, laue_expand_right, laue_expand_left, &
                                laue_starting_right, laue_starting_left, &
                                laue_buffer_right, laue_buffer_left, &
-                               laue_both_hands, laue_reference
+                               laue_both_hands, laue_reference, &
+                               laue_wall, laue_wall_z, laue_wall_rho, &
+                               laue_wall_epsilon, laue_wall_sigma
   !
   IMPLICIT NONE
   !
@@ -60,7 +62,7 @@ SUBROUTINE iosys_3drism(laue, linit)
   ! ... check starting condition.
   IF (TRIM(restart_mode) == 'restart') THEN
     IF (TRIM(starting3d) /= 'file') THEN
-      CALL infomsg('input','WARNING: "starting3d" set to '//TRIM(starting3d)//' may spoil restart')
+      CALL infomsg('iosys', 'WARNING: "starting3d" set to '//TRIM(starting3d)//' may spoil restart')
       starting3d = 'file'
     END IF
   END IF
@@ -171,9 +173,24 @@ SUBROUTINE iosys_3drism(laue, linit)
   !
   ! ... initialize solute
   CALL allocate_solU()
+  !
   DO is = 1, nsp
     CALL set_solU_LJ_param(is, solute_lj(is), solute_epsilon(is), solute_sigma(is))
   END DO
+  !
+  ! ... initialize repulsive wall
+  IF (laue .AND. laue_wall) THEN
+    IF (laue_expand_right > 0.0_DP .AND. laue_expand_left > 0.0_DP) THEN
+      ! ... no wall
+      CALL infomsg('input','WARNING: "laue_wall" is ignored')
+    ELSE IF (laue_expand_right > 0.0_DP) THEN
+      ! ... set wall on left
+      CALL set_wall_param(.FALSE., laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma)
+    ELSE IF (laue_expand_left > 0.0_DP) THEN
+      ! ... set wall on right
+      CALL set_wall_param(.TRUE.,  laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma)
+    END IF
+  END IF
   !
   ! ... initialize rism3d_facade
   IF (TRIM(closure) == 'hnc') THEN

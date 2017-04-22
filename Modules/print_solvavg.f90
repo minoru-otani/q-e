@@ -1370,6 +1370,32 @@ CONTAINS
       CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
     END DO
     !
+    ! ... Uwall, R-space.
+    DO iq = 1, nq
+      iv    = iuniq_to_isite(1, iq)
+      isolV = isite_to_isolV(iv)
+      iatom = isite_to_iatom(iv)
+      satom = ADJUSTL(solVs(isolV)%aname(iatom))
+      !
+      IF (rismt%mp_site%isite_start <= iq .AND. iq <= rismt%mp_site%isite_end) THEN
+        owner_group_id = my_group_id
+        vpot = beta * rismt%uwr(:, iq - rismt%mp_site%isite_start + 1)
+      ELSE
+        owner_group_id = 0
+        vpot = 0.0_DP
+      END IF
+      !
+      CALL mp_sum(owner_group_id, rismt%mp_site%inter_sitg_comm)
+      CALL mp_get(vpot, vpot, my_group_id, io_group_id, &
+                & owner_group_id, iq, rismt%mp_site%inter_sitg_comm)
+      !
+      IF (my_group_id == io_group_id) THEN
+        CALL solvavg_put('Avg uW_'// TRIM(satom) // ' (kT)', .FALSE., vpot)
+      END IF
+      !
+      CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
+    END DO
+    !
     ! ... Uuv, R-space + Laue-rep.
     DO iq = 1, nq
       iv    = iuniq_to_isite(1, iq)
@@ -1380,7 +1406,7 @@ CONTAINS
       !
       IF (rismt%mp_site%isite_start <= iq .AND. iq <= rismt%mp_site%isite_end) THEN
         owner_group_id = my_group_id
-        vpot = beta * (rismt%uljr(:, iq - rismt%mp_site%isite_start + 1) + qv * rismt%vsr(:))
+        vpot = beta * rismt%usr(:, iq - rismt%mp_site%isite_start + 1)
         vpol = (beta * qv) * rismt%vlgz(:)
       ELSE
         owner_group_id = 0

@@ -23,6 +23,7 @@ SUBROUTINE summary_3drism()
   USE rism,          ONLY : ITYPE_LAUERISM, CLOSURE_HNC, CLOSURE_KH
   USE rism3d_facade, ONLY : rism3t, niter, epsv, mdiis_size, mdiis_step, ecutsolv, laue_nfit, &
                           & ireference, IREFERENCE_AVERAGE, IREFERENCE_RIGHT, IREFERENCE_LEFT
+  USE solute,        ONLY : iwall, wall_tau, IWALL_RIGHT, IWALL_LEFT
   USE solvmol,       ONLY : solVs, get_nuniq_in_solVs, iuniq_to_isite, &
                           & isite_to_isolV, isite_to_iatom
   !
@@ -158,6 +159,11 @@ SUBROUTINE summary_3drism()
   WRITE(stdout, '(5X,"buffer  of right (in bohr) : [",2F11.6,"]")')    (zstart * alat), &
     &                                                                  (zend   * alat)
   END IF
+  END IF
+  IF (iwall == IWALL_RIGHT) THEN
+  WRITE(stdout, '(5X,"repulsive wall (in bohr)   : [",F11.6,A11,"]")') (wall_tau * alat), "+infinity"
+  ELSE IF (iwall == IWALL_LEFT) THEN
+  WRITE(stdout, '(5X,"repulsive wall (in bohr)   : [",A11,F11.6,"]")') "-infinity", (wall_tau * alat)
   END IF
   WRITE(stdout, '(5X,"reference of potential     : ",A)')              TRIM(sreference)
   WRITE(stdout, '(5X,"#grids to fit at edges of unit-cell =",I5)')     laue_nfit

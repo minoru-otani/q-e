@@ -1492,25 +1492,25 @@ MODULE input_parameters
           ! number of fitting points in Laue-RISM calculation
 
         REAL(DP) :: laue_expand_right = -1.0_DP
-          ! expanding length on right-hand side in Laue-RISM calculation
+          ! expanding length on right-hand side in Laue-RISM calculation (in bohr)
 
         REAL(DP) :: laue_expand_left = -1.0_DP
-          ! expanding length on left-hand side in Laue-RISM calculation
+          ! expanding length on left-hand side in Laue-RISM calculation (in bohr)
 
         REAL(DP) :: laue_starting_right = 0.0_DP
-          ! starting position on right-hand side in Laue-RISM calculation
+          ! starting position on right-hand side in Laue-RISM calculation (in bohr)
 
         REAL(DP) :: laue_starting_left = 0.0_DP
-          ! starting position on left-hand side in Laue-RISM calculation
+          ! starting position on left-hand side in Laue-RISM calculation (in bohr)
 
         REAL(DP) :: laue_buffer_right = -1.0_DP
-          ! buffering length on right-hand side in Laue-RISM calculation
+          ! buffering length on right-hand side in Laue-RISM calculation (in bohr)
 
         REAL(DP) :: laue_buffer_left = -1.0_DP
-          ! buffering length on left-hand side in Laue-RISM calculation
+          ! buffering length on left-hand side in Laue-RISM calculation (in bohr)
 
         LOGICAL :: laue_both_hands = .FALSE.
-          ! number of fitting points in Laue-RISM calculation
+          ! use both-hands method in Laue-RISM calculation, or not
 
         CHARACTER(len=80) :: laue_reference = 'none'
           ! laue_reference = 'none' | 'average' | 'right' | 'left'
@@ -1523,6 +1523,23 @@ MODULE input_parameters
         CHARACTER(len=80) :: laue_reference_allowed(4)
         DATA laue_reference_allowed / 'none', 'average', 'right', 'left' /
 
+        LOGICAL :: laue_wall = .FALSE.
+          ! use repulsive wall in Laue-RISM calculation, or not
+
+        REAL(DP) :: laue_wall_z = 0.0_DP
+          ! edge position of repulsive wall in Laue-RISM calculation (in bohr)
+
+        REAL(DP) :: laue_wall_rho = 0.01_DP
+          ! density of repulsive wall in Laue-RISM calculation (in 1/bohr^3)
+
+        REAL(DP) :: laue_wall_epsilon = 0.1_DP
+          ! Lennard-Jones parameters `epsilon' for repulsive wall
+          ! in Laue-RISM calculation (in kcal/mol)
+
+        REAL(DP) :: laue_wall_sigma = 4.0_DP
+          ! Lennard-Jones parameters `sigma' for repulsive wall
+          ! in Laue-RISM calculation (in angstrom)
+
         NAMELIST / rism / nsolv, closure, tempv, permittivity, ecutsolv, solute_lj, &
                           solute_epsilon, solute_sigma, rmax_lj, rmax1d, &
                           starting1d, starting3d, smear1d, smear3d, &
@@ -1531,7 +1548,8 @@ MODULE input_parameters
                           rism1d_bond_width, rism1d_nproc, rism3d_conv_always, rism3d_planar_average, &
                           laue_nfit, laue_expand_right, laue_expand_left, &
                           laue_starting_right, laue_starting_left, &
-                          laue_buffer_right, laue_buffer_left, laue_both_hands, laue_reference
+                          laue_buffer_right, laue_buffer_left, laue_both_hands, laue_reference, &
+                          laue_wall, laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma
 !  END manual
 ! ----------------------------------------------------------------------
 

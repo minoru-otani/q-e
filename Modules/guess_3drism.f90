@@ -37,6 +37,7 @@ SUBROUTINE guess_3drism(rismt, ierr)
   INTEGER  :: i3min
   INTEGER  :: i3max
   INTEGER  :: i1, i2, i3
+  LOGICAL  :: laue
   REAL(DP) :: beta
   REAL(DP) :: qv
   REAL(DP) :: vlj
@@ -71,6 +72,12 @@ SUBROUTINE guess_3drism(rismt, ierr)
   ! ... if no data, return as normally done
   IF (rismt%nsite < 1) THEN
     GOTO 1
+  END IF
+  !
+  ! ... Laue-RISM or not
+  laue = .FALSE.
+  IF (rismt%itype == ITYPE_LAUERISM) THEN
+    laue = .TRUE.
   END IF
   !
   ! ... beta = 1 / (kB * T)
@@ -116,6 +123,10 @@ SUBROUTINE guess_3drism(rismt, ierr)
       END IF
       !
       vlj = rismt%uljr(ir, iiq)
+      IF (laue) THEN
+        vlj =  vlj + rismt%uwr(ir, iiq)
+      END IF
+      !
       IF (vlj >= VLJ_MAX) THEN
         cs0 = beta * qv * rismt%vlr(ir)
         csmax = MAX(csmax, ABS(cs0))

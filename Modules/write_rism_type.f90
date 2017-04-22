@@ -91,6 +91,11 @@ SUBROUTINE write_rism_type(rismt)
     CALL write_rarray(rismt%nr, rismt%nsite, rismt%uljr)
   END IF
   !
+  IF (ASSOCIATED(rismt%uwr)) THEN
+    WRITE(stdout, '(5X,"[Uw(r)]")')
+    CALL write_rarray(rismt%nr, rismt%nsite, rismt%uwr)
+  END IF
+  !
   IF (ASSOCIATED(rismt%usr)) THEN
     WRITE(stdout, '(5X,"[Us(r)]")')
     CALL write_rarray(rismt%nr, rismt%nsite, rismt%usr)

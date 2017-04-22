@@ -19,7 +19,7 @@ MODULE solute
   USE ions_base,      ONLY : nat, atm, nsp, ityp, tau
   USE kinds,          ONLY : DP
   USE molecule_const, ONLY : RY_TO_KCALMOLm1
-  USE rism,           ONLY : rism_type
+  USE rism,           ONLY : rism_type, ITYPE_LAUERISM
   !
   IMPLICIT NONE
   SAVE
@@ -45,6 +45,19 @@ MODULE solute
   ! ... index of atom, super cell -> unit cell
   INTEGER,                 ALLOCATABLE :: isup_to_iuni(:)
   !
+  ! ... parameters of repulsive-wall
+  LOGICAL                              :: init_wall   ! initialized wall, or not
+  INTEGER                              :: iwall       ! type of wall
+  REAL(DP)                             :: wall_tau    ! edge position (in alat)
+  REAL(DP)                             :: wall_rho    ! density (in 1/bohr^3)
+  REAL(DP)                             :: wall_ljeps  ! LJ's epsilon (in Ry)
+  REAL(DP)                             :: wall_ljsig  ! LJ's sigma (in bohr)
+  !
+  ! ..... types of repulsive-wall
+  INTEGER, PARAMETER :: IWALL_NULL  = 0
+  INTEGER, PARAMETER :: IWALL_RIGHT = 1
+  INTEGER, PARAMETER :: IWALL_LEFT  = 2
+  !
   ! ... public components
   PUBLIC :: rmax_lj
   PUBLIC :: solU_nat
@@ -53,12 +66,23 @@ MODULE solute
   PUBLIC :: solU_ljsig
   PUBLIC :: solU_ljname
   PUBLIC :: isup_to_iuni
+  PUBLIC :: iwall
+  PUBLIC :: wall_tau
+  PUBLIC :: wall_rho
+  PUBLIC :: wall_ljeps
+  PUBLIC :: wall_ljsig
+  !
+  PUBLIC :: IWALL_NULL
+  PUBLIC :: IWALL_RIGHT
+  PUBLIC :: IWALL_LEFT
+  !
   PUBLIC :: allocate_solU
   PUBLIC :: deallocate_solU
   PUBLIC :: update_solU
   PUBLIC :: get_solU_LJ_force
   PUBLIC :: get_solU_LJ_stress
   PUBLIC :: set_solU_LJ_param
+  PUBLIC :: set_wall_param
   !
 CONTAINS
   !
@@ -75,6 +99,13 @@ CONTAINS
     ALLOCATE(solU_ljeps(nat))
     ALLOCATE(solU_ljsig(nat))
     ALLOCATE(solU_ljname(nat))
+    !
+    init_wall  = .FALSE.
+    iwall      = IWALL_NULL
+    wall_tau   = 0.0_DP
+    wall_rho   = 0.0_DP
+    wall_ljeps = 0.0_DP
+    wall_ljsig = 0.0_DP
     !
   END SUBROUTINE allocate_solU
   !
@@ -93,6 +124,13 @@ CONTAINS
     IF (ALLOCATED(solU_ljsig))   DEALLOCATE(solU_ljsig)
     IF (ALLOCATED(solU_ljname))  DEALLOCATE(solU_ljname)
     IF (ALLOCATED(isup_to_iuni)) DEALLOCATE(isup_to_iuni)
+    !
+    init_wall  = .FALSE.
+    iwall      = IWALL_NULL
+    wall_tau   = 0.0_DP
+    wall_rho   = 0.0_DP
+    wall_ljeps = 0.0_DP
+    wall_ljsig = 0.0_DP
     !
   END SUBROUTINE deallocate_solU
   !
@@ -126,6 +164,17 @@ CONTAINS
     !
     ! ... update Lennard-Jones potentials
     CALL lj_setup_solU_vlj(rismt, rmax_lj, ierr)
+    !
+    ! ... initialize repulsive-wall
+    IF (rismt%itype == ITYPE_LAUERISM .AND. (.NOT. init_wall)) THEN
+      CALL lj_setup_wall(rismt, rmax_lj, ierr)
+      IF (ierr /= IERR_RISM_NULL) THEN
+        RETURN
+      END IF
+      !
+      init_wall = .TRUE.
+      !
+    END IF
     !
   END SUBROUTINE update_solU
   !
@@ -403,5 +452,45 @@ CONTAINS
     END DO
     !
   END FUNCTION coordination_number
+  !
+  !--------------------------------------------------------------------------
+  SUBROUTINE set_wall_param(lwall, z, rho, eps, sig)
+    !--------------------------------------------------------------------------
+    !
+    ! ... set repulsive-wall parameters
+    !
+    IMPLICIT NONE
+    !
+    LOGICAL,  INTENT(IN) :: lwall
+    REAL(DP), INTENT(IN) :: z
+    REAL(DP), INTENT(IN) :: rho
+    REAL(DP), INTENT(IN) :: eps
+    REAL(DP), INTENT(IN) :: sig
+    !
+    IF (rho <= 0.0_DP .OR. eps <= 0.0_DP .OR. sig <= 0.0_DP) THEN
+      CALL stop_by_err_rism('set_wall_param', IERR_RISM_LJ_OUT_OF_RANGE)
+    END IF
+    !
+    IF (lwall) THEN
+      ! ... right-wall
+      iwall = IWALL_RIGHT
+    ELSE
+      ! ... left-wall
+      iwall = IWALL_LEFT
+    END IF
+    !
+    ! ... z (bohr) -> wall_tau (alat)
+    wall_tau = z / alat
+    !
+    ! ... rho (1/bohr^3) -> wall_rho (1/bohr^3)
+    wall_rho = rho
+    !
+    ! ... eps (kcal/mol) -> wall_ljeps (Ry)
+    wall_ljeps = eps / RY_TO_KCALMOLm1
+    !
+    ! ... sig (angstrom) -> wall_ljsig (bohr)
+    wall_ljsig = sig / BOHR_RADIUS_ANGS
+    !
+  END SUBROUTINE set_wall_param
   !
 END MODULE solute

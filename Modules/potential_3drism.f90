@@ -170,6 +170,12 @@ SUBROUTINE potential_3drism(rismt, vrs, rhog, ierr)
       & rismt%uljr(1:rismt%cfft%dfftt%nnr, iiq) + qv * rismt%vsr(1:rismt%cfft%dfftt%nnr)
     END IF
     !
+    ! ... add repulsive-wall potential (R-space)
+    IF (rismt%itype == ITYPE_LAUERISM) THEN
+      rismt%usr(1:rismt%cfft%dfftt%nnr, iiq) = &
+      & rismt%usr(1:rismt%cfft%dfftt%nnr, iiq) + rismt%uwr(1:rismt%cfft%dfftt%nnr, iiq)
+    END IF
+    !
     IF (rismt%itype == ITYPE_3DRISM) THEN
       !
       ! ... long-range coulomb potential (R-space)
