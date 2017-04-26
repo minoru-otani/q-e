@@ -13,7 +13,6 @@ subroutine stres_har (sigmahar)
   USE kinds, ONLY : DP
   USE constants, ONLY : e2, fpi
   USE cell_base, ONLY: omega, tpiba2
-  USE cell_base
   USE ener,      ONLY: ehart
   USE fft_base,  ONLY : dfftp
   USE fft_interfaces,ONLY : fwfft
@@ -30,7 +29,6 @@ subroutine stres_har (sigmahar)
   real(DP) :: sigmahar (3, 3), shart, g2
   real(DP), parameter :: eps = 1.d-8
   integer :: is, ig, l, m, nspin0
-  real(DP) :: ehart0 !!! for EMS stress
 
   sigmahar(:,:) = 0.d0
   psic (:) = (0.d0, 0.d0)
@@ -41,16 +39,11 @@ subroutine stres_har (sigmahar)
   enddo
 
   CALL fwfft ('Dense', psic, dfftp)
-
   ! psic contains now the charge density in G space
   ! the  G=0 component is not computed
-  ehart0 = 0.D0
   do ig = gstart, ngm
      g2 = gg (ig) * tpiba2
      shart = psic (nl (ig) ) * CONJG(psic (nl (ig) ) ) / g2
-     !!! for ESM stress
-     !!! calculate ehart here, not using ESM ehart
-     ehart0 = ehart0 + shart
      do l = 1, 3
         do m = 1, l
            sigmahar (l, m) = sigmahar (l, m) + shart * tpiba2 * 2 * &
@@ -62,17 +55,12 @@ subroutine stres_har (sigmahar)
   call mp_sum(  sigmahar, intra_bgrp_comm )
   !
   if (gamma_only) then
-     sigmahar(:,:) =         fpi * e2 * sigmahar(:,:)
+     sigmahar(:,:) =       fpi * e2 * sigmahar(:,:)
   else
      sigmahar(:,:) = 0.5d0 * fpi * e2 * sigmahar(:,:)
   end if
-
-  ehart0 = ehart0 * 0.5D0 * omega * (e2 * fpi)
   do l = 1, 3
-     !!! for ESM stress
-     !!! calculate sigma without ehart calculated by ESM
-     sigmahar (l, l) = sigmahar (l, l) - ehart0 / omega
-!!$     sigmahar (l, l) = sigmahar (l, l) - ehart / omega
+     sigmahar (l, l) = sigmahar (l, l) - ehart / omega
   enddo
   do l = 1, 3
      do m = 1, l - 1

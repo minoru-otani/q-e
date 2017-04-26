@@ -32,7 +32,7 @@ subroutine stress ( sigma )
   USE exx,           ONLY : exx_stress
   USE funct,         ONLY : dft_is_hybrid
   USE tsvdw_module,  ONLY : HtsvdW
-  USE ener,          ONLY : etot ! DEBUG for ESM stress
+  USE ener,          ONLY : etot ! for ESM stress
   USE esm,           ONLY : do_comp_esm, esm_bc ! for ESM stress
   USE esm,           ONLY : esm_stres_har, esm_stres_ewa, esm_stres_loclong ! for ESM stress
   !
@@ -64,12 +64,10 @@ subroutine stress ( sigma )
   !
   !   contribution from local  potential
   !
+  call stres_loc(sigmaloc) ! In ESM, sigmaloc has only short term.
   IF ( do_comp_esm .and. ( esm_bc .ne. 'pbc' ) ) THEN ! for ESM stress
-     call stres_loc(sigmaloc) ! short range part
      call esm_stres_loclong( sigmaloclong, rho%of_g ) ! long range part
      sigmaloc(:,:) = sigmaloc(:,:) + sigmaloclong(:,:)
-  ELSE
-     call stres_loc (sigmaloc)
   END IF
   !
   !  hartree contribution
@@ -157,7 +155,9 @@ subroutine stress ( sigma )
                sigmaion(:,:) + sigmalon(:,:) + sigmaxdm(:,:) + &
                sigma_nonloc_dft(:,:) + sigma_ts(:,:)
 
-!!$  write(*,"(f6.3,f8.3,f12.6,f12.6,a)") alat, omega, etot, sigma(1,1)+sigma(2,2), " # alat, omega, etot, sigma11+sigma22"
+!!$  write(*,"(f6.3,f8.3,f12.6,f12.6,a)") &
+!!$       alat, omega, etot, sigma(1,1)+sigma(2,2), &
+!!$       " # alat, omega, etot, sigma11+sigma22" ! for ESM stress
 
   !
   IF (dft_is_hybrid()) THEN
