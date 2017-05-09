@@ -254,6 +254,12 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
       GOTO 100
     END IF
     !
+    ! ... correct or normalize G(r) and H(gxy,z) to guarantee total charge of solvent system
+    CALL normalize_lauerism(rismt, charge, ierr)
+    IF (ierr /= IERR_RISM_NULL) THEN
+      GOTO 100
+    END IF
+    !
     ! ... calculate chemical potential
     CALL chempot_lauerism(rismt, ierr)
     IF (ierr /= IERR_RISM_NULL) THEN

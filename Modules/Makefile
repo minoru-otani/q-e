@@ -197,6 +197,7 @@ molecule_const.o \
 molecule_types.o \
 mp_rism.o \
 mp_swap_ax_rism.o \
+normalize_lauerism.o \
 plot_rism.o \
 potential_3drism.o \
 potential_esm.o \
