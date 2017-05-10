@@ -498,6 +498,7 @@ SUBROUTINE esm_hartree_bc1(rhog, ehart, aux)
   USE mp,               ONLY : mp_sum
   USE fft_base,         ONLY : dfftp
   USE fft_scalar,       ONLY : cft_1z
+
   !
   IMPLICIT NONE
   !
@@ -1542,17 +1543,19 @@ END SUBROUTINE esm_hartree_bc4
        end if
 
        if( nspin == 2 ) then
-          rhog3(igz,igp) = rhog(ig,1) + rhog(ig,2)
+          rg3 = rhog(ig,1) + rhog(ig,2)
        else
-          rhog3(igz,igp) = rhog(ig,1)
+          rg3 = rhog(ig,1)
        endif
+       rhog3(igz,igp) = rg3
 
+       ! expand function symmetrically to gz<0
        if( gamma_only .and. iga==0 .and. igb==0 ) then
           igz = 1-mill(3,ig)
           if( igz<1 ) then
              igz = igz + dfftp%nr3
           end if
-          rhog3(igz,igp) = CONJG(rhog3(igz,igp))
+          rhog3(igz,igp) = CONJG(rg3)
        end if
     end do ! ig
 
@@ -1633,6 +1636,11 @@ END SUBROUTINE esm_hartree_bc4
                - delta(:,:)* fpi*rg3/(gp**2+gz**2) &
                - dgp2_deps(:,:)* fpi*rg3/(gp**2+gz**2)**2
        end do ! igz
+
+       ! modifications
+       if( gamma_only ) then
+          dVg_deps(:,:,:) = dVg_deps(:,:,:)*2.0d0
+       end if
 
        ! calculate stress tensor
        do igz=1, dfftp%nr3
@@ -1753,19 +1761,6 @@ END SUBROUTINE esm_hartree_bc4
 
     end if ! imill_2d(0,0) > 0
 
-    ! modifications
-    if (gamma_only) then
-       sigmahar(:,:) = 2.0d0 * sigmahar(:,:)
-
-       if( imill_2d(0,0) > 0 ) then
-          do igz=1, dfftp%nr3
-             rg3 = rhog3(igz,imill_2d(0,0))
-             sigmahar(1:2,1:2) = sigmahar(1:2,1:2) &
-                  - real( CONJG(rg3) * dVg_deps(igz,1:2,1:2) )
-          end do ! igz
-       end if
-    end if
-
     ! half means removing duplications.
     ! e2 means hartree -> Ry.
     sigmahar(:,:) = sigmahar(:,:) * (-0.5d0*e2)
@@ -1848,17 +1843,19 @@ END SUBROUTINE esm_hartree_bc4
        end if
 
        if( nspin == 2 ) then
-          rhog3(igz,igp) = rhog(ig,1) + rhog(ig,2)
+          rg3 = rhog(ig,1) + rhog(ig,2)
        else
-          rhog3(igz,igp) = rhog(ig,1)
+          rg3 = rhog(ig,1)
        endif
+       rhog3(igz,igp) = rg3
 
+       ! expand function symmetrically to gz<0
        if( gamma_only .and. iga==0 .and. igb==0 ) then
           igz = 1-mill(3,ig)
           if( igz<1 ) then
              igz = igz + dfftp%nr3
           end if
-          rhog3(igz,igp) = CONJG(rhog3(igz,igp))
+          rhog3(igz,igp) = CONJG(rg3)
        end if
     end do ! ig
 
@@ -1974,6 +1971,11 @@ END SUBROUTINE esm_hartree_bc4
                - dgp2_deps(:,:)* fpi*rg3/(gp**2+gz**2)**2
        end do ! igz
 
+       ! modifications
+       if( gamma_only ) then
+          dVg_deps(:,:,:) = dVg_deps(:,:,:)*2.0d0
+       end if
+
        ! calculate stress tensor
        do igz=1, dfftp%nr3
           rg3 = rhog3(igz,igp)
@@ -1981,7 +1983,6 @@ END SUBROUTINE esm_hartree_bc4
                + real( CONJG(rg3) * dVg_deps(igz,:,:) )
        end do ! igz
     end do ! igp
-
 
     !****For gp=0 case ********************
     if( imill_2d(0,0) > 0 ) then
@@ -2111,19 +2112,6 @@ END SUBROUTINE esm_hartree_bc4
        end do ! igz
     end if ! imill_2d(0,0) > 0
 
-    ! modifications
-    if (gamma_only) then
-       sigmahar(:,:) = 2.0d0 * sigmahar(:,:)
-
-       if( imill_2d(0,0) > 0 ) then
-          do igz=1, dfftp%nr3
-             rg3 = rhog3(igz,imill_2d(0,0))
-             sigmahar(1:2,1:2) = sigmahar(1:2,1:2) &
-                  - real( CONJG(rg3) * dVg_deps(igz,1:2,1:2) )
-          end do ! igz
-       end if
-    end if
-
     ! half means removing duplications.
     ! e2 means hartree -> Ry.
     sigmahar(:,:) = sigmahar(:,:) * (-0.5d0*e2)
@@ -2208,17 +2196,19 @@ END SUBROUTINE esm_hartree_bc4
        end if
 
        if( nspin == 2 ) then
-          rhog3(igz,igp) = rhog(ig,1) + rhog(ig,2)
+          rg3 = rhog(ig,1) + rhog(ig,2)
        else
-          rhog3(igz,igp) = rhog(ig,1)
+          rg3 = rhog(ig,1)
        endif
+       rhog3(igz,igp) = rg3
 
+       ! expand function symmetrically to gz<0
        if( gamma_only .and. iga==0 .and. igb==0 ) then
           igz = 1-mill(3,ig)
           if( igz<1 ) then
              igz = igz + dfftp%nr3
           end if
-          rhog3(igz,igp) = CONJG(rhog3(igz,igp))
+          rhog3(igz,igp) = CONJG(rg3)
        end if
     end do ! ig
 
@@ -2316,6 +2306,11 @@ END SUBROUTINE esm_hartree_bc4
                - dgp2_deps(:,:)* fpi*rg3/(gp**2+gz**2)**2
        end do ! igz
 
+       ! modifications
+       if( gamma_only ) then
+          dVg_deps(:,:,:) = dVg_deps(:,:,:)*2.0d0
+       end if
+
        ! calculate stress tensor
        do igz=1, dfftp%nr3
           rg3 = rhog3(igz,igp)
@@ -2323,7 +2318,6 @@ END SUBROUTINE esm_hartree_bc4
                + real( CONJG(rg3) * dVg_deps(igz,:,:) )
        end do ! igz
     end do ! igp
-
 
     !****For gp=0 case ********************
     if( imill_2d(0,0) > 0 ) then
@@ -2452,19 +2446,6 @@ END SUBROUTINE esm_hartree_bc4
        end do ! igz
     end if ! imill_2d(0,0) > 0
 
-    ! modifications
-    if (gamma_only) then
-       sigmahar(:,:) = 2.0d0 * sigmahar(:,:)
-
-       if( imill_2d(0,0) > 0 ) then
-          do igz=1, dfftp%nr3
-             rg3 = rhog3(igz,imill_2d(0,0))
-             sigmahar(1:2,1:2) = sigmahar(1:2,1:2) &
-                  - real( CONJG(rg3) * dVg_deps(igz,1:2,1:2) )
-          end do ! igz
-       end if
-    end if
-
     ! half means removing duplications.
     ! e2 means hartree -> Ry.
     sigmahar(:,:) = sigmahar(:,:) * (-0.5d0*e2)
@@ -2580,7 +2561,6 @@ SUBROUTINE esm_ewaldr_pbc ( alpha_g, ewr )
   !
   real(DP)            :: tmp, fac, ss, ew, rmax0, rr
   !
-  !
   ewr = 0.d0
 
   tmp=sqrt(alpha_g)
@@ -2653,7 +2633,6 @@ SUBROUTINE esm_ewaldr_bc4 ( alpha_g, ewr )
   ! zbuff: smearing width to avoid the singularity of the Force
   ! znrm: threashold value for normal RSUM and Smooth-ESM's RSUM
   real(DP), parameter :: eps=1.d-11, epsneib=1.d-6
-  !
   !
   ewr = 0.d0
   L=at(3,3)*alat
@@ -4576,17 +4555,18 @@ END SUBROUTINE esm_local_bc4
        end if
 
        if( nspin == 2 ) then
-          rhog3(igz,igp) = rhog(ig,1) + rhog(ig,2)
+          rg3 = rhog(ig,1) + rhog(ig,2)
        else
-          rhog3(igz,igp) = rhog(ig,1)
+          rg3 = rhog(ig,1)
        endif
+       rhog3(igz,igp) = rg3
 
        if( gamma_only .and. iga==0 .and. igb==0 ) then
           igz = 1-mill(3,ig)
           if( igz<1 ) then
              igz = igz + dfftp%nr3
           end if
-          rhog3(igz,igp) = CONJG(rhog3(igz,igp))
+          rhog3(igz,igp) = CONJG(rg3)
        endif
     end do ! ig
 
@@ -4661,6 +4641,11 @@ END SUBROUTINE esm_local_bc4
              call cft_1z( dVr_deps(:,la,mu), 1, dfftp%nr3, dfftp%nr3, -1, dVg_deps(:,la,mu) )
           end do
        end do
+
+       ! modifications
+       if( gamma_only ) then
+          dVg_deps(:,:,:) = dVg_deps(:,:,:)*2.0d0
+       end if
 
        ! calculate stress tensor
        do igz=1, dfftp%nr3
@@ -4760,19 +4745,6 @@ END SUBROUTINE esm_local_bc4
        end do ! igz
     endif ! imill_2d(0,0) > 0
 
-    ! modifications
-    if (gamma_only) then
-       sigmaloclong(:,:) = 2.0d0 * sigmaloclong(:,:)
-
-       if( imill_2d(0,0) > 0 ) then
-          do igz=1, dfftp%nr3
-             rg3 = rhog3(igz,imill_2d(0,0))
-             sigmaloclong(1:2,1:2) = sigmaloclong(1:2,1:2) &
-                  + real( CONJG(rg3) * dVg_deps(igz,1:2,1:2) )
-          end do ! igz
-       endif
-    end if
-
     ! e2 means hartree -> Ry.
     sigmaloclong(:,:) = sigmaloclong(:,:)*(e2)
 
@@ -4845,17 +4817,18 @@ END SUBROUTINE esm_local_bc4
        end if
 
        if( nspin == 2 ) then
-          rhog3(igz,igp) = rhog(ig,1) + rhog(ig,2)
+          rg3 = rhog(ig,1) + rhog(ig,2)
        else
-          rhog3(igz,igp) = rhog(ig,1)
+          rg3 = rhog(ig,1)
        endif
+       rhog3(igz,igp) = rg3
 
        if( gamma_only .and. iga==0 .and. igb==0 ) then
           igz = 1-mill(3,ig)
           if( igz<1 ) then
              igz = igz + dfftp%nr3
           end if
-          rhog3(igz,igp) = CONJG(rhog3(igz,igp))
+          rhog3(igz,igp) = CONJG(rg3)
        endif
     end do ! ig
 
@@ -4945,6 +4918,11 @@ END SUBROUTINE esm_local_bc4
              call cft_1z( dVr_deps(:,la,mu), 1, dfftp%nr3, dfftp%nr3, -1, dVg_deps(:,la,mu) )
           end do
        end do
+
+       ! modifications
+       if( gamma_only ) then
+          dVg_deps(:,:,:) = dVg_deps(:,:,:)*2.0d0
+       end if
 
        ! calculate stress tensor
        do igz=1, dfftp%nr3
@@ -5058,19 +5036,6 @@ END SUBROUTINE esm_local_bc4
        end do ! igz
     endif ! imill_2d(0,0) > 0
 
-    ! modifications
-    if (gamma_only) then
-       sigmaloclong(:,:) = 2.0d0 * sigmaloclong(:,:)
-
-       if( imill_2d(0,0) > 0 ) then
-          do igz=1, dfftp%nr3
-             rg3 = rhog3(igz,imill_2d(0,0))
-             sigmaloclong(1:2,1:2) = sigmaloclong(1:2,1:2) &
-                  + real( CONJG(rg3) * dVg_deps(igz,1:2,1:2) )
-          end do ! igz
-       endif
-    end if
-
     ! e2 means hartree -> Ry.
     sigmaloclong(:,:) = sigmaloclong(:,:)*(e2)
 
@@ -5145,17 +5110,18 @@ END SUBROUTINE esm_local_bc4
        end if
 
        if( nspin == 2 ) then
-          rhog3(igz,igp) = rhog(ig,1) + rhog(ig,2)
+          rg3 = rhog(ig,1) + rhog(ig,2)
        else
-          rhog3(igz,igp) = rhog(ig,1)
+          rg3 = rhog(ig,1)
        endif
-
+       rhog3(igz,igp) = rg3
+          
        if( gamma_only .and. iga==0 .and. igb==0 ) then
           igz = 1-mill(3,ig)
           if( igz<1 ) then
              igz = igz + dfftp%nr3
           end if
-          rhog3(igz,igp) = CONJG(rhog3(igz,igp))
+          rhog3(igz,igp) = CONJG(rg3)
        endif
     end do ! ig
 
@@ -5241,6 +5207,11 @@ END SUBROUTINE esm_local_bc4
              call cft_1z( dVr_deps(:,la,mu), 1, dfftp%nr3, dfftp%nr3, -1, dVg_deps(:,la,mu) )
           end do
        end do
+
+       ! modifications
+       if( gamma_only ) then
+          dVg_deps(:,:,:) = dVg_deps(:,:,:)*2.0d0
+       end if
 
        ! calculate stress tensor
        do igz=1, dfftp%nr3
@@ -5350,19 +5321,6 @@ END SUBROUTINE esm_local_bc4
                - real( CONJG(rg3) * dVg_deps(igz,1:2,1:2) )
        end do ! igz
     endif ! imill_2d(0,0) > 0
-
-    ! modifications
-    if (gamma_only) then
-       sigmaloclong(:,:) = 2.0d0 * sigmaloclong(:,:)
-
-       if( imill_2d(0,0) > 0 ) then
-          do igz=1, dfftp%nr3
-             rg3 = rhog3(igz,imill_2d(0,0))
-             sigmaloclong(1:2,1:2) = sigmaloclong(1:2,1:2) &
-                  + real( CONJG(rg3) * dVg_deps(igz,1:2,1:2) )
-          end do ! igz
-       endif
-    end if
 
     ! e2 means hartree -> Ry.
     sigmaloclong(:,:) = sigmaloclong(:,:)*(e2)
@@ -7041,7 +6999,7 @@ END SUBROUTINE esm_force_lc_bc4
     real(DP) :: L, S, z0, z1, z, gz, alpha, salp
     real(DP) :: Qa, ra(2), za
     complex(DP), parameter :: ci = dcmplx(0.0d0, 1.0d0)
-    complex(DP) :: rg3, sum1c, sum2c
+    complex(DP) :: rg3, vg3, sum1c, sum2c
     complex(DP) :: expimgpr, experfcm, experfcp, dexperfcm_dgp, dexperfcp_dgp
 
     complex(DP), allocatable :: rho0r(:), rho0g(:)
@@ -7071,10 +7029,10 @@ END SUBROUTINE esm_force_lc_bc4
     do ig=1, ngm
        iga = mill(1,ig)
        igb = mill(2,ig)
+       igz = mill(3,ig)+1
 
        if( .not. (iga==0 .and. igb==0) ) cycle
 
-       igz = mill(3,ig)+1
        if( igz<1 ) then
           igz = igz + dfftp%nr3
        end if
@@ -7084,7 +7042,6 @@ END SUBROUTINE esm_force_lc_bc4
        else
           rg3 = rhog(ig,1)
        endif
-
        rho0g(igz) = rg3
 
        if( gamma_only .and. iga==0 .and. igb==0 ) then
@@ -7168,9 +7125,20 @@ END SUBROUTINE esm_force_lc_bc4
           igz = igz + dfftp%nr3
        end if
 
+       vg3 = 0.0d0
        do ia=1, ntyp
-          Vloc0g(igz) = Vloc0g(igz) + vloc(igtongl(ig),ia)*strf(ig,ia)/e2
+          vg3 = vg3 + vloc(igtongl(ig),ia)*strf(ig,ia)/e2
        end do
+       Vloc0g(igz) = vg3
+
+       if( gamma_only .and. iga==0 .and. igb==0 ) then
+          igz = 1-mill(3,ig)
+          if( igz<1 ) then
+             igz = igz + dfftp%nr3
+          end if
+
+          Vloc0g(igz) = CONJG(vg3)
+       end if
     end do
     call cft_1z( Vloc0g,1,dfftp%nr3,dfftp%nr3,+1,Vloc0r )
 
@@ -7211,6 +7179,7 @@ END SUBROUTINE esm_force_lc_bc4
 
        end do ! ia
     end do ! iz
+
     !!---- output potentials
     esm1_file = TRIM( tmp_dir ) // TRIM( prefix ) // ".esm1"
     open( UNIT = 4, FILE = esm1_file, STATUS = "UNKNOWN", &
