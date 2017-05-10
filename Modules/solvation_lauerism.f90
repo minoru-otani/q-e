@@ -136,7 +136,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
       qtmp = 0.0_DP
 !$omp parallel do default(shared) private(irz) reduction(+:qtmp)
       DO irz = 1, (rismt%lfft%izleft_start - 1)
-        qtmp = qtmp + fac2 * DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq))
+        qtmp = qtmp + fac2 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
       END DO
 !$omp end parallel do
       rismt%qsol(iiq) = rismt%qsol(iiq) + qtmp
@@ -162,7 +162,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
       qtmp = 0.0_DP
 !$omp parallel do default(shared) private(irz) reduction(+:qtmp)
       DO irz = (rismt%lfft%izright_end + 1), rismt%lfft%nrz
-        qtmp = qtmp + fac1 * DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq))
+        qtmp = qtmp + fac1 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
       END DO
 !$omp end parallel do
       rismt%qsol(iiq) = rismt%qsol(iiq) + qtmp
