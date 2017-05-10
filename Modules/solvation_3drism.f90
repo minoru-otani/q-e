@@ -40,7 +40,7 @@ SUBROUTINE solvation_3drism(rismt, ierr)
   INTEGER                  :: ig
   REAL(DP)                 :: rhov
   REAL(DP)                 :: qv
-  REAL(DP)                 :: qtmp
+  REAL(DP)                 :: ntmp
   REAL(DP)                 :: gg0
   REAL(DP)                 :: domega
   REAL(DP)                 :: fac
@@ -92,18 +92,20 @@ SUBROUTINE solvation_3drism(rismt, ierr)
     iatom = isite_to_iatom(iv)
     rhov  = DBLE(nv) * solVs(isolV)%density
     qv    = solVs(isolV)%charge(iatom)
-    fac   = qv * rhov * domega
+    fac   = rhov * domega
     !
-    qtmp = 0.0_DP
-!$omp parallel do default(shared) private(ir) reduction(+:qtmp)
+    ntmp = 0.0_DP
+!$omp parallel do default(shared) private(ir) reduction(+:ntmp)
     DO ir = 1, rismt%cfft%dfftt%nnr
-      qtmp = qtmp + fac * rismt%gr(ir, iiq)
+      ntmp = ntmp + fac * rismt%gr(ir, iiq)
     END DO
 !$omp end parallel do
-    rismt%qsol(iiq) = qtmp
+    rismt%nsol(iiq) = ntmp
+    rismt%qsol(iiq) = qv * ntmp
   END DO
   !
   IF (rismt%nsite > 0) THEN
+    CALL mp_sum(rismt%nsol, rismt%mp_site%intra_sitg_comm)
     CALL mp_sum(rismt%qsol, rismt%mp_site%intra_sitg_comm)
   END IF
   !

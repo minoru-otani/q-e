@@ -56,7 +56,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   REAL(DP)                 :: rhov1
   REAL(DP)                 :: rhov2
   REAL(DP)                 :: qv
-  REAL(DP)                 :: qtmp
+  REAL(DP)                 :: ntmp
   REAL(DP)                 :: dz
   REAL(DP)                 :: area_xy
   REAL(DP)                 :: dvol
@@ -127,50 +127,56 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
     rhov2 = DBLE(nv) * solVs(isolV)%subdensity
     qv    = solVs(isolV)%charge(iatom)
     !
+    rismt%nsol(iiq) = 0.0_DP
     rismt%qsol(iiq) = 0.0_DP
     !
     IF (rismt%lfft%gxystart > 1) THEN
-      fac1 = qv * rhov1 * dvol
-      fac2 = qv * rhov2 * dvol
+      fac1 = rhov1 * dvol
+      fac2 = rhov2 * dvol
       !
-      qtmp = 0.0_DP
-!$omp parallel do default(shared) private(irz) reduction(+:qtmp)
+      ntmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:ntmp)
       DO irz = 1, (rismt%lfft%izleft_start - 1)
-        qtmp = qtmp + fac2 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
+        ntmp = ntmp + fac2 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
       END DO
 !$omp end parallel do
-      rismt%qsol(iiq) = rismt%qsol(iiq) + qtmp
+      rismt%nsol(iiq) = rismt%nsol(iiq) + ntmp
+      rismt%qsol(iiq) = rismt%qsol(iiq) + qv * ntmp
       !
-      qtmp = 0.0_DP
-!$omp parallel do default(shared) private(irz, iirz) reduction(+:qtmp)
+      ntmp = 0.0_DP
+!$omp parallel do default(shared) private(irz, iirz) reduction(+:ntmp)
       DO irz = rismt%lfft%izleft_start, rismt%lfft%izleft_gedge
         iirz = irz - rismt%lfft%izcell_start + 1
-        qtmp = qtmp + fac2 * DBLE(ggz(iirz, iiq))
+        ntmp = ntmp + fac2 * DBLE(ggz(iirz, iiq))
       END DO
 !$omp end parallel do
-      rismt%qsol(iiq) = rismt%qsol(iiq) + qtmp
+      rismt%nsol(iiq) = rismt%nsol(iiq) + ntmp
+      rismt%qsol(iiq) = rismt%qsol(iiq) + qv * ntmp
       !
-      qtmp = 0.0_DP
-!$omp parallel do default(shared) private(irz, iirz) reduction(+:qtmp)
+      ntmp = 0.0_DP
+!$omp parallel do default(shared) private(irz, iirz) reduction(+:ntmp)
       DO irz = rismt%lfft%izright_gedge, rismt%lfft%izright_end
         iirz = irz - rismt%lfft%izcell_start + 1
-        qtmp = qtmp + fac1 * DBLE(ggz(iirz, iiq))
+        ntmp = ntmp + fac1 * DBLE(ggz(iirz, iiq))
       END DO
 !$omp end parallel do
-      rismt%qsol(iiq) = rismt%qsol(iiq) + qtmp
+      rismt%nsol(iiq) = rismt%nsol(iiq) + ntmp
+      rismt%qsol(iiq) = rismt%qsol(iiq) + qv * ntmp
       !
-      qtmp = 0.0_DP
-!$omp parallel do default(shared) private(irz) reduction(+:qtmp)
+      ntmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:ntmp)
       DO irz = (rismt%lfft%izright_end + 1), rismt%lfft%nrz
-        qtmp = qtmp + fac1 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
+        ntmp = ntmp + fac1 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
       END DO
 !$omp end parallel do
-      rismt%qsol(iiq) = rismt%qsol(iiq) + qtmp
+      rismt%nsol(iiq) = rismt%nsol(iiq) + ntmp
+      rismt%qsol(iiq) = rismt%qsol(iiq) + qv * ntmp
       !
     END IF
   END DO
   !
   IF (rismt%nsite > 0) THEN
+    CALL mp_sum(rismt%nsol, rismt%mp_site%intra_sitg_comm)
     CALL mp_sum(rismt%qsol, rismt%mp_site%intra_sitg_comm)
   END IF
   !

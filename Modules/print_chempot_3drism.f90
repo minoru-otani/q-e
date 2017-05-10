@@ -35,7 +35,9 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
   INTEGER                  :: iv
   INTEGER                  :: nv
   INTEGER                  :: isolV
+  INTEGER                  :: natom
   REAL(DP)                 :: rho
+  REAL(DP), ALLOCATABLE    :: nsol(:)
   REAL(DP), ALLOCATABLE    :: qsol(:)
   REAL(DP), ALLOCATABLE    :: uscl(:)
   REAL(DP), ALLOCATABLE    :: usgf(:)
@@ -60,9 +62,11 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
   END IF
   !
   ! ... allocate memory
+  ALLOCATE(nsol(nsolV + 1))
   ALLOCATE(qsol(nsolV + 1))
   ALLOCATE(uscl(nsolV + 1))
   ALLOCATE(usgf(nsolV + 1))
+  nsol = 0.0_DP
   qsol = 0.0_DP
   uscl = 0.0_DP
   usgf = 0.0_DP
@@ -73,25 +77,43 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
     iv    = iuniq_to_isite(1, iq)
     nv    = iuniq_to_nsite(iq)
     isolV = isite_to_isolV(iv)
+    natom = solVs(isolV)%natom
     rho   = DBLE(nv) * solVs(isolV)%density
     !
+    nsol(isolV) = nsol(isolV) + rismt%nsol(iiq) / DBLE(natom)
     qsol(isolV) = qsol(isolV) + rismt%qsol(iiq)
     uscl(isolV) = uscl(isolV) + rho * rismt%usol(iiq)
     usgf(isolV) = usgf(isolV) + rho * rismt%usol_GF(iiq)
   END DO
   !
+  nsol(nsolV + 1) = 0.0_DP
   qsol(nsolV + 1) = 0.0_DP
   uscl(nsolV + 1) = 0.0_DP
   usgf(nsolV + 1) = 0.0_DP
   DO isolV = 1, nsolV
+    nsol(nsolV + 1) = nsol(nsolV + 1) + nsol(isolV)
     qsol(nsolV + 1) = qsol(nsolV + 1) + qsol(isolV)
     uscl(nsolV + 1) = uscl(nsolV + 1) + uscl(isolV)
     usgf(nsolV + 1) = usgf(nsolV + 1) + usgf(isolV)
   END DO
   !
+  CALL mp_sum(nsol, rismt%mp_site%inter_sitg_comm)
   CALL mp_sum(qsol, rismt%mp_site%inter_sitg_comm)
   CALL mp_sum(uscl, rismt%mp_site%inter_sitg_comm)
   CALL mp_sum(usgf, rismt%mp_site%inter_sitg_comm)
+  !
+  ! ... write numbers
+  WRITE(stdout, '()')
+  WRITE(stdout, '(5X,"Total number of solvent")')
+  !
+  DO isolV = 1, nsolV
+    !
+    label1 = solVs(isolV)%name
+    WRITE(stdout, 100) label1, nsol(isolV)
+    !
+100 FORMAT(5X,A10,X,F10.6)
+    !
+  END DO
   !
   ! ... write charges
   WRITE(stdout, '()')
@@ -104,9 +126,9 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
     ELSE
       label1 = 'Total     '
     END IF
-    WRITE(stdout, 100) label1, qsol(isolV)
+    WRITE(stdout, 200) label1, qsol(isolV)
     !
-100 FORMAT(5X,A10,X,F10.6,' e')
+200 FORMAT(5X,A10,X,F10.6,' e')
     !
   END DO
   !
@@ -126,9 +148,9 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
     usol_kJ   = uscl(isolV) * RY_TO_KJMOLm1
     usol_kcal = uscl(isolV) * RY_TO_KCALMOLm1
 #if defined (__DEBUG_RISM)
-    WRITE(stdout, 200) label1, label2, usol_eV, usol_kJ, usol_kcal
+    WRITE(stdout, 300) label1, label2, usol_eV, usol_kJ, usol_kcal
 #else
-    WRITE(stdout, 200) label1, label2, usol_kcal
+    WRITE(stdout, 300) label1, label2, usol_kcal
 #endif
     !
     label1 = '          '
@@ -137,15 +159,15 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
     usol_kJ   = usgf(isolV) * RY_TO_KJMOLm1
     usol_kcal = usgf(isolV) * RY_TO_KCALMOLm1
 #if defined (__DEBUG_RISM)
-    WRITE(stdout, 200) label1, label2, usol_eV, usol_kJ, usol_kcal
+    WRITE(stdout, 300) label1, label2, usol_eV, usol_kJ, usol_kcal
 #else
-    WRITE(stdout, 200) label1, label2, usol_kcal
+    WRITE(stdout, 300) label1, label2, usol_kcal
 #endif
     !
 #if defined (__DEBUG_RISM)
-200 FORMAT(5X,A10,X,A10,X,E14.6,' eV',E14.6,' kJ/mol',E14.6,' kcal/mol')
+300 FORMAT(5X,A10,X,A10,X,E14.6,' eV',E14.6,' kJ/mol',E14.6,' kcal/mol')
 #else
-200 FORMAT(5X,A10,X,A10,X,E14.6,' kcal/mol')
+300 FORMAT(5X,A10,X,A10,X,E14.6,' kcal/mol')
 #endif
     !
   END DO
@@ -153,6 +175,7 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
   WRITE(stdout, '()')
   !
   ! ... deallocate memory
+  DEALLOCATE(nsol)
   DEALLOCATE(qsol)
   DEALLOCATE(uscl)
   DEALLOCATE(usgf)

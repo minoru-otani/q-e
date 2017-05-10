@@ -104,6 +104,7 @@ MODULE rism
     REAL(DP),    POINTER :: ygs1(:,:,:)  ! ygs1 is left-hand version of xgs1 (Laue-RISM).
     !
     ! ... results from RISM
+    REAL(DP),    POINTER :: nsol(:)      ! solvent's number for each site
     REAL(DP),    POINTER :: qsol(:)      ! solvent's charge for each site
     REAL(DP)             :: qtot         ! solvent's total charge
     REAL(DP),    POINTER :: usol(:)      ! solvation's chemical potential for each site
@@ -539,6 +540,7 @@ CONTAINS
     ! ..... charges
     IF (itype == ITYPE_3DRISM .OR. itype == ITYPE_LAUERISM) THEN
       IF (nsite > 0) THEN
+        ALLOCATE(rismt%nsol(nsite))
         ALLOCATE(rismt%qsol(nsite))
       END IF
     END IF
@@ -774,6 +776,7 @@ CONTAINS
     !
     ! ... deallocate arrays
     IF (lall) THEN
+      IF (ASSOCIATED(rismt%nsol))      DEALLOCATE(rismt%nsol)
       IF (ASSOCIATED(rismt%qsol))      DEALLOCATE(rismt%qsol)
       IF (ASSOCIATED(rismt%usol))      DEALLOCATE(rismt%usol)
       IF (ASSOCIATED(rismt%usol_GF))   DEALLOCATE(rismt%usol_GF)
@@ -839,6 +842,7 @@ CONTAINS
     IF (ASSOCIATED(rismt%hgz ))     rismt%hgz      = C_ZERO
     IF (ASSOCIATED(rismt%hsgz))     rismt%hsgz     = C_ZERO
     IF (ASSOCIATED(rismt%gr ))      rismt%gr       = R_ZERO
+    IF (ASSOCIATED(rismt%nsol))     rismt%nsol     = R_ZERO
     IF (ASSOCIATED(rismt%qsol))     rismt%qsol     = R_ZERO
     IF (ASSOCIATED(rismt%usol))     rismt%usol     = R_ZERO
     IF (ASSOCIATED(rismt%usol_GF))  rismt%usol_GF  = R_ZERO
