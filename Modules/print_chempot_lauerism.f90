@@ -23,7 +23,6 @@ SUBROUTINE print_chempot_lauerism(rismt, ierr)
   USE solvmol,        ONLY : nsolV, solVs, get_nuniq_in_solVs, iuniq_to_isite, &
                            & iuniq_to_nsite, isite_to_isolV
   !
-  !
   IMPLICIT NONE
   !
   TYPE(rism_type), INTENT(IN)  :: rismt
