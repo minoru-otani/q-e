@@ -146,6 +146,17 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
       GOTO 100
     END IF
     !
+    ! ... correct or normalize H(gxy,z) to guarantee total charge of solvent system
+    CALL eqn_laueshort(rismt, lboth, .TRUE., ierr)
+    IF (ierr /= IERR_RISM_NULL) THEN
+      GOTO 100
+    END IF
+    !
+    CALL normalize_lauerism(rismt, charge, .FALSE., ierr)
+    IF (ierr /= IERR_RISM_NULL) THEN
+      GOTO 100
+    END IF
+    !
     ! ... FFT: H(gxy,z) -> H(r)
     CALL fft_hlaue_to_hr()
     !
@@ -249,13 +260,13 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
     FLUSH(stdout)
     !
     ! ... Laue-RISM eq. of short-range around the expanded cell
-    CALL eqn_laueshort(rismt, lboth, ierr)
+    CALL eqn_laueshort(rismt, lboth, .FALSE., ierr)
     IF (ierr /= IERR_RISM_NULL) THEN
       GOTO 100
     END IF
     !
-    ! ... correct or normalize G(r) and H(gxy,z) to guarantee total charge of solvent system
-    CALL normalize_lauerism(rismt, charge, ierr)
+    ! ... correct or normalize H(gxy,z) to guarantee total charge of solvent system
+    CALL normalize_lauerism(rismt, charge, .TRUE., ierr)
     IF (ierr /= IERR_RISM_NULL) THEN
       GOTO 100
     END IF

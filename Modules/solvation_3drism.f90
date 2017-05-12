@@ -165,6 +165,7 @@ SUBROUTINE solvation_3drism(rismt, ierr)
   IF (rismt%cfft%gstart_t > 1) THEN
     rismt%rhog(1) = CMPLX(rhotot, 0.0_DP, kind=DP)
   END IF
+  !
   WRITE(stdout, '(/,5X,"solvent charge ",F10.5, &
                   & ", renormalised to ",F10.5)') rismt%qtot, rhotot * omega
   !

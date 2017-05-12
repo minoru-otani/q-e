@@ -391,7 +391,6 @@ noncol.o : parameters.o
 normalize_lauerism.o : cell_base.o
 normalize_lauerism.o : constants.o
 normalize_lauerism.o : err_rism.o
-normalize_lauerism.o : io_global.o
 normalize_lauerism.o : kind.o
 normalize_lauerism.o : mp.o
 normalize_lauerism.o : rism.o
@@ -743,7 +742,9 @@ solvation_force.o : recvec.o
 solvation_force.o : rism.o
 solvation_force.o : solute.o
 solvation_lauerism.o : cell_base.o
+solvation_lauerism.o : constants.o
 solvation_lauerism.o : err_rism.o
+solvation_lauerism.o : io_global.o
 solvation_lauerism.o : kind.o
 solvation_lauerism.o : lauefft.o
 solvation_lauerism.o : mp.o

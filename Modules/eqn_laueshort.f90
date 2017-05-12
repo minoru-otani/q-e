@@ -8,7 +8,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !---------------------------------------------------------------------------
-SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
+SUBROUTINE eqn_laueshort(rismt, lboth, lgzero, ierr)
   !---------------------------------------------------------------------------
   !
   ! ... solve short-range part of Laue-RISM equation, which is defined as
@@ -33,6 +33,7 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
   !
   TYPE(rism_type), INTENT(INOUT) :: rismt
   LOGICAL,         INTENT(IN)    :: lboth  ! both-hands calculation, or not
+  LOGICAL,         INTENT(IN)    :: lgzero ! only for Gxy=0, or not
   INTEGER,         INTENT(OUT)   :: ierr
   !
   INTEGER                  :: nq
@@ -42,6 +43,9 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
   INTEGER                  :: jgxy
   INTEGER                  :: iglxy
   INTEGER                  :: jglxy
+  INTEGER                  :: igxy_sta
+  INTEGER                  :: igxy_end
+  INTEGER                  :: igxy_len
   INTEGER                  :: iz1, iz2
   INTEGER                  :: iiz2
   INTEGER                  :: nzint1
@@ -131,6 +135,17 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
   nzleft2  = MAX(izleft2_end  - izleft2_sta  + 1, 0)
   nzint2   = nzright2 + nzleft2
   !
+  ! ... region of Gxy
+  IF (lgzero) THEN
+    igxy_sta = 1
+    igxy_end = rismt%lfft%gxystart - 1
+    igxy_len = igxy_end - igxy_sta + 1
+  ELSE
+    igxy_sta = 1
+    igxy_end = rismt%lfft%ngxy
+    igxy_len = rismt%lfft%ngxy
+  END IF
+  !
   ! ... allocate working memory
   IF (rismt%nrzl > 0) THEN
     ALLOCATE(xgt(rismt%nrzl))
@@ -142,8 +157,8 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
   IF (nzint2 > 0) THEN
     ALLOCATE(cs2(nzint2))
   END IF
-  IF (nzint1 * rismt%lfft%ngxy > 0) THEN
-    ALLOCATE(hs1(nzint1, rismt%lfft%ngxy))
+  IF (nzint1 * igxy_len > 0) THEN
+    ALLOCATE(hs1(nzint1, igxy_sta:igxy_end))
   END IF
   !
   ! ... Laue-RISM equation of short-range
@@ -155,7 +170,7 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
       iiq1 = 0
     END IF
     !
-    IF (nzint1 * rismt%lfft%ngxy > 0) THEN
+    IF (nzint1 * igxy_len > 0) THEN
       hs1 = C_ZERO
     END IF
     !
@@ -166,7 +181,7 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
       ! ... solve Laue-RISM equation for each igxy
       ggxy_old = -1.0_DP
       !
-      DO igxy = 1, rismt%lfft%ngxy
+      DO igxy = igxy_sta, igxy_end
         jgxy  = rismt%nrzs * (igxy - 1)
         iglxy = rismt%lfft%igtonglxy(igxy)
         jglxy = rismt%nrzl * (iglxy - 1)
@@ -243,13 +258,13 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
       !
     END DO
     !
-    IF (nzint1 * rismt%lfft%ngxy > 0) THEN
+    IF (nzint1 * igxy_len > 0) THEN
       CALL mp_sum(hs1, rismt%mp_site%inter_sitg_comm)
     END IF
     !
     IF (iiq1 > 0) THEN
       ! ... copy hs1 -> hsgz
-      IF (rismt%nrzl * rismt%ngxy > 0) THEN
+      IF ((.NOT. lgzero) .AND. (rismt%nrzl * rismt%ngxy > 0)) THEN
         rismt%hsgz(:, iiq1) = C_ZERO
       END IF
       !
@@ -257,7 +272,7 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
         rismt%hsgz(1:rismt%lfft%nrz, iiq1) = C_MONE
       END IF
       !
-      DO igxy = 1, rismt%lfft%ngxy
+      DO igxy = igxy_sta, igxy_end
         jgxy = rismt%nrzl * (igxy - 1)
         !
 !$omp parallel do default(shared) private(iz1, izint1)
@@ -299,7 +314,7 @@ SUBROUTINE eqn_laueshort(rismt, lboth, ierr)
   IF (nzint2 > 0) THEN
     DEALLOCATE(cs2)
   END IF
-  IF (nzint1 * rismt%lfft%ngxy > 0) THEN
+  IF (nzint1 * igxy_len > 0) THEN
     DEALLOCATE(hs1)
   END IF
   !

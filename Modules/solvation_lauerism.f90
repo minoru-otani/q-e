@@ -22,10 +22,13 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   !                     v
   !
   ! ... Variables:
-  ! ...   charge:  total charge of solvent system
+  ! ...   charge:     total charge of solvent system
+  ! ...   ireference: reference position of solvation potential
   !
   USE cell_base,      ONLY : at, alat
+  USE constants,      ONLY : eps8
   USE err_rism,       ONLY : IERR_RISM_NULL, IERR_RISM_INCORRECT_DATA_TYPE
+  USE io_global,      ONLY : stdout
   USE kinds,          ONLY : DP
   USE lauefft,        ONLY : fw_lauefft_2xy
   USE mp,             ONLY : mp_sum
@@ -52,6 +55,10 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   INTEGER                  :: igxy
   INTEGER                  :: jgxy
   INTEGER                  :: kgxy
+  INTEGER                  :: nright
+  INTEGER                  :: nleft
+  INTEGER                  :: izright_tail
+  INTEGER                  :: izleft_tail
   REAL(DP)                 :: rhov
   REAL(DP)                 :: rhov1
   REAL(DP)                 :: rhov2
@@ -59,11 +66,16 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   REAL(DP)                 :: ntmp
   REAL(DP)                 :: dz
   REAL(DP)                 :: area_xy
-  REAL(DP)                 :: dvol
+  REAL(DP)                 :: vol, dvol
   REAL(DP)                 :: fac1
   REAL(DP)                 :: fac2
+  REAL(DP)                 :: charge0
+  REAL(DP)                 :: chgtmp
+  REAL(DP)                 :: rhog0
   REAL(DP)                 :: vsol0
   COMPLEX(DP), ALLOCATABLE :: ggz(:,:)
+  !
+  COMPLEX(DP), PARAMETER   :: C_ZERO = CMPLX(0.0_DP, 0.0_DP, kind=DP)
   !
   ! ... number of sites in solvents
   nq = get_nuniq_in_solVs()
@@ -108,7 +120,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
     iiq = iq - rismt%mp_site%isite_start + 1
     IF (rismt%nrzs * rismt%ngxy > 0) THEN
-      ggz(:, iiq) = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+      ggz(:, iiq) = C_ZERO
     END IF
     !
     IF (rismt%nr > 0 .AND. (rismt%nrzs * rismt%ngxy) > 0) THEN
@@ -191,7 +203,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   !
   ! ... make rhog (which is Laue-rep.)
   IF (rismt%nrzl * rismt%ngxy > 0) THEN
-    rismt%rhog(:) = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    rismt%rhog(:) = C_ZERO
   END IF
   !
   DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
@@ -244,6 +256,79 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   IF (rismt%nrzl * rismt%ngxy > 0) THEN
     CALL mp_sum(rismt%rhog, rismt%mp_site%inter_sitg_comm)
   END IF
+  !
+  ! ... truncate rhog
+  charge0 = 0.0_DP
+  izright_tail = 0
+  izleft_tail  = 0
+  !
+  IF (rismt%lfft%gxystart > 1) THEN
+    izleft_tail = 1
+    DO irz = 1, rismt%lfft%izleft_gedge
+      IF (ABS(rismt%rhog(irz)) < eps8) THEN
+        rismt%rhog(irz) = C_ZERO
+      ELSE
+        izleft_tail = irz
+        EXIT
+      END IF
+    END DO
+    !
+    izright_tail = rismt%lfft%nrz
+    DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
+      iirz = rismt%lfft%nrz + rismt%lfft%izright_gedge - irz
+      IF (ABS(rismt%rhog(iirz)) < eps8) THEN
+        rismt%rhog(iirz) = C_ZERO
+      ELSE
+        izright_tail = iirz
+        EXIT
+      END IF
+    END DO
+    !
+    chgtmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:chgtmp)
+    DO irz = izleft_tail, rismt%lfft%izleft_gedge
+      chgtmp = chgtmp + dvol * rismt%rhog(irz)
+    END DO
+!$omp end parallel do
+    charge0 = charge0 + chgtmp
+    !
+    chgtmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:chgtmp)
+    DO irz = rismt%lfft%izright_gedge, izright_tail
+      chgtmp = chgtmp + dvol * rismt%rhog(irz)
+    END DO
+!$omp end parallel do
+    charge0 = charge0 + chgtmp
+    !
+  END IF
+  !
+  CALL mp_sum(charge0,      rismt%mp_site%intra_sitg_comm)
+  CALL mp_sum(izright_tail, rismt%mp_site%intra_sitg_comm)
+  CALL mp_sum(izleft_tail,  rismt%mp_site%intra_sitg_comm)
+  !
+  ! ... renormalize rhog
+  IF (rismt%lfft%gxystart > 1) THEN
+    nright = MAX(0, izright_tail - rismt%lfft%izright_gedge + 1)
+    nleft  = MAX(0, rismt%lfft%izleft_gedge - izleft_tail + 1)
+    vol    = dvol * DBLE(nright + nleft)
+    rhog0  = (charge - charge0) / vol
+    !
+!$omp parallel do default(shared) private(irz)
+    DO irz = izleft_tail, rismt%lfft%izleft_gedge
+      rismt%rhog(irz) = rismt%rhog(irz) + CMPLX(rhog0, 0.0_DP, kind=DP)
+    END DO
+!$omp end parallel do
+    !
+!$omp parallel do default(shared) private(irz)
+    DO irz = rismt%lfft%izright_gedge, izright_tail
+      rismt%rhog(irz) = rismt%rhog(irz) + CMPLX(rhog0, 0.0_DP, kind=DP)
+    END DO
+!$omp end parallel do
+    !
+  END IF
+  !
+  WRITE(stdout, '(/,5X,"solvent charge ",F10.5, &
+                  & ", renormalised to ",F10.5)') charge0, charge
   !
   ! ... make vpot
   CALL solvation_esm_potential(rismt, ireference, vsol0, ierr)
