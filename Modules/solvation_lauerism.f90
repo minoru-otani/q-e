@@ -116,7 +116,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
     END IF
   END DO
   !
-  ! ... make qsol
+  ! ... make nsol, qsol
   DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
     iiq   = iq - rismt%mp_site%isite_start + 1
     iv    = iuniq_to_isite(1, iq)
