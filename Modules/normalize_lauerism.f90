@@ -333,16 +333,19 @@ CONTAINS
     REAL(DP), INTENT(IN)  :: gr(:)
     REAL(DP), INTENT(OUT) :: gz(:)
     !
-    INTEGER :: ir
-    INTEGER :: idx
-    INTEGER :: idx0
-    INTEGER :: i3min
-    INTEGER :: i3max
-    INTEGER :: i1, i2, i3
-    INTEGER :: n1, n2, n3
-    INTEGER :: nx1, nx2, nx3
-    INTEGER :: nnr
-    INTEGER :: irz
+    INTEGER               :: ir
+    INTEGER               :: idx
+    INTEGER               :: idx0
+    INTEGER               :: i3min
+    INTEGER               :: i3max
+    INTEGER               :: i1, i2, i3
+    INTEGER               :: n1, n2, n3
+    INTEGER               :: nx1, nx2, nx3
+    INTEGER               :: nnr
+    INTEGER               :: irz
+#if defined(__OPENMP)
+    REAL(DP), ALLOCATABLE :: gzomp(:)
+#endif
     !
     ! ... FFT box
     n1  = rismt%cfft%dfftt%nr1
@@ -360,6 +363,12 @@ CONTAINS
     i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
     i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
     !
+!$omp parallel default(shared) private(ir, idx, i1, i2, i3, irz, gzomp)
+#if defined(__OPENMP)
+    ALLOCATE(gzomp(n3))
+    gzomp = 0.0_DP
+#endif
+!$omp do
     DO ir = 1, nnr
       !
       idx = idx0 + ir - 1
@@ -388,9 +397,21 @@ CONTAINS
       irz = irz + (n3 / 2)
       irz = irz + 1
       !
+#if defined(__OPENMP)
+      gzomp(irz) = gzomp(irz) + gr(ir)
+#else
       gz(irz) = gz(irz) + gr(ir)
+#endif
       !
     END DO
+!$omp end do
+#if defined(__OPENMP)
+!$omp critical
+    gz(1:n3) = gz(1:n3) + gzomp(1:n3)
+!$omp end critical
+    DEALLOCATE(fromp)
+#endif
+!$omp end parallel
     !
     CALL mp_sum(gz(1:n3), rismt%mp_site%intra_sitg_comm)
     !
@@ -438,6 +459,7 @@ CONTAINS
     i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
     irz0  = rismt%lfft%izcell_start
     !
+!$omp parallel do default(shared) private(ir, idx, i1, i2, i3, irz)
     DO ir = 1, nnr
       !
       idx = idx0 + ir - 1
@@ -471,6 +493,7 @@ CONTAINS
       END IF
       !
     END DO
+!$omp end parallel do
     !
   END SUBROUTINE truncate_gr
   !
@@ -519,6 +542,7 @@ CONTAINS
     irz_edg1 = rismt%lfft%izright_gedge
     irz_edg2 = rismt%lfft%izleft_gedge
     !
+!$omp parallel do default(shared) private(ir, idx, i1, i2, i3, irz)
     DO ir = 1, nnr
       !
       idx = idx0 + ir - 1
@@ -554,6 +578,7 @@ CONTAINS
       END IF
       !
     END DO
+!$omp end parallel do
     !
   END SUBROUTINE renormalize_gr
   !
