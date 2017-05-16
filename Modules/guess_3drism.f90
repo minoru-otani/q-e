@@ -123,7 +123,7 @@ SUBROUTINE guess_3drism(rismt, ierr)
       END IF
       !
       vlj = rismt%uljr(ir, iiq)
-      IF (laue) THEN
+      IF (laue) THEN  ! add LJ-wall
         vlj =  vlj + rismt%uwr(ir, iiq)
       END IF
       !
