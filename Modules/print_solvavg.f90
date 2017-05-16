@@ -1196,12 +1196,24 @@ CONTAINS
     !
     INTEGER                  :: nq
     INTEGER                  :: iq
+    INTEGER                  :: iiq
     INTEGER                  :: iv
     INTEGER                  :: isolV
     INTEGER                  :: iatom
     CHARACTER(LEN=LEN_SATOM) :: satom
     INTEGER                  :: owner_group_id
+    INTEGER                  :: iz
+    INTEGER                  :: iiz
+    INTEGER                  :: izsta
+    INTEGER                  :: izend
+    INTEGER                  :: izsol
     REAL(DP)                 :: qv
+    REAL(DP)                 :: voppo
+    REAL(DP)                 :: c2, d2
+    REAL(DP)                 :: z
+    REAL(DP)                 :: zstep
+    REAL(DP)                 :: zoffs
+    REAL(DP)                 :: zedge
     REAL(DP),    ALLOCATABLE :: rhor(:)
     COMPLEX(DP), ALLOCATABLE :: rhol(:)
     COMPLEX(DP), ALLOCATABLE :: rhos(:)
@@ -1260,8 +1272,45 @@ CONTAINS
       !
       IF (rismt%mp_site%isite_start <= iq .AND. iq <= rismt%mp_site%isite_end) THEN
         owner_group_id = my_group_id
-        rhor = rismt%csr(:, iq - rismt%mp_site%isite_start + 1)
+        iiq = iq - rismt%mp_site%isite_start + 1
+        !
+        rhor = rismt%csr(:, iiq)
         rhol = (-beta * qv) * rismt%vlgz(:)
+        !
+        IF (rismt%lfft%gxystart > 1) THEN
+          !
+          IF (rismt%lfft%xright .AND. rismt%lfft%xleft) THEN
+            izsta = 1
+            izend = 0
+            !
+          ELSE IF (rismt%lfft%xright) THEN
+            izsta = 1
+            izend = rismt%lfft%izright_start - 1
+            izsol = rismt%lfft%izright_start
+            voppo = DBLE(rismt%vleft(1))
+            !
+          ELSE !IF (rismt%lfft%xleft) THEN
+            izsta = rismt%lfft%izleft_end + 1
+            izend = rismt%lfft%nrz
+            izsol = rismt%lfft%izleft_end
+            voppo = DBLE(rismt%vright(1))
+          END IF
+          !
+          iiz = izsol - rismt%lfft%izcell_start + 1
+          c2  = DBLE(rismt%csgz(iiz, iiq)) - beta * qv * DBLE(rismt%vlgz(izsol))
+          d2  = -beta * qv * voppo
+          !
+          zstep = rismt%lfft%zstep
+          zoffs = (rismt%lfft%zleft + rismt%lfft%zoffset)
+          zedge = zoffs + zstep * DBLE(izsol - 1)
+          !
+          DO iz = izsta, izend
+            z = zoffs + zstep * DBLE(iz - 1)
+            rhol(iz) = CMPLX(c2 - d2 * ABS(z - zedge), 0.0_DP, kind=DP)
+          END DO
+          !
+        END IF
+        !
       ELSE
         owner_group_id = 0
         rhor = 0.0_DP
