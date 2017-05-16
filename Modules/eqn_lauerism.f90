@@ -61,8 +61,9 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
   COMPLEX(DP), ALLOCATABLE :: cs2(:)
   COMPLEX(DP), ALLOCATABLE :: hs1(:,:)
   !
-  COMPLEX(DP), PARAMETER   :: C_ZERO = CMPLX(0.0_DP, 0.0_DP, kind=DP)
-  COMPLEX(DP), PARAMETER   :: C_ONE  = CMPLX(1.0_DP, 0.0_DP, kind=DP)
+  COMPLEX(DP), PARAMETER   :: C_ZERO = CMPLX( 0.0_DP, 0.0_DP, kind=DP)
+  COMPLEX(DP), PARAMETER   :: C_ONE  = CMPLX( 1.0_DP, 0.0_DP, kind=DP)
+  COMPLEX(DP), PARAMETER   :: C_MONE = CMPLX(-1.0_DP, 0.0_DP, kind=DP)
   !
   EXTERNAL :: zgemv
   !
@@ -288,6 +289,10 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
     IF (iiq1 > 0) THEN
       IF (rismt%nrzs * rismt%ngxy > 0) THEN
         rismt%hgz(:, iiq1) = C_ZERO
+      END IF
+      !
+      IF (rismt%lfft%gxystart > 1) THEN
+        rismt%hgz(1:rismt%cfft%dfftt%nr3, iiq1) = C_MONE
       END IF
       !
       DO igxy = 1, rismt%lfft%ngxy

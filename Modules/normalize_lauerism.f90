@@ -69,14 +69,18 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
   REAL(DP)              :: vol2
   REAL(DP)              :: charge0
   REAL(DP)              :: chgtmp
+  REAL(DP)              :: ntmp
   REAL(DP)              :: hr0
   REAL(DP)              :: hr1
   REAL(DP)              :: hr2
   REAL(DP), ALLOCATABLE :: rhoz(:)
+  REAL(DP), ALLOCATABLE :: nsol(:)
+  COMPLEX(DP)           :: cpad
   !
   INTEGER,     PARAMETER :: RHOZ_NEDGE     = 3  ! to avoid noise at edges of unit-cell
   REAL(DP),    PARAMETER :: RHOZ_THRESHOLD = 1.0E-5_DP
-  COMPLEX(DP), PARAMETER :: C_ZERO = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+  COMPLEX(DP), PARAMETER :: C_ZERO = CMPLX( 0.0_DP, 0.0_DP, kind=DP)
+  COMPLEX(DP), PARAMETER :: C_MONE = CMPLX(-1.0_DP, 0.0_DP, kind=DP)
   !
   ! ... number of sites in solvents
   nq = get_nuniq_in_solVs()
@@ -88,6 +92,11 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
   END IF
   !
   IF (rismt%mp_site%nsite < nq) THEN
+    ierr = IERR_RISM_INCORRECT_DATA_TYPE
+    RETURN
+  END IF
+  !
+  IF (rismt%ngxy < rismt%lfft%ngxy) THEN
     ierr = IERR_RISM_INCORRECT_DATA_TYPE
     RETURN
   END IF
@@ -111,31 +120,18 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
   IF (rismt%nrzl > 0) THEN
     ALLOCATE(rhoz(rismt%nrzl))
   END IF
+  IF (rismt%nsite > 0) THEN
+    ALLOCATE(nsol(rismt%nsize))
+  END IF
   !
   ! ... set variables
   dz      = rismt%lfft%zstep * alat
   area_xy = ABS(at(1, 1) * at(2, 2) - at(1, 2) * at(2, 1)) * alat * alat
   dvol    = area_xy * dz
   !
-  ! ... qrho = sum(qv^2 * rhov^2)
-  qrho1 = 0.0_DP
-  qrho2 = 0.0_DP
-  !
-  DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
-    iiq   = iq - rismt%mp_site%isite_start + 1
-    iv    = iuniq_to_isite(1, iq)
-    nv    = iuniq_to_nsite(iq)
-    isolV = isite_to_isolV(iv)
-    iatom = isite_to_iatom(iv)
-    rhov1 = solVs(isolV)%density
-    rhov2 = solVs(isolV)%subdensity
-    qv    = solVs(isolV)%charge(iatom)
-    qrho1 = qrho1 + DBLE(nv) * qv * qv * rhov1 * rhov1
-    qrho2 = qrho2 + DBLE(nv) * qv * qv * rhov2 * rhov2
-  END DO
-  !
-  CALL mp_sum(qrho1, rismt%mp_site%inter_sitg_comm)
-  CALL mp_sum(qrho2, rismt%mp_site%inter_sitg_comm)
+  ! ...
+  ! ... Define domain of total correlations
+  ! ......................................................................................
   !
   ! ... rhoz: planar average of rho(r), in expand-cell
   IF (rismt%nrzl > 0) THEN
@@ -174,7 +170,6 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
   END IF
   !
   ! ... truncate rhoz
-  charge0 = 0.0_DP
   izright_tail = 0
   izleft_tail  = 0
   !
@@ -202,34 +197,49 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
       END IF
     END DO
     !
-    chgtmp = 0.0_DP
-!$omp parallel do default(shared) private(irz) reduction(+:chgtmp)
-    DO irz = izleft_tail, rismt%lfft%izleft_gedge
-      chgtmp = chgtmp + dvol * rismt%rhog(irz)
-    END DO
-!$omp end parallel do
-    charge0 = charge0 + chgtmp
-    !
-    chgtmp = 0.0_DP
-!$omp parallel do default(shared) private(irz) reduction(+:chgtmp)
-    DO irz = rismt%lfft%izright_gedge, izright_tail
-      chgtmp = chgtmp + dvol * rismt%rhog(irz)
-    END DO
-!$omp end parallel do
-    charge0 = charge0 + chgtmp
-    !
   END IF
   !
-  CALL mp_sum(charge0,      rismt%mp_site%intra_sitg_comm)
   CALL mp_sum(izright_tail, rismt%mp_site%intra_sitg_comm)
   CALL mp_sum(izleft_tail,  rismt%mp_site%intra_sitg_comm)
   !
   ! ... truncate hgz, hsgz, hlgz
   IF (rismt%nsite > 0) THEN
     !
-    IF (expand) THEN ! expand-cell
+    IF (expand) THEN
+      ! ... expand-cell
+      ! ... Gxy = 0
+      IF (rismt%lfft%gxystart > 1) THEN
+        !
+        IF (rismt%xleft) THEN
+          cpad = C_ZERO
+        ELSE
+          cpad = C_MONE
+        END IF
+        !
+!$omp parallel do default(shared) private(irz)
+        DO irz = 1, (izleft_tail - 1)
+          rismt%hsgz(irz, :) = cpad
+          rismt%hlgz(irz, :) = C_ZERO
+        END DO
+!$omp end parallel do
+        !
+        IF (rismt%xright) THEN
+          cpad = C_ZERO
+        ELSE
+          cpad = C_MONE
+        END IF
+        !
+!$omp parallel do default(shared) private(irz)
+        DO irz = (izright_tail + 1), rismt%lfft%nrz
+          rismt%hsgz(irz, :) = cpad
+          rismt%hlgz(irz, :) = C_ZERO
+        END DO
+!$omp end parallel do
+        !
+      END IF
       !
-      DO igxy = 1, rismt%ngxy
+      ! ... Gxy /= 0
+      DO igxy = rismt%lfft%gxystart, rismt%lfft%ngxy
         jgxy = (igxy - 1) * rismt%nrzl
         !
 !$omp parallel do default(shared) private(irz)
@@ -248,9 +258,37 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
         !
       END DO
       !
-    ELSE ! unit-cell
+    ELSE
+      ! ... unit-cell
+      ! ... Gxy = 0
+      IF (rismt%lfft%gxystart > 1) THEN
+        !
+        IF (rismt%xleft) THEN
+          cpad = C_ZERO
+        ELSE
+          cpad = C_MONE
+        END IF
+        !
+        DO irz = rismt%lfft%izcell_start, (izleft_tail - 1)
+          iirz = irz - rismt%lfft%izcell_start + 1
+          rismt%hgz(iirz, :) = cpad
+        END DO
+        !
+        IF (rismt%xright) THEN
+          cpad = C_ZERO
+        ELSE
+          cpad = C_MONE
+        END IF
+        !
+        DO irz = (izright_tail + 1), rismt%lfft%izcell_end
+          iirz = irz - rismt%lfft%izcell_start + 1
+          rismt%hgz(iirz, :) = cpad
+        END DO
+        !
+      END IF
       !
-      DO igxy = 1, rismt%ngxy
+      ! ... Gxy /= 0
+      DO igxy = rismt%lfft%gxystart, rismt%lfft%ngxy
         jgxy = (igxy - 1) * rismt%nrzs
         !
         DO irz = rismt%lfft%izcell_start, (izleft_tail - 1)
@@ -268,6 +306,93 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
     END IF
     !
   END IF
+  !
+  ! ...
+  ! ... Correct stoichiometry of solvent molecules
+  ! ......................................................................................
+  !
+  ! ... calculate total numbers of solvents
+  IF (rismt%nsite > 0) THEN
+    nsol(:) = 0.0_DP
+  END IF
+  !
+  DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
+    iiq   = iq - rismt%mp_site%isite_start + 1
+    iv    = iuniq_to_isite(1, iq)
+    nv    = iuniq_to_nsite(iq)
+    isolV = isite_to_isolV(iv)
+    rhov1 = DBLE(nv) * solVs(isolV)%density
+    rhov2 = DBLE(nv) * solVs(isolV)%subdensity
+    !
+    IF (rismt%lfft%gxystart > 1) THEN
+      !
+      ntmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:ntmp)
+      DO irz = 1, rismt%lfft%izleft_gedge
+        ntmp = ntmp + rhov2 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
+      END DO
+!$omp end parallel do
+      nsol(iiq) = nsol(iiq) + ntmp
+      !
+      ntmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:ntmp)
+      DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
+        ntmp = ntmp + rhov1 * (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
+      END DO
+!$omp end parallel do
+      nsol(iiq) = nsol(iiq) + ntmp
+      !
+    END IF
+  END DO
+  !
+  ! ...
+  ! ... Correct total charge of solvent system
+  ! ......................................................................................
+  !
+  ! ... qrho = sum(qv^2 * rhov^2)
+  qrho1 = 0.0_DP
+  qrho2 = 0.0_DP
+  !
+  DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
+    iiq   = iq - rismt%mp_site%isite_start + 1
+    iv    = iuniq_to_isite(1, iq)
+    nv    = iuniq_to_nsite(iq)
+    isolV = isite_to_isolV(iv)
+    iatom = isite_to_iatom(iv)
+    rhov1 = solVs(isolV)%density
+    rhov2 = solVs(isolV)%subdensity
+    qv    = solVs(isolV)%charge(iatom)
+    qrho1 = qrho1 + DBLE(nv) * qv * qv * rhov1 * rhov1
+    qrho2 = qrho2 + DBLE(nv) * qv * qv * rhov2 * rhov2
+  END DO
+  !
+  CALL mp_sum(qrho1, rismt%mp_site%inter_sitg_comm)
+  CALL mp_sum(qrho2, rismt%mp_site%inter_sitg_comm)
+  !
+  ! ... calculate total charge
+  charge0 = 0.0_DP
+  !
+  IF (rismt%lfft%gxystart > 1) THEN
+    !
+    chgtmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:chgtmp)
+    DO irz = izleft_tail, rismt%lfft%izleft_gedge
+      chgtmp = chgtmp + dvol * rismt%rhog(irz)
+    END DO
+!$omp end parallel do
+    charge0 = charge0 + chgtmp
+    !
+    chgtmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:chgtmp)
+    DO irz = rismt%lfft%izright_gedge, izright_tail
+      chgtmp = chgtmp + dvol * rismt%rhog(irz)
+    END DO
+!$omp end parallel do
+    charge0 = charge0 + chgtmp
+    !
+  END IF
+  !
+  CALL mp_sum(charge0, rismt%mp_site%intra_sitg_comm)
   !
   ! ... renormalize hgz, hsgz, hlgz
   IF (ABS(charge0 - charge) > eps8) THEN
@@ -295,8 +420,8 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
       !
       IF (rismt%lfft%gxystart > 1) THEN
         !
-        IF (expand) THEN ! expand-cell
-          !
+        IF (expand) THEN
+          ! ... expand-cell
 !$omp parallel do default(shared) private(irz)
           DO irz = izleft_tail, rismt%lfft%izleft_gedge
             ! correct only short-range (for convenience)
@@ -311,8 +436,8 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
           END DO
 !$omp end parallel do
           !
-        ELSE ! unit-cell
-          !
+        ELSE
+          ! ... unit-cell
           DO irz = rismt%lfft%izcell_start, rismt%lfft%izleft_gedge
             iirz = irz - rismt%lfft%izcell_start + 1
             rismt%hgz(iirz, iiq) = rismt%hgz(iirz, iiq) - CMPLX(hr2, 0.0_DP, kind=DP)
@@ -338,6 +463,9 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
 100 CONTINUE
   IF (rismt%nrzl > 0) THEN
     DEALLOCATE(rhoz)
+  END IF
+  IF (rismt%nsite > 0) THEN
+    DEALLOCATE(nsol)
   END IF
   !
 END SUBROUTINE normalize_lauerism
