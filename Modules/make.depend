@@ -707,9 +707,12 @@ simpsn.o : kind.o
 solute.o : cell_base.o
 solute.o : constants.o
 solute.o : err_rism.o
+solute.o : io_global.o
 solute.o : ions_base.o
 solute.o : kind.o
 solute.o : molecule_const.o
+solute.o : mp.o
+solute.o : mp_images.o
 solute.o : rism.o
 solvation_3drism.o : ../FFTXlib/fft_interfaces.o
 solvation_3drism.o : cell_base.o

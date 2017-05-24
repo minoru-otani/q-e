@@ -13,12 +13,15 @@ MODULE solute
   ! ... this module keeps data of solute.
   !
   USE cell_base,      ONLY : at, bg, alat
-  USE constants,      ONLY : BOHR_RADIUS_ANGS
+  USE constants,      ONLY : BOHR_RADIUS_ANGS, K_BOLTZMANN_RY
   USE err_rism,       ONLY : stop_by_err_rism, IERR_RISM_NULL, &
                            & IERR_RISM_LJ_UNSUPPORTED, IERR_RISM_LJ_OUT_OF_RANGE
+  USE io_global,      ONLY : ionode, ionode_id
   USE ions_base,      ONLY : nat, atm, nsp, ityp, tau
   USE kinds,          ONLY : DP
   USE molecule_const, ONLY : RY_TO_KCALMOLm1
+  USE mp,             ONLY : mp_bcast
+  USE mp_images,      ONLY : intra_image_comm
   USE rism,           ONLY : rism_type, ITYPE_LAUERISM
   !
   IMPLICIT NONE
@@ -85,6 +88,7 @@ MODULE solute
   PUBLIC :: get_solU_LJ_stress
   PUBLIC :: set_solU_LJ_param
   PUBLIC :: set_wall_param
+  PUBLIC :: auto_wall_edge
   !
 CONTAINS
   !
@@ -500,5 +504,54 @@ CONTAINS
     wall_lj6 = lj6
     !
   END SUBROUTINE set_wall_param
+  !
+  !--------------------------------------------------------------------------
+  SUBROUTINE auto_wall_edge(z0, g0, temp)
+    !--------------------------------------------------------------------------
+    !
+    ! ... set edge position of repulsive-wall automatically
+    !
+    IMPLICIT NONE
+    !
+    REAL(DP), INTENT(IN) :: z0
+    REAL(DP), INTENT(IN) :: g0
+    REAL(DP), INTENT(IN) :: temp
+    !
+    REAL(DP) :: tau0
+    REAL(DP) :: tau1
+    REAL(DP) :: beta
+    REAL(DP) :: v0
+    !
+    IF (g0 <= 0.0_DP) THEN
+      CALL stop_by_err_rism('auto_wall_edge', IERR_RISM_LJ_OUT_OF_RANGE)
+    END IF
+    !
+    IF (ionode) THEN
+      !
+      ! ... z0 (bohr) -> tau0 (alat)
+      ! ... tau0 is position where g(r) <= g0
+      tau0 = z0 / alat
+      !
+      ! ... beta = 1 / (kB * T)
+      beta = 1.0_DP / K_BOLTZMANN_RY / temp
+      !
+      ! ... g0 -> v0, which is potential of wall
+      v0 = (-1.0_DP / beta) * LOG(g0)
+      !
+      ! ... v0 -> tau1, which is offset of edge position
+      CALL lj_get_wall_edge(tau1, v0)
+      !
+      ! ... update wall_tau
+      IF (iwall == IWALL_RIGHT) THEN
+        wall_tau = tau0 + tau1
+      ELSE IF (iwall == IWALL_LEFT) THEN
+        wall_tau = tau0 - tau1
+      END IF
+      !
+    END IF
+    !
+    CALL mp_bcast(wall_tau, ionode_id, intra_image_comm)
+    !
+  END SUBROUTINE auto_wall_edge
   !
 END MODULE solute

@@ -470,6 +470,20 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
   REAL(DP) :: rsign
   REAL(DP) :: vw
   !
+  ! ... which type of wall ?
+  IF (iwall == IWALL_RIGHT) THEN
+    rsign = -1.0_DP
+    !
+  ELSE IF (iwall == IWALL_LEFT) THEN
+    rsign = +1.0_DP
+    !
+  ELSE !IF (iwall == IWALL_NULL) THEN
+    IF (rismt%cfft%dfftt%nnr > 0) THEN
+      rismt%uwr(1:rismt%cfft%dfftt%nnr, iiq) = 0.0_DP
+    END IF
+    RETURN
+  END IF
+  !
   ! ... FFT box
   n1  = rismt%cfft%dfftt%nr1
   n2  = rismt%cfft%dfftt%nr2
@@ -486,27 +500,24 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
   sv    = solVs(isolV)%ljsig(iatom)
   ev    = solVs(isolV)%ljeps(iatom)
   !
-  ! ... which type of wall ?
-  IF (iwall == IWALL_RIGHT) THEN
-    rsign = -1.0_DP
-    !
-  ELSE IF (iwall == IWALL_LEFT) THEN
-    rsign = +1.0_DP
-    !
-  ELSE !IF (iwall == IWALL_NULL) THEN
-    IF (rismt%cfft%dfftt%nnr > 0) THEN
-      rismt%uwr(1:rismt%cfft%dfftt%nnr, iiq) = 0.0_DP
-    END IF
-    RETURN
-  END IF
+  ! ... wall properties
+  rho = wall_rho
+  su  = wall_ljsig
+  eu  = wall_ljeps
+  !
+  ! ... wall-solvent properties
+  suv  = 0.5_DP * (sv + su)
+  euv  = SQRT(ev * eu)
+  rmax = rsmax * suv / alat
+  rmin = RSMIN * suv / alat
   !
   ! ... calculate potential on each FFT grid
   idx0  = nx1 * nx2 * rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
   !
-!$omp parallel do default(shared) private(ir, idx, i1, i2, i3, r3, tau_z, vw, &
-!$omp             su, suv, rmax, rmin, zuv, rho, eu, euv, sr, sr2, sr3, sr6, sr9)
+!$omp parallel do default(shared) private(ir, idx, i1, i2, i3, r3, tau_z, &
+!$omp             vw, zuv, sr, sr2, sr3, sr6, sr9)
   DO ir = 1, rismt%cfft%dfftt%nnr
     !
     ! ... create coordinate of a FFT grid
@@ -539,11 +550,6 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
     tau_z = r3 * at(3, 3)
     !
     ! ... potential from the wall
-    su   = wall_ljsig
-    suv  = 0.5_DP * (sv + su)
-    rmax = rsmax * suv / alat
-    rmin = RSMIN * suv / alat
-    !
     zuv = rsign * (tau_z - wall_tau)
     IF (zuv < rmin) THEN
       zuv = rmin
@@ -553,9 +559,6 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
       vw = 0.0_DP
       !
     ELSE
-      rho  = wall_rho
-      eu   = wall_ljeps
-      euv  = SQRT(ev * eu)
       sr   = suv / zuv / alat
       sr2  = sr  * sr
       sr3  = sr2 * sr
@@ -575,6 +578,96 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
 !$omp end parallel do
   !
 END SUBROUTINE lj_setup_wall_x
+!
+!--------------------------------------------------------------------------
+SUBROUTINE lj_get_wall_edge(tau0, v0)
+  !--------------------------------------------------------------------------
+  !
+  ! ... calculate edge position of repulsive wall
+  !
+  USE kinds,   ONLY : DP
+  USE solvmol, ONLY : get_nuniq_in_solVs
+  !
+  IMPLICIT NONE
+  !
+  REAL(DP), INTENT(OUT) :: tau0 ! edge position of wall
+  REAL(DP), INTENT(IN)  :: v0   ! threshold of LJ-potential
+  !
+  INTEGER :: nq
+  INTEGER :: iq
+  !
+  ! ... number of sites in solvents
+  nq = get_nuniq_in_solVs()
+  !
+  ! ... calculate edge position of wall
+  tau0 = 1.0E+99_DP
+  DO iq = 1, nq
+    CALl lj_get_wall_edge_x(iq, tau0, v0)
+  END DO
+  !
+END SUBROUTINE lj_get_wall_edge
+!
+!--------------------------------------------------------------------------
+SUBROUTINE lj_get_wall_edge_x(iq, tau0, v0)
+  !--------------------------------------------------------------------------
+  !
+  ! ... calculate edge position of repulsive wall
+  ! ... for a solvent's site
+  !
+  USE cell_base, ONLY : alat
+  USE constants, ONLY : tpi
+  USE kinds,     ONLY : DP
+  USE solute,    ONLY : iwall, wall_rho, wall_ljeps, wall_ljsig
+  USE solvmol,   ONLY : iuniq_to_isite, isite_to_isolV, isite_to_iatom, solVs
+  !
+  IMPLICIT NONE
+  !
+  INTEGER,  INTENT(IN)    :: iq
+  REAL(DP), INTENT(INOUT) :: tau0
+  REAL(DP), INTENT(IN)    :: v0
+  !
+  INTEGER  :: iv
+  INTEGER  :: isolV
+  INTEGER  :: iatom
+  REAL(DP) :: rho
+  REAL(DP) :: ev, eu, euv
+  REAL(DP) :: sv, su, suv
+  REAL(DP) :: suv2, suv4, suv8, suv12
+  REAL(DP) :: z0
+  !
+  IF(v0 <= 0.0_DP) THEN
+    RETURN
+  END IF
+  !
+  ! ... solvent properties
+  iv    = iuniq_to_isite(1, iq)
+  isolV = isite_to_isolV(iv)
+  iatom = isite_to_iatom(iv)
+  sv    = solVs(isolV)%ljsig(iatom)
+  ev    = solVs(isolV)%ljeps(iatom)
+  !
+  ! ... wall properties
+  rho = wall_rho
+  su  = wall_ljsig
+  eu  = wall_ljeps
+  !
+  ! ... wall-solvent properties
+  suv = 0.5_DP * (sv + su)
+  euv = SQRT(ev * eu)
+  !
+  ! ... calculate edge position of wall
+  suv2  = suv  * suv
+  suv4  = suv2 * suv2
+  suv8  = suv4 * suv4
+  suv12 = suv8 * suv4
+  z0    = tpi * rho * 4.0_DP * euv * suv12 / 90.0_DP / v0
+  !
+  IF (z0 > 0.0_DP) THEN
+    z0 = z0 ** (1.0_DP / 9.0_DP)
+    tau0 = MIN(tau0, z0 / alat)
+  END IF
+  !
+END SUBROUTINE lj_get_wall_edge_x
 !
 !--------------------------------------------------------------------------
 SUBROUTINE lj_get_force(rismt, force, rsmax, ierr)

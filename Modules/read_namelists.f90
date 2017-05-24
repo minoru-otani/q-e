@@ -736,7 +736,10 @@ MODULE read_namelists_module
        !
        ! ... ( 'none' | 'average' | 'right' | 'left' )
        !
-       laue_wall             = .FALSE.
+       laue_wall             = 'auto'
+       !
+       ! ... ( 'none' | 'auto' | 'manual' )
+       !
        laue_wall_z           = 0.0_DP
        laue_wall_rho         = 0.01_DP
        laue_wall_epsilon     = 0.1_DP
@@ -1907,6 +1910,7 @@ MODULE read_namelists_module
        IF( rism1d_nproc <= 0 ) &
           CALL errore( sub_name,' rism1d_nproc out of range ', 1 )
        !
+       ! ... for Laue-RISM
        IF( TRIM(assume_isolated) == 'esm' ) THEN
           !
           IF( laue_nfit < 0 ) &
@@ -1922,7 +1926,14 @@ MODULE read_namelists_module
           IF( .NOT. allowed ) &
              CALL errore( sub_name, ' laue_reference '''//TRIM(laue_reference)//''' not allowed ', 1 )
           !
-          IF ( laue_wall ) THEN
+          allowed = .FALSE.
+          DO i = 1, SIZE(laue_wall_allowed)
+             IF( TRIM(laue_wall) == laue_wall_allowed(i) ) allowed = .TRUE.
+          END DO
+          IF( .NOT. allowed ) &
+             CALL errore( sub_name, ' laue_wall '''//TRIM(laue_wall)//''' not allowed ', 1 )
+          !
+          IF ( TRIM(laue_wall) == 'manual' ) THEN
              !
              IF( laue_expand_right > 0.0_DP .AND. laue_expand_left > 0.0_DP ) THEN
                 CALL errore( sub_name,' cannot use laue_wall with Solvent/Slab/Solvent ', 1 )
@@ -1937,14 +1948,26 @@ MODULE read_namelists_module
                 !
              END IF
              !
-             IF( laue_wall_rho <= 0.0_DP ) &
-                CALL errore( sub_name,' laue_wall_rho out of range ', 1 )
+          END IF
+          !
+          IF ( TRIM(laue_wall) /= 'none' ) THEN
              !
-             IF( laue_wall_epsilon <= 0.0_DP ) &
-                CALL errore( sub_name,' laue_wall_epsilon out of range ', 1 )
-             !
-             IF( laue_wall_sigma <= 0.0_DP ) &
-                CALL errore( sub_name,' laue_wall_sigma out of range ', 1 )
+             IF( TRIM(laue_wall) == 'auto' .AND. &
+                laue_expand_right > 0.0_DP .AND. laue_expand_left > 0.0_DP ) THEN
+                ! NOP
+                !
+             ELSE
+                !
+                IF( laue_wall_rho <= 0.0_DP ) &
+                   CALL errore( sub_name,' laue_wall_rho out of range ', 1 )
+                !
+                IF( laue_wall_epsilon <= 0.0_DP ) &
+                   CALL errore( sub_name,' laue_wall_epsilon out of range ', 1 )
+                !
+                IF( laue_wall_sigma <= 0.0_DP ) &
+                   CALL errore( sub_name,' laue_wall_sigma out of range ', 1 )
+                !
+             END IF
              !
           END IF
           !

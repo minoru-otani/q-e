@@ -26,7 +26,8 @@ SUBROUTINE iosys_3drism(laue, linit)
                              & expand_r, expand_l, starting_r, starting_l, buffer_r, buffer_l, &
                              & both_hands, ireference, IREFERENCE_NULL, IREFERENCE_AVERAGE, &
                              & IREFERENCE_RIGHT, IREFERENCE_LEFT
-  USE solute,           ONLY : rmax_lj_ => rmax_lj, allocate_solU, set_solU_LJ_param, set_wall_param
+  USE solute,           ONLY : rmax_lj_ => rmax_lj, allocate_solU, set_solU_LJ_param, &
+                             & set_wall_param, auto_wall_edge
   USE solvmol,          ONLY : get_nuniq_in_solVs
   !
   ! ... CONTROL namelist
@@ -58,6 +59,7 @@ SUBROUTINE iosys_3drism(laue, linit)
   REAL(DP), PARAMETER :: MDIIS_STEP_DEF1 = 0.8_DP
   REAL(DP), PARAMETER :: MDIIS_STEP_DEF2 = 0.3_DP
   REAL(DP), PARAMETER :: BUFFER_DEF      = 8.0_DP
+  REAL(DP), PARAMETER :: WALL_THR        = 1.0E-10_DP
   !
   ! ... check starting condition.
   IF (TRIM(restart_mode) == 'restart') THEN
@@ -113,6 +115,13 @@ SUBROUTINE iosys_3drism(laue, linit)
       IF (laue_buffer_left < 0.0_DP) THEN
         laue_buffer_left = BUFFER_DEF
       END IF
+    END IF
+  END IF
+  !
+  ! ... modify laue_wall
+  IF (laue .AND. TRIM(laue_wall) == 'auto') THEN
+    IF (laue_expand_right > 0.0_DP .AND. laue_expand_left > 0.0_DP) THEN
+      laue_wall = 'none'
     END IF
   END IF
   !
@@ -179,18 +188,29 @@ SUBROUTINE iosys_3drism(laue, linit)
   END DO
   !
   ! ... initialize repulsive wall
-  IF (laue .AND. laue_wall) THEN
+  IF (laue .AND. TRIM(laue_wall) /= 'none') THEN
     IF (laue_expand_right > 0.0_DP .AND. laue_expand_left > 0.0_DP) THEN
       ! ... no wall
       CALL infomsg('input','WARNING: "laue_wall" is ignored')
+      !
     ELSE IF (laue_expand_right > 0.0_DP) THEN
       ! ... set wall on left
       CALL set_wall_param(.FALSE., &
       & laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma, laue_wall_lj6)
+      !
+      IF(TRIM(laue_wall) == 'auto') THEN
+        CALL auto_wall_edge(laue_starting_right, WALL_THR, tempv)
+      END IF
+      !
     ELSE IF (laue_expand_left > 0.0_DP) THEN
       ! ... set wall on right
       CALL set_wall_param(.TRUE.,  &
       & laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma, laue_wall_lj6)
+      !
+      IF(TRIM(laue_wall) == 'auto') THEN
+        CALL auto_wall_edge(laue_starting_left, WALL_THR, tempv)
+      END IF
+      !
     END IF
   END IF
   !

@@ -1513,7 +1513,7 @@ MODULE input_parameters
           ! use both-hands method in Laue-RISM calculation, or not
 
         CHARACTER(len=80) :: laue_reference = 'none'
-          ! laue_reference = 'none' | 'average' | 'right' | 'left'
+          ! laue_reference = 'none'* | 'average' | 'right' | 'left'
           ! reference of electrostatic potential in Laue-RISM calculation
           ! (used to evaluate Fermi energy and to calculate FCP)
           ! 'none'     explicit reference is not defined
@@ -1523,8 +1523,15 @@ MODULE input_parameters
         CHARACTER(len=80) :: laue_reference_allowed(4)
         DATA laue_reference_allowed / 'none', 'average', 'right', 'left' /
 
-        LOGICAL :: laue_wall = .FALSE.
-          ! use repulsive wall in Laue-RISM calculation, or not
+        CHARACTER(len=80) :: laue_wall = 'auto'
+          ! laue_wall = 'none' | 'auto'* | 'manual'
+          ! define repulsive wall in Laue-RISM calculation
+          ! 'none'    wall is not defined
+          ! 'auto'    edge position of wall is defined automatically
+          ! 'manual'  edge position of wall is defined manually
+
+        CHARACTER(len=80) :: laue_wall_allowed(3)
+        DATA laue_wall_allowed / 'none', 'manual', 'auto' /
 
         REAL(DP) :: laue_wall_z = 0.0_DP
           ! edge position of repulsive wall in Laue-RISM calculation (in bohr)

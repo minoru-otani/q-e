@@ -2852,47 +2852,68 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
             }
         }
 
-        var laue_wall -type LOGICAL {
-            default { .FALSE. }
-            info {
-                If .TRUE., the repulsive wall is used with (1/r)^12 term of Lennard-Jones potential.
-                Also, @ref laue_wall_z has to be set. This is only for Laue-RISM.
+        var laue_wall -type CHARACTER {
+            default { 'auto' }
+            options {
+                info {
+                    Set the repulsive wall with (1/r)^12 term of Lennard-Jones potential.
+                    This is only for Laue-RISM.
+                }
+                opt -val 'none' {
+                    The repulsive wall is not defined.
+                }
+                opt -val 'auto' {
+                    The repulsive wall is defined, whose edge position is set automatically.
+                    One does not have to set @ref laue_wall_z (the edge position).
+                }
+                opt -val 'manual' {
+                    The repulsive wall is defined, whose edge position is set manually.
+                    One have to set @ref laue_wall_z (the edge position).
+                }
             }
         }
 
-        var laue_wall_z -type LOGICAL {
+        var laue_wall_z -type REAL {
             default { 0.0 }
             info {
                 Set the edge position [in a.u.] of the repulsive wall.
                 If @ref laue_expand_right > 0.0, the repulsive wall is defined on [ -inf , @ref laue_wall_z ].
                 If @ref laue_expand_left > 0.0, the repulsive wall is defined on [ @ref laue_wall_z , inf ].
-                This is only for Laue-RISM and @ref laue_wall == .TRUE. .
+                This is only for Laue-RISM and @ref laue_wall == 'manual' .
             }
         }
 
-        var laue_wall_rho -type LOGICAL {
+        var laue_wall_rho -type REAL {
             default { 0.01 }
             info {
                 The density (1/bohr^3) of the repulsive wall.
-                This is only for Laue-RISM and @ref laue_wall == .TRUE. .
+                This is only for Laue-RISM and @ref laue_wall /= 'none' .
             }
         }
 
-        var laue_wall_epsilon -type LOGICAL {
+        var laue_wall_epsilon -type REAL {
             default { 0.1 }
             info {
                 The Lennard-Jones potential of the repulsive wall.
                 Here, you can set the parameter 'epsilon' (kcal/mol).
-                This is only for Laue-RISM and @ref laue_wall == .TRUE. .
+                This is only for Laue-RISM and @ref laue_wall /= 'none' .
             }
         }
 
-        var laue_wall_sigma -type LOGICAL {
+        var laue_wall_sigma -type REAL {
             default { 4.0 }
             info {
                 The Lennard-Jones potential of the repulsive wall.
                 Here, you can set the parameter 'sigma' (Angstrom).
-                This is only for Laue-RISM and @ref laue_wall == .TRUE. .
+                This is only for Laue-RISM and @ref laue_wall /= 'none' .
+            }
+        }
+
+        var laue_wall_lj6 -type LOGICAL {
+            default { .FALSE. }
+            info {
+                If .TRUE., the attractive term -(1/r)^6 of Lennard-Jones potential is added.
+                This is only for Laue-RISM and @ref laue_wall /= 'none' .
             }
         }
     }

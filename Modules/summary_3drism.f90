@@ -191,7 +191,8 @@ SUBROUTINE print_solu_info(iverbosity)
   USE constants,      ONLY : BOHR_RADIUS_ANGS
   USE io_global,      ONLY : stdout
   USE molecule_const, ONLY : RY_TO_KCALMOLm1
-  USE solute,         ONLY : solU_ljeps, solU_ljsig, solU_ljname, rmax_lj
+  USE solute,         ONLY : solU_ljeps, solU_ljsig, solU_ljname, rmax_lj, &
+                             iwall, wall_rho, wall_ljeps, wall_ljsig, wall_lj6, IWALL_NULL
   !
   IMPLICIT NONE
   !
@@ -212,6 +213,20 @@ SUBROUTINE print_solu_info(iverbosity)
       & TRIM(ADJUSTL(solU_ljname(ia)))
     !
   END DO
+  !
+  IF (iwall /= IWALL_NULL) THEN
+    !
+    WRITE(stdout, '()')
+    WRITE(stdout, '(5X,"Wall:")')
+    WRITE(stdout, '(5X,"  Density =",F14.8,"  bohr^-3")')  wall_rho
+    WRITE(stdout, '(5X,"  E       =",F14.8,"  kcal/mol")') wall_ljeps * RY_TO_KCALMOLm1
+    WRITE(stdout, '(5X,"  S       =",F14.8,"  angs")')     wall_ljsig * BOHR_RADIUS_ANGS
+    IF (wall_lj6) THEN
+    WRITE(stdout, '(5X,"  the attractive term of -(1/r)^6 is used")')
+    ELSE
+    END IF
+    !
+  END IF
   !
   WRITE(stdout, '()')
   !
