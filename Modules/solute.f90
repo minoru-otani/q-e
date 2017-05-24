@@ -52,6 +52,7 @@ MODULE solute
   REAL(DP)                             :: wall_rho    ! density (in 1/bohr^3)
   REAL(DP)                             :: wall_ljeps  ! LJ's epsilon (in Ry)
   REAL(DP)                             :: wall_ljsig  ! LJ's sigma (in bohr)
+  LOGICAL                              :: wall_lj6    ! use 6-term of LJ, or not
   !
   ! ..... types of repulsive-wall
   INTEGER, PARAMETER :: IWALL_NULL  = 0
@@ -71,6 +72,7 @@ MODULE solute
   PUBLIC :: wall_rho
   PUBLIC :: wall_ljeps
   PUBLIC :: wall_ljsig
+  PUBLIC :: wall_lj6
   !
   PUBLIC :: IWALL_NULL
   PUBLIC :: IWALL_RIGHT
@@ -106,6 +108,7 @@ CONTAINS
     wall_rho   = 0.0_DP
     wall_ljeps = 0.0_DP
     wall_ljsig = 0.0_DP
+    wall_lj6   = .FALSE.
     !
   END SUBROUTINE allocate_solU
   !
@@ -131,6 +134,7 @@ CONTAINS
     wall_rho   = 0.0_DP
     wall_ljeps = 0.0_DP
     wall_ljsig = 0.0_DP
+    wall_lj6   = .FALSE.
     !
   END SUBROUTINE deallocate_solU
   !
@@ -454,7 +458,7 @@ CONTAINS
   END FUNCTION coordination_number
   !
   !--------------------------------------------------------------------------
-  SUBROUTINE set_wall_param(lwall, z, rho, eps, sig)
+  SUBROUTINE set_wall_param(lwall, z, rho, eps, sig, lj6)
     !--------------------------------------------------------------------------
     !
     ! ... set repulsive-wall parameters
@@ -466,6 +470,7 @@ CONTAINS
     REAL(DP), INTENT(IN) :: rho
     REAL(DP), INTENT(IN) :: eps
     REAL(DP), INTENT(IN) :: sig
+    LOGICAL,  INTENT(IN) :: lj6
     !
     IF (rho <= 0.0_DP .OR. eps <= 0.0_DP .OR. sig <= 0.0_DP) THEN
       CALL stop_by_err_rism('set_wall_param', IERR_RISM_LJ_OUT_OF_RANGE)
@@ -490,6 +495,9 @@ CONTAINS
     !
     ! ... sig (angstrom) -> wall_ljsig (bohr)
     wall_ljsig = sig / BOHR_RADIUS_ANGS
+    !
+    ! ... use attractive term (LJ-6), or not
+    wall_lj6 = lj6
     !
   END SUBROUTINE set_wall_param
   !

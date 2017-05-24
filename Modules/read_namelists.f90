@@ -741,6 +741,7 @@ MODULE read_namelists_module
        laue_wall_rho         = 0.01_DP
        laue_wall_epsilon     = 0.1_DP
        laue_wall_sigma       = 4.0_DP
+       laue_wall_lj6         = .FALSE.
        !
        RETURN
        !
@@ -1380,6 +1381,7 @@ MODULE read_namelists_module
        CALL mp_bcast( laue_wall_rho,         ionode_id, intra_image_comm )
        CALL mp_bcast( laue_wall_epsilon,     ionode_id, intra_image_comm )
        CALL mp_bcast( laue_wall_sigma,       ionode_id, intra_image_comm )
+       CALL mp_bcast( laue_wall_lj6,         ionode_id, intra_image_comm )
        !
        RETURN
        !

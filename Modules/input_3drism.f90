@@ -44,7 +44,7 @@ SUBROUTINE iosys_3drism(laue, linit)
                                laue_buffer_right, laue_buffer_left, &
                                laue_both_hands, laue_reference, &
                                laue_wall, laue_wall_z, laue_wall_rho, &
-                               laue_wall_epsilon, laue_wall_sigma
+                               laue_wall_epsilon, laue_wall_sigma, laue_wall_lj6
   !
   IMPLICIT NONE
   !
@@ -185,10 +185,12 @@ SUBROUTINE iosys_3drism(laue, linit)
       CALL infomsg('input','WARNING: "laue_wall" is ignored')
     ELSE IF (laue_expand_right > 0.0_DP) THEN
       ! ... set wall on left
-      CALL set_wall_param(.FALSE., laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma)
+      CALL set_wall_param(.FALSE., &
+      & laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma, laue_wall_lj6)
     ELSE IF (laue_expand_left > 0.0_DP) THEN
       ! ... set wall on right
-      CALL set_wall_param(.TRUE.,  laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma)
+      CALL set_wall_param(.TRUE.,  &
+      & laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma, laue_wall_lj6)
     END IF
   END IF
   !

@@ -1540,6 +1540,9 @@ MODULE input_parameters
           ! Lennard-Jones parameters `sigma' for repulsive wall
           ! in Laue-RISM calculation (in angstrom)
 
+        LOGICAL :: laue_wall_lj6 = .FALSE.
+          ! use attractive term of Lennard-Jones: -(1/r)^6, or not
+
         NAMELIST / rism / nsolv, closure, tempv, permittivity, ecutsolv, solute_lj, &
                           solute_epsilon, solute_sigma, rmax_lj, rmax1d, &
                           starting1d, starting3d, smear1d, smear3d, &
@@ -1549,7 +1552,8 @@ MODULE input_parameters
                           laue_nfit, laue_expand_right, laue_expand_left, &
                           laue_starting_right, laue_starting_left, &
                           laue_buffer_right, laue_buffer_left, laue_both_hands, laue_reference, &
-                          laue_wall, laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma
+                          laue_wall, laue_wall_z, laue_wall_rho, laue_wall_epsilon, laue_wall_sigma, &
+                          laue_wall_lj6
 !  END manual
 ! ----------------------------------------------------------------------
 

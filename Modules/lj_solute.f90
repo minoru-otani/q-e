@@ -373,6 +373,12 @@ SUBROUTINE lj_setup_wall(rismt, rsmax, ierr)
   ! ...                                  sig^12
   ! ...   (+-) 2pi * rho * 4 * esp * --------------
   ! ...                              90 * |z - Z|^9
+  ! ...
+  ! ... optionally, attractive potential is added
+  ! ...
+  ! ...                                  sig^6
+  ! ...   (-+) 2pi * rho * 4 * esp * --------------
+  ! ...                              12 * |z - Z|^3
   !
   USE err_rism, ONLY : IERR_RISM_NULL, IERR_RISM_INCORRECT_DATA_TYPE
   USE kinds,    ONLY : DP
@@ -429,7 +435,7 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
   USE kinds,     ONLY : DP
   USE rism,      ONLY : rism_type
   USE solute,    ONLY : iwall, wall_tau, wall_rho, wall_ljeps, wall_ljsig, &
-                        IWALL_RIGHT, IWALL_LEFT
+                        wall_lj6, IWALL_RIGHT, IWALL_LEFT
   USE solvmol,   ONLY : iuniq_to_isite, isite_to_isolV, isite_to_iatom, solVs
   !
   IMPLICIT NONE
@@ -555,7 +561,11 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
       sr3  = sr2 * sr
       sr6  = sr3 * sr3
       sr9  = sr6 * sr3
-      vw   = tpi * rho * 4.0_DP * euv * suv * suv * suv * sr9 / 90.0_DP
+      IF (wall_lj6) THEN
+        vw = tpi * rho * 4.0_DP * euv * suv * suv * suv * (sr9 / 90.0_DP - sr3 / 12.0_DP)
+      ELSE
+        vw = tpi * rho * 4.0_DP * euv * suv * suv * suv * sr9 / 90.0_DP
+      END IF
       !
     END IF
     !
