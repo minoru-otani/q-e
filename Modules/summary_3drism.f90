@@ -161,9 +161,9 @@ SUBROUTINE summary_3drism()
   END IF
   END IF
   IF (iwall == IWALL_RIGHT) THEN
-  WRITE(stdout, '(5X,"repulsive wall (in bohr)   : [",F11.6,A11,"]")') (wall_tau * alat), "+infinity"
+  WRITE(stdout, '(5X,"repulsive wall (in bohr)   : [",F11.6,A11,"]")') (wall_tau * alat), "+Infinity"
   ELSE IF (iwall == IWALL_LEFT) THEN
-  WRITE(stdout, '(5X,"repulsive wall (in bohr)   : [",A11,F11.6,"]")') "-infinity", (wall_tau * alat)
+  WRITE(stdout, '(5X,"repulsive wall (in bohr)   : [",A11,F11.6,"]")') "-Infinity", (wall_tau * alat)
   END IF
   WRITE(stdout, '(5X,"reference of potential     : ",A)')              TRIM(sreference)
   WRITE(stdout, '(5X,"#grids to fit at edges of unit-cell =",I5)')     laue_nfit
