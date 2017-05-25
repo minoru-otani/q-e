@@ -167,7 +167,7 @@ SUBROUTINE guess_3drism(rismt, ierr)
   END DO
   !
   ! ... correction for Laue-RISM
-  IF (rismt%itype == ITYPE_LAUERISM) THEN
+  IF (laue) THEN
     CALL correct_edge()
   END IF
   !
