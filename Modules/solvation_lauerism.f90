@@ -55,8 +55,6 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   INTEGER                  :: igxy
   INTEGER                  :: jgxy
   INTEGER                  :: kgxy
-  INTEGER                  :: nright
-  INTEGER                  :: nleft
   INTEGER                  :: izright_tail
   INTEGER                  :: izleft_tail
   REAL(DP)                 :: rhov
@@ -67,15 +65,21 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   REAL(DP)                 :: dz
   REAL(DP)                 :: area_xy
   REAL(DP)                 :: vol, dvol
+  REAL(DP)                 :: voltmp
   REAL(DP)                 :: fac1
   REAL(DP)                 :: fac2
   REAL(DP)                 :: charge0
   REAL(DP)                 :: chgtmp
   REAL(DP)                 :: rhog0
   REAL(DP)                 :: vsol0
+  REAL(DP),    ALLOCATABLE :: wei(:)
   COMPLEX(DP), ALLOCATABLE :: ggz(:,:)
   !
+  REAL(DP),    PARAMETER   :: RHO_THR   = eps8
+  REAL(DP),    PARAMETER   :: RHO_SMEAR = 2.0_DP  ! in bohr
   COMPLEX(DP), PARAMETER   :: C_ZERO = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+  !
+  REAL(DP),    EXTERNAL    :: qe_erfc
   !
   ! ... number of sites in solvents
   nq = get_nuniq_in_solVs()
@@ -107,6 +111,9 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   END IF
   !
   ! ... allocate memory
+  IF(rismt%lfft%nrz > 0) THEN
+    ALLOCATE(wei(rismt%lfft%nrz))
+  END IF
   IF (rismt%nrzs * rismt%ngxy * rismt%nsite > 0) THEN
     ALLOCATE(ggz(rismt%nrzs * rismt%ngxy, rismt%nsite))
   END IF
@@ -257,17 +264,14 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
     CALL mp_sum(rismt%rhog, rismt%mp_site%inter_sitg_comm)
   END IF
   !
-  ! ... truncate rhog
-  charge0 = 0.0_DP
+  ! ... detect truncating positions
   izright_tail = 0
   izleft_tail  = 0
   !
   IF (rismt%lfft%gxystart > 1) THEN
     izleft_tail = 1
     DO irz = 1, rismt%lfft%izleft_gedge
-      IF (ABS(rismt%rhog(irz)) < eps8) THEN
-        rismt%rhog(irz) = C_ZERO
-      ELSE
+      IF (ABS(rismt%rhog(irz)) > RHO_THR) THEN
         izleft_tail = irz
         EXIT
       END IF
@@ -276,52 +280,100 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
     izright_tail = rismt%lfft%nrz
     DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
       iirz = rismt%lfft%nrz + rismt%lfft%izright_gedge - irz
-      IF (ABS(rismt%rhog(iirz)) < eps8) THEN
-        rismt%rhog(iirz) = C_ZERO
-      ELSE
+      IF (ABS(rismt%rhog(iirz)) > RHO_THR) THEN
         izright_tail = iirz
         EXIT
       END IF
     END DO
     !
+  END IF
+  !
+  CALL mp_sum(izright_tail, rismt%mp_site%intra_sitg_comm)
+  CALL mp_sum(izleft_tail,  rismt%mp_site%intra_sitg_comm)
+  !
+  ! ... calculate weight
+  IF(rismt%lfft%nrz > 0) THEN
+    wei = 0.0_DP
+  END IF
+  !
+!$omp parallel do default(shared) private(irz)
+  DO irz = 1, rismt%lfft%izleft_gedge
+    wei(irz) = 0.5_DP * qe_erfc(DBLE(izleft_tail - irz ) * dz / RHO_SMEAR)
+  END DO
+!$omp end parallel do
+  !
+!$omp parallel do default(shared) private(irz)
+  DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
+    wei(irz) = 0.5_DP * qe_erfc(DBLE(irz - izright_tail) * dz / RHO_SMEAR)
+  END DO
+!$omp end parallel do
+  !
+  ! ... evaluate volume
+  vol = 0.0_DP
+  !
+  IF (rismt%lfft%gxystart > 1) THEN
+    !
+    voltmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:voltmp)
+    DO irz = 1, rismt%lfft%izleft_gedge
+      voltmp = voltmp + dvol * wei(irz)
+    END DO
+!$omp end parallel do
+    vol = vol + voltmp
+    !
+    voltmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:voltmp)
+    DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
+      voltmp = voltmp + dvol * wei(irz)
+    END DO
+!$omp end parallel do
+    vol = vol + voltmp
+    !
+  END IF
+  !
+  CALL mp_sum(vol, rismt%mp_site%intra_sitg_comm)
+  !
+  ! ... evaluate total charge
+  charge0 = 0.0_DP
+  !
+  IF (rismt%lfft%gxystart > 1) THEN
+    !
     chgtmp = 0.0_DP
 !$omp parallel do default(shared) private(irz) reduction(+:chgtmp)
-    DO irz = izleft_tail, rismt%lfft%izleft_gedge
-      chgtmp = chgtmp + dvol * rismt%rhog(irz)
+    DO irz = 1, rismt%lfft%izleft_gedge
+      chgtmp = chgtmp + dvol * wei(irz) * rismt%rhog(irz)
     END DO
 !$omp end parallel do
     charge0 = charge0 + chgtmp
     !
     chgtmp = 0.0_DP
 !$omp parallel do default(shared) private(irz) reduction(+:chgtmp)
-    DO irz = rismt%lfft%izright_gedge, izright_tail
-      chgtmp = chgtmp + dvol * rismt%rhog(irz)
+    DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
+      chgtmp = chgtmp + dvol * wei(irz) * rismt%rhog(irz)
     END DO
 !$omp end parallel do
     charge0 = charge0 + chgtmp
     !
   END IF
   !
-  CALL mp_sum(charge0,      rismt%mp_site%intra_sitg_comm)
-  CALL mp_sum(izright_tail, rismt%mp_site%intra_sitg_comm)
-  CALL mp_sum(izleft_tail,  rismt%mp_site%intra_sitg_comm)
+  CALL mp_sum(charge0, rismt%mp_site%intra_sitg_comm)
   !
   ! ... renormalize rhog
   IF (rismt%lfft%gxystart > 1) THEN
-    nright = MAX(0, izright_tail - rismt%lfft%izright_gedge + 1)
-    nleft  = MAX(0, rismt%lfft%izleft_gedge - izleft_tail + 1)
-    vol    = dvol * DBLE(nright + nleft)
-    rhog0  = (charge - charge0) / vol
+    IF (ABS(vol) <= eps8) THEN  ! will not be occurred
+      CALL errore('solvation_lauerism', 'vol is zero', 1)
+    END IF
+    rhog0 = (charge - charge0) / vol
     !
 !$omp parallel do default(shared) private(irz)
-    DO irz = izleft_tail, rismt%lfft%izleft_gedge
-      rismt%rhog(irz) = rismt%rhog(irz) + CMPLX(rhog0, 0.0_DP, kind=DP)
+    DO irz = 1, rismt%lfft%izleft_gedge
+      rismt%rhog(irz) = (rismt%rhog(irz) + CMPLX(rhog0, 0.0_DP, kind=DP)) * wei(irz)
     END DO
 !$omp end parallel do
     !
 !$omp parallel do default(shared) private(irz)
-    DO irz = rismt%lfft%izright_gedge, izright_tail
-      rismt%rhog(irz) = rismt%rhog(irz) + CMPLX(rhog0, 0.0_DP, kind=DP)
+    DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
+      rismt%rhog(irz) = (rismt%rhog(irz) + CMPLX(rhog0, 0.0_DP, kind=DP)) * wei(irz)
     END DO
 !$omp end parallel do
     !
@@ -362,6 +414,9 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   rismt%vsol = 0.5_DP * vsol0 * charge
   !
   ! ... deallocate memory
+  IF(rismt%lfft%nrz > 0) THEN
+    DEALLOCATE(wei)
+  END IF
   IF (rismt%nrzs * rismt%ngxy * rismt%nsite > 0) THEN
     DEALLOCATE(ggz)
   END IF
