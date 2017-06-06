@@ -227,6 +227,7 @@ guess_3drism.o : cell_base.o
 guess_3drism.o : constants.o
 guess_3drism.o : err_rism.o
 guess_3drism.o : kind.o
+guess_3drism.o : mp.o
 guess_3drism.o : rism.o
 guess_3drism.o : solvmol.o
 gvecw.o : kind.o

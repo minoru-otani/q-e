@@ -16,6 +16,7 @@ SUBROUTINE guess_3drism(rismt, ierr)
   USE constants, ONLY : eps4, K_BOLTZMANN_RY
   USE err_rism,  ONLY : IERR_RISM_NULL, IERR_RISM_INCORRECT_DATA_TYPE
   USE kinds,     ONLY : DP
+  USE mp,        ONLY : mp_max
   USE rism,      ONLY : rism_type, ITYPE_3DRISM, ITYPE_LAUERISM
   USE solvmol,   ONLY : get_nuniq_in_solVs, solVs, &
                       & iuniq_to_isite, isite_to_isolV, isite_to_iatom
@@ -134,6 +135,8 @@ SUBROUTINE guess_3drism(rismt, ierr)
       END IF
       !
     END DO
+    !
+    CALL mp_max(csmax, rismt%mp_site%intra_sitg_comm)
     !
     ! ... correct csr to be smooth
     DO ir = 1, rismt%cfft%dfftt%nnr
