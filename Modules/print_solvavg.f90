@@ -725,6 +725,11 @@ CONTAINS
       vpot = -rismt%vsr * RYTOEV  ! acting on electron
       CALL solvavg_put('Avg v_short (eV)' , .FALSE., vpot)
       !
+      ! ... Vlong, R-space
+      vpot = -rismt%vlr * RYTOEV  ! acting on electron
+      CALL solvavg_put('Avg v_Rlong (eV)' , .FALSE., vpot)
+      !
+      !
       ! ... Vlong, Laue-rep.
       vpol = -rismt%vlgz * RYTOEV  ! acting on electron
       CALL solvavg_put('Avg v_long (eV)',   .FALSE., vpol, rismt%nrzl, .TRUE.)
