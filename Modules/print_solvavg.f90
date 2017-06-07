@@ -127,6 +127,7 @@ SUBROUTINE print_solvavg_3drism(rismt, io_group_id, my_group_id)
   CALL put_solvent_h()
   CALL put_solvent_c()
   CALL put_solvent_u()
+  CALL put_solvent_t()
   !
 CONTAINS
   !
@@ -630,6 +631,60 @@ CONTAINS
 #endif
   END SUBROUTINE put_solvent_u
   !
+  SUBROUTINE put_solvent_t()
+    IMPLICIT NONE
+#if defined (__DEBUG_RISM)
+    !
+    INTEGER                  :: nq
+    INTEGER                  :: iq
+    INTEGER                  :: iv
+    INTEGER                  :: isolV
+    INTEGER                  :: iatom
+    CHARACTER(LEN=LEN_SATOM) :: satom
+    INTEGER                  :: owner_group_id
+    REAL(DP), ALLOCATABLE    :: vpot(:)
+    !
+    IF (rismt%nr < 1) THEN
+      RETURN
+    END IF
+    !
+    nq = get_nuniq_in_solVs()
+    !
+    ALLOCATE(vpot(rismt%nr))
+    !
+    ! ... -beta * Uuv + Huv - Cuv, R-space
+    DO iq = 1, nq
+      iv    = iuniq_to_isite(1, iq)
+      isolV = isite_to_isolV(iv)
+      iatom = isite_to_iatom(iv)
+      satom = ADJUSTL(solVs(isolV)%aname(iatom))
+      !
+      IF (rismt%mp_site%isite_start <= iq .AND. iq <= rismt%mp_site%isite_end) THEN
+        owner_group_id = my_group_id
+        vpot = -beta * rismt%usr(:, iq - rismt%mp_site%isite_start + 1) &
+                   & + rismt%hr (:, iq - rismt%mp_site%isite_start + 1) &
+                   & - rismt%csr(:, iq - rismt%mp_site%isite_start + 1)
+      ELSE
+        owner_group_id = 0
+        vpot = 0.0_DP
+      END IF
+      !
+      CALL mp_sum(owner_group_id, rismt%mp_site%inter_sitg_comm)
+      CALL mp_get(vpot, vpot, my_group_id, io_group_id, &
+                & owner_group_id, iq, rismt%mp_site%inter_sitg_comm)
+      !
+      IF (my_group_id == io_group_id) THEN
+        CALL solvavg_put('Avg t_'// TRIM(satom), .FALSE., vpot)
+      END IF
+      !
+      CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
+    END DO
+    !
+    DEALLOCATE(vpot)
+    !
+#endif
+  END SUBROUTINE put_solvent_t
+  !
 END SUBROUTINE print_solvavg_3drism
 !
 !---------------------------------------------------------------------------
@@ -669,6 +724,7 @@ SUBROUTINE print_solvavg_lauerism(rismt, io_group_id, my_group_id)
   CALL put_solvent_h()
   CALL put_solvent_c()
   CALL put_solvent_u()
+  CALL put_solvent_t()
   !
 CONTAINS
   !
@@ -1487,5 +1543,59 @@ CONTAINS
     !
 #endif
   END SUBROUTINE put_solvent_u
+  !
+  SUBROUTINE put_solvent_t()
+    IMPLICIT NONE
+#if defined (__DEBUG_RISM)
+    !
+    INTEGER                  :: nq
+    INTEGER                  :: iq
+    INTEGER                  :: iv
+    INTEGER                  :: isolV
+    INTEGER                  :: iatom
+    CHARACTER(LEN=LEN_SATOM) :: satom
+    INTEGER                  :: owner_group_id
+    REAL(DP), ALLOCATABLE    :: vpot(:)
+    !
+    IF (rismt%nr < 1) THEN
+      RETURN
+    END IF
+    !
+    nq = get_nuniq_in_solVs()
+    !
+    ALLOCATE(vpot(rismt%nr))
+    !
+    ! ... -beta * Uuv + Huv - Cuv, R-space
+    DO iq = 1, nq
+      iv    = iuniq_to_isite(1, iq)
+      isolV = isite_to_isolV(iv)
+      iatom = isite_to_iatom(iv)
+      satom = ADJUSTL(solVs(isolV)%aname(iatom))
+      !
+      IF (rismt%mp_site%isite_start <= iq .AND. iq <= rismt%mp_site%isite_end) THEN
+        owner_group_id = my_group_id
+        vpot = -beta * rismt%usr(:, iq - rismt%mp_site%isite_start + 1) &
+                   & + rismt%hr (:, iq - rismt%mp_site%isite_start + 1) &
+                   & - rismt%csr(:, iq - rismt%mp_site%isite_start + 1)
+      ELSE
+        owner_group_id = 0
+        vpot = 0.0_DP
+      END IF
+      !
+      CALL mp_sum(owner_group_id, rismt%mp_site%inter_sitg_comm)
+      CALL mp_get(vpot, vpot, my_group_id, io_group_id, &
+                & owner_group_id, iq, rismt%mp_site%inter_sitg_comm)
+      !
+      IF (my_group_id == io_group_id) THEN
+        CALL solvavg_put('Avg t_'// TRIM(satom), .FALSE., vpot)
+      END IF
+      !
+      CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
+    END DO
+    !
+    DEALLOCATE(vpot)
+    !
+#endif
+  END SUBROUTINE put_solvent_t
   !
 END SUBROUTINE print_solvavg_lauerism
