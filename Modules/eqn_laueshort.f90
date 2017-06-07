@@ -42,6 +42,7 @@ SUBROUTINE eqn_laueshort(rismt, lboth, lgzero, ierr)
   INTEGER                  :: igxy
   INTEGER                  :: jgxy
   INTEGER                  :: iglxy
+  INTEGER                  :: iglxy_old
   INTEGER                  :: jglxy
   INTEGER                  :: igxy_sta
   INTEGER                  :: igxy_end
@@ -65,8 +66,6 @@ SUBROUTINE eqn_laueshort(rismt, lboth, lgzero, ierr)
   INTEGER                  :: nzleft2
   INTEGER                  :: izleft2_sta
   INTEGER                  :: izleft2_end
-  REAL(DP)                 :: ggxy
-  REAL(DP)                 :: ggxy_old
   REAL(DP),    ALLOCATABLE :: xgt(:)
   REAL(DP),    ALLOCATABLE :: ygt(:)
   COMPLEX(DP)              :: zstep
@@ -179,17 +178,16 @@ SUBROUTINE eqn_laueshort(rismt, lboth, lgzero, ierr)
       iiq2 = iq2 - rismt%mp_site%isite_start + 1
       !
       ! ... solve Laue-RISM equation for each igxy
-      ggxy_old = -1.0_DP
+      iglxy_old = -1
       !
       DO igxy = igxy_sta, igxy_end
         jgxy  = rismt%nrzs * (igxy - 1)
         iglxy = rismt%lfft%igtonglxy(igxy)
         jglxy = rismt%nrzl * (iglxy - 1)
-        ggxy  = rismt%lfft%glxy(iglxy)
         !
         ! ... x(z2-z1)
-        IF (ggxy > (ggxy_old + eps8)) THEN
-          ggxy_old = ggxy
+        IF (iglxy /= iglxy_old) THEN
+          iglxy_old = iglxy
           !
           xgt(1:rismt%nrzl) = rismt%xgs((1 + jglxy):(rismt%nrzl + jglxy), iiq2, iq1)
           IF (.NOT. lboth) THEN

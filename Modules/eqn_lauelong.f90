@@ -41,6 +41,7 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
   INTEGER                  :: igxy
   INTEGER                  :: jgxy
   INTEGER                  :: iglxy
+  INTEGER                  :: iglxy_old
   INTEGER                  :: jglxy
   INTEGER                  :: irz
   INTEGER                  :: iz1, iz2
@@ -58,8 +59,6 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
   REAL(DP)                 :: qv2
   REAL(DP)                 :: z
   REAL(DP)                 :: gxy
-  REAL(DP)                 :: ggxy
-  REAL(DP)                 :: ggxy_old
   REAL(DP),    ALLOCATABLE :: xz(:)
   REAL(DP),    ALLOCATABLE :: xgz(:)
   REAL(DP),    ALLOCATABLE :: xgzt(:,:)
@@ -215,18 +214,17 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
     !                             /zleft
     !
     ! ... solve Laue-RISM equation for each igxy
-    ggxy_old = -1.0_DP
+    iglxy_old = -1
     !
     DO igxy = 1, rismt%lfft%ngxy
       jgxy  = rismt%nrzl * (igxy - 1)
       iglxy = rismt%lfft%igtonglxy(igxy)
       jglxy = rismt%nrzl * (iglxy - 1)
-      ggxy  = rismt%lfft%glxy(iglxy)
       gxy   = rismt%lfft%gnxy(igxy)
       !
       ! ... x(z2-z1)
-      IF (ggxy > (ggxy_old + eps8)) THEN
-        ggxy_old = ggxy
+      IF (iglxy /= iglxy_old) THEN
+        iglxy_old = iglxy
         !
         IF (.NOT. lboth) THEN
           ! ... susceptibility matrix of one-hand calculation, which is symmetric
@@ -356,7 +354,7 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
     !
     ! ... solve Laue-RISM equation for each igxy
     IF (rismt%lfft%xleft) THEN
-      ggxy_old = -1.0_DP
+      iglxy_old = -1
       !
       DO igxy = 1, rismt%lfft%ngxy
         IF (.NOT. rismt%do_vleft(igxy)) THEN
@@ -366,12 +364,11 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
         jgxy  = rismt%nrzl * (igxy - 1)
         iglxy = rismt%lfft%igtonglxy(igxy)
         jglxy = rismt%nrzl * (iglxy - 1)
-        ggxy  = rismt%lfft%glxy(iglxy)
         gxy   = rismt%lfft%gnxy(igxy)
         !
         ! ... x(z2-z1)
-        IF (ggxy > (ggxy_old + eps8)) THEN
-          ggxy_old = ggxy
+        IF (iglxy /= iglxy_old) THEN
+          iglxy_old = iglxy
           x21out = C_ZERO
           !
           xz(1:rismt%nrzl) = xgz((1 + jglxy):(rismt%nrzl + jglxy))
@@ -446,7 +443,7 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
     !
     ! ... solve Laue-RISM equation for each igxy
     IF (rismt%lfft%xright) THEN
-      ggxy_old = -1.0_DP
+      iglxy_old = -1
       !
       DO igxy = 1, rismt%lfft%ngxy
         IF (.NOT. rismt%do_vright(igxy)) THEN
@@ -456,12 +453,11 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
         jgxy  = rismt%nrzl * (igxy - 1)
         iglxy = rismt%lfft%igtonglxy(igxy)
         jglxy = rismt%nrzl * (iglxy - 1)
-        ggxy  = rismt%lfft%glxy(iglxy)
         gxy   = rismt%lfft%gnxy(igxy)
         !
         ! ... x(z2-z1)
-        IF (ggxy > (ggxy_old + eps8)) THEN
-          ggxy_old = ggxy
+        IF (iglxy /= iglxy_old) THEN
+          iglxy_old = iglxy
           x21out = C_ZERO
           !
           xz(1:rismt%nrzl) = xgz((1 + jglxy):(rismt%nrzl + jglxy))

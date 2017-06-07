@@ -39,6 +39,7 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
   INTEGER                  :: jgxy
   INTEGER                  :: kgxy
   INTEGER                  :: iglxy
+  INTEGER                  :: iglxy_old
   INTEGER                  :: jglxy
   INTEGER                  :: iz1, iz2
   INTEGER                  :: iiz1
@@ -52,8 +53,6 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
   INTEGER                  :: nzleft
   INTEGER                  :: izleft_sta
   INTEGER                  :: izleft_end
-  REAL(DP)                 :: ggxy
-  REAL(DP)                 :: ggxy_old
   REAL(DP),    ALLOCATABLE :: xgt(:)
   REAL(DP),    ALLOCATABLE :: ygt(:)
   COMPLEX(DP)              :: zstep
@@ -148,17 +147,16 @@ SUBROUTINE eqn_lauerism(rismt, lboth, ierr)
       iiq2 = iq2 - rismt%mp_site%isite_start + 1
       !
       ! ... solve Laue-RISM equation for each igxy
-      ggxy_old = -1.0_DP
+      iglxy_old = -1
       !
       DO igxy = 1, rismt%lfft%ngxy
         jgxy  = rismt%nrzs * (igxy - 1)
         iglxy = rismt%lfft%igtonglxy(igxy)
         jglxy = rismt%nrzl * (iglxy - 1)
-        ggxy  = rismt%lfft%glxy(iglxy)
         !
         ! ... x(z2-z1)
-        IF (ggxy > (ggxy_old + eps8)) THEN
-          ggxy_old = ggxy
+        IF (iglxy /= iglxy_old) THEN
+          iglxy_old = iglxy
           !
           IF (.NOT. lboth) THEN
             ! ... susceptibility matrix of one-hand calculation, which is symmetric
