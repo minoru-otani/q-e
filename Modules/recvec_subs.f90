@@ -20,7 +20,7 @@ MODULE recvec_subs
    USE fft_base,           ONLY : dfftp, dffts
 !
    USE kinds,              ONLY : DP
-   USE constants,          ONLY : eps8
+   USE constants,          ONLY : eps8, eps12
 
    PRIVATE
    SAVE
@@ -180,9 +180,11 @@ CONTAINS
 
    igsrt(1) = 0
    IF( .NOT. global_sort ) THEN
-      CALL hpsort_eps( ngm, g2sort_g, igsrt, eps8 )
+      !CALL hpsort_eps( ngm, g2sort_g, igsrt, eps8 )
+      CALL hpsort_eps( ngm, g2sort_g, igsrt, eps12 ) ! consistent with Custom-FFT
    ELSE
-      CALL hpsort_eps( ngm_g, g2sort_g, igsrt, eps8 )
+      !CALL hpsort_eps( ngm_g, g2sort_g, igsrt, eps8 )
+      CALL hpsort_eps( ngm_g, g2sort_g, igsrt, eps12 ) ! consistent with Custom-FFT
    END IF
    mill_g(1,:) = mill_unsorted(1,igsrt(:))
    mill_g(2,:) = mill_unsorted(2,igsrt(:))

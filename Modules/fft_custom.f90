@@ -188,7 +188,7 @@ CONTAINS
     USE kinds,              ONLY : DP
     USE cell_base,          ONLY : at, bg, tpiba2
     USE control_flags,      ONLY : gamma_only
-    USE constants,          ONLY : eps8
+    USE constants,          ONLY : eps8, eps12
     
     IMPLICIT NONE
     
@@ -270,7 +270,8 @@ CONTAINS
          CALL errore ('ggent', 'g-vectors missing !', ABS(fc%ngmt - fc%ngmt_g))
 
     igsrt(1) = 0
-    CALL hpsort_eps( fc%ngmt_g, g2sort_g, igsrt, eps8 )
+    !CALL hpsort_eps( fc%ngmt_g, g2sort_g, igsrt, eps8 )
+    CALL hpsort_eps( fc%ngmt_g, g2sort_g, igsrt, eps12 ) ! consistent with Dense-FFT
     mill_g(1,:) = mill_unsorted(1,igsrt(:))
     mill_g(2,:) = mill_unsorted(2,igsrt(:))
     mill_g(3,:) = mill_unsorted(3,igsrt(:))
