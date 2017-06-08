@@ -481,6 +481,7 @@ print_solvavg.o : kind.o
 print_solvavg.o : lauefft.o
 print_solvavg.o : mp.o
 print_solvavg.o : rism.o
+print_solvavg.o : rism1d_facade.o
 print_solvavg.o : solvavg.o
 print_solvavg.o : solvmol.o
 pseudo_types.o : kind.o

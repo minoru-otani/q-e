@@ -776,10 +776,10 @@ CONTAINS
     !
     ! ... deallocate arrays
     IF (lall) THEN
-      IF (ASSOCIATED(rismt%nsol))      DEALLOCATE(rismt%nsol)
-      IF (ASSOCIATED(rismt%qsol))      DEALLOCATE(rismt%qsol)
-      IF (ASSOCIATED(rismt%usol))      DEALLOCATE(rismt%usol)
-      IF (ASSOCIATED(rismt%usol_GF))   DEALLOCATE(rismt%usol_GF)
+      IF (ASSOCIATED(rismt%nsol))    DEALLOCATE(rismt%nsol)
+      IF (ASSOCIATED(rismt%qsol))    DEALLOCATE(rismt%qsol)
+      IF (ASSOCIATED(rismt%usol))    DEALLOCATE(rismt%usol)
+      IF (ASSOCIATED(rismt%usol_GF)) DEALLOCATE(rismt%usol_GF)
     END IF
     IF (ASSOCIATED(rismt%csr))       DEALLOCATE(rismt%csr)
     IF (ASSOCIATED(rismt%csg))       DEALLOCATE(rismt%csg)

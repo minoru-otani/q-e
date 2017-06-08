@@ -698,6 +698,7 @@ SUBROUTINE print_solvavg_lauerism(rismt, io_group_id, my_group_id)
   USE lauefft,        ONLY : fw_lauefft_2xy
   USE mp,             ONLY : mp_sum, mp_get, mp_barrier
   USE rism,           ONLY : rism_type
+  USE rism1d_facade,  ONLY : rism1t
   USE solvavg,        ONLY : solvavg_size, solvavg_put, solvavg_add
   USE solvmol,        ONLY : solVs, get_nuniq_in_solVs, &
                            & iuniq_to_isite, iuniq_to_nsite, isite_to_isolV, isite_to_iatom
@@ -1256,9 +1257,12 @@ CONTAINS
 #if defined (__DEBUG_RISM)
     !
     INTEGER                  :: nq
-    INTEGER                  :: iq
+    INTEGER                  :: iq, iq2
     INTEGER                  :: iiq
-    INTEGER                  :: iv
+    INTEGER                  :: iv, iv2
+    INTEGER                  :: iw, iw2
+    INTEGER                  :: ivv
+    INTEGER                  :: nv
     INTEGER                  :: isolV
     INTEGER                  :: iatom
     CHARACTER(LEN=LEN_SATOM) :: satom
@@ -1268,15 +1272,21 @@ CONTAINS
     INTEGER                  :: izsta
     INTEGER                  :: izend
     INTEGER                  :: izsol
+    INTEGER                  :: isolvavg
     REAL(DP)                 :: qv
     REAL(DP)                 :: voppo
     REAL(DP)                 :: c2, d2
+    REAL(DP)                 :: x12
     REAL(DP)                 :: z
     REAL(DP)                 :: zstep
     REAL(DP)                 :: zoffs
     REAL(DP)                 :: zedge
+    REAL(DP)                 :: rhov_right
+    REAL(DP)                 :: rhov_left
     REAL(DP),    ALLOCATABLE :: rhor(:)
+    REAL(DP),    ALLOCATABLE :: rhor2(:)
     COMPLEX(DP), ALLOCATABLE :: rhol(:)
+    COMPLEX(DP), ALLOCATABLE :: rhol2(:)
     COMPLEX(DP), ALLOCATABLE :: rhos(:)
     !
     IF ((rismt%nrzl * rismt%ngxy) < 1) THEN
@@ -1293,9 +1303,11 @@ CONTAINS
     !
     nq = get_nuniq_in_solVs()
     !
-    ALLOCATE(rhol(rismt%nrzl * rismt%ngxy))
-    ALLOCATE(rhos(rismt%nrzs * rismt%ngxy))
-    ALLOCATE(rhor(rismt%nr))
+    ALLOCATE(rhol( rismt%nrzl * rismt%ngxy))
+    ALLOCATE(rhol2(rismt%nrzl * rismt%ngxy))
+    ALLOCATE(rhos( rismt%nrzs * rismt%ngxy))
+    ALLOCATE(rhor( rismt%nr))
+    ALLOCATE(rhor2(rismt%nr))
     !
     ! ... Csuv, R-space.
     DO iq = 1, nq
@@ -1318,6 +1330,33 @@ CONTAINS
       !
       IF (my_group_id == io_group_id) THEN
         CALL solvavg_put('Avg cs_'// TRIM(satom), .FALSE., rhor)
+      END IF
+      !
+      CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
+    END DO
+    !
+    ! ... Csuv, Laue-rep. (in unit-cell)
+    DO iq = 1, nq
+      iv    = iuniq_to_isite(1, iq)
+      isolV = isite_to_isolV(iv)
+      iatom = isite_to_iatom(iv)
+      satom = ADJUSTL(solVs(isolV)%aname(iatom))
+      !
+      IF (rismt%mp_site%isite_start <= iq .AND. iq <= rismt%mp_site%isite_end) THEN
+        owner_group_id = my_group_id
+        rhos = rismt%csgz(:, iq - rismt%mp_site%isite_start + 1)
+      ELSE
+        owner_group_id = 0
+        rhos = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+      END IF
+      !
+      CALL mp_sum(owner_group_id, rismt%mp_site%inter_sitg_comm)
+      CALL mp_get(rhos, rhos, my_group_id, io_group_id, &
+                & owner_group_id, iq, rismt%mp_site%inter_sitg_comm)
+      !
+      IF (my_group_id == io_group_id) THEN
+        CALL solvavg_put('Avg cs(L)_'// TRIM(satom), .FALSE., rhos, rismt%nrzs, .FALSE.)
+        CALL solvavg_put('G=2 cs(L)_'// TRIM(satom), .FALSE., rhos, rismt%nrzs, .FALSE., 2)
       END IF
       !
       CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
@@ -1392,36 +1431,112 @@ CONTAINS
       CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
     END DO
     !
-    ! ... Csuv, Laue-rep. (in unit-cell)
+    ! ... Cuv * Xvv(G=0), R-space + Laue-rep.
+    IF (my_group_id == io_group_id) THEN
+      rhor     = 0.0_DP
+      isolvavg = solvavg_size()
+      !
+      DO iq = 1, nq
+        iv    = iuniq_to_isite(1, iq)
+        isolV = isite_to_isolV(iv)
+        iatom = isite_to_iatom(iv)
+        satom = ADJUSTL(solVs(isolV)%aname(iatom))
+        CALL solvavg_put('Avg cx_'// TRIM(satom), .FALSE., rhor)
+      END DO
+    END IF
+    !
     DO iq = 1, nq
-      iv    = iuniq_to_isite(1, iq)
-      isolV = isite_to_isolV(iv)
-      iatom = isite_to_iatom(iv)
-      satom = ADJUSTL(solVs(isolV)%aname(iatom))
+      iv         = iuniq_to_isite(1, iq)
+      nv         = iuniq_to_nsite(iq)
+      isolV      = isite_to_isolV(iv)
+      iatom      = isite_to_iatom(iv)
+      qv         = solVs(isolV)%charge(iatom)
+      rhov_right = solVs(isolV)%density
+      rhov_left  = solVs(isolV)%subdensity
       !
       IF (rismt%mp_site%isite_start <= iq .AND. iq <= rismt%mp_site%isite_end) THEN
         owner_group_id = my_group_id
-        rhos = rismt%csgz(:, iq - rismt%mp_site%isite_start + 1)
+        iiq = iq - rismt%mp_site%isite_start + 1
+        !
+        rhor = rismt%csr(:, iiq)
+        rhol = (-beta * qv) * rismt%vlgz(:)
+        !
+        IF (rismt%lfft%gxystart > 1) THEN
+          !
+          IF (rismt%lfft%xright .AND. rismt%lfft%xleft) THEN
+            izsta = 1
+            izend = 0
+            !
+          ELSE IF (rismt%lfft%xright) THEN
+            izsta = 1
+            izend = rismt%lfft%izright_start - 1
+            izsol = rismt%lfft%izright_start
+            voppo = DBLE(rismt%vleft(1))
+            !
+          ELSE !IF (rismt%lfft%xleft) THEN
+            izsta = rismt%lfft%izleft_end + 1
+            izend = rismt%lfft%nrz
+            izsol = rismt%lfft%izleft_end
+            voppo = DBLE(rismt%vright(1))
+          END IF
+          !
+          iiz = izsol - rismt%lfft%izcell_start + 1
+          c2  = DBLE(rismt%csgz(iiz, iiq)) - beta * qv * DBLE(rismt%vlgz(izsol))
+          d2  = -beta * qv * voppo
+          !
+          zstep = rismt%lfft%zstep
+          zoffs = (rismt%lfft%zleft + rismt%lfft%zoffset)
+          zedge = zoffs + zstep * DBLE(izsol - 1)
+          !
+          DO iz = izsta, izend
+            z = zoffs + zstep * DBLE(iz - 1)
+            rhol(iz) = CMPLX(c2 - d2 * ABS(z - zedge), 0.0_DP, kind=DP)
+          END DO
+          !
+        END IF
+        !
       ELSE
         owner_group_id = 0
-        rhos = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+        rhor = 0.0_DP
+        rhol = CMPLX(0.0_DP, 0.0_DP, kind=DP)
       END IF
       !
       CALL mp_sum(owner_group_id, rismt%mp_site%inter_sitg_comm)
-      CALL mp_get(rhos, rhos, my_group_id, io_group_id, &
+      CALL mp_get(rhor, rhor, my_group_id, io_group_id, &
                 & owner_group_id, iq, rismt%mp_site%inter_sitg_comm)
+      CALL mp_get(rhol, rhol, my_group_id, io_group_id, &
+                & owner_group_id, iq + nq, rismt%mp_site%inter_sitg_comm)
       !
-      IF (my_group_id == io_group_id) THEN
-        CALL solvavg_put('Avg cs(L)_'// TRIM(satom), .FALSE., rhos, rismt%nrzs, .FALSE.)
-        CALL solvavg_put('G=2 cs(L)_'// TRIM(satom), .FALSE., rhos, rismt%nrzs, .FALSE., 2)
-      END IF
+      DO iq2 = 1, nq
+        iv2 = iuniq_to_isite(1, iq2)
+        iw  = MAX(iv, iv2)
+        iw2 = MIN(iv, iv2)
+        ivv = iw * (iw - 1) / 2 + iw2
+        !
+        x12 = 0.0_DP
+        IF (rism1t%mp_task%ivec_start == 1) THEN
+          x12 = rism1t%wg(1, ivv) + rhov_right * rism1t%hg(1, ivv)
+          !x12 = rism1t%wg(1, ivv) + rhov_left  * rism1t%hg(1, ivv)
+        END IF
+        CALL mp_sum(x12, rism1t%intra_comm)
+        !
+        rhor2 = rhor * (DBLE(nv) * x12)
+        rhol2 = rhol * (DBLE(nv) * x12)
+        !
+        IF (my_group_id == io_group_id) THEN
+          CALL solvavg_add(isolvavg + iq2, .FALSE., rhor2)
+          CALL solvavg_add(isolvavg + iq2, .FALSE., rhol2, rismt%nrzl, .TRUE.)
+        END IF
+      END DO
       !
       CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
     END DO
     !
     DEALLOCATE(rhol)
+    DEALLOCATE(rhol2)
     DEALLOCATE(rhos)
     DEALLOCATE(rhor)
+    DEALLOCATE(rhor2)
     !
 #endif
   END SUBROUTINE put_solvent_c
