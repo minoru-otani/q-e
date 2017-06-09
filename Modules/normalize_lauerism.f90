@@ -78,11 +78,11 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
   REAL(DP), ALLOCATABLE :: msol(:)
   REAL(DP), ALLOCATABLE :: qsol(:)
   !
-  INTEGER,     PARAMETER :: HZ_EDGE  = 3  ! to avoid noise at edges of unit-cell
-  REAL(DP),    PARAMETER :: HZ_THR   = 1.0E-3_DP
-  REAL(DP),    PARAMETER :: HZ_SMEAR = 2.0_DP  ! in bohr
+  INTEGER,    PARAMETER :: HZ_EDGE  = 3  ! to avoid noise at edges of unit-cell
+  REAL(DP),   PARAMETER :: HZ_THR   = 1.0E-2_DP
+  REAL(DP),   PARAMETER :: HZ_SMEAR = 2.0_DP  ! in bohr
   !
-  REAL(DP),    EXTERNAL  :: qe_erfc
+  REAL(DP),   EXTERNAL  :: qe_erfc
   !
   ! ... number of sites in solvents
   nq = get_nuniq_in_solVs()

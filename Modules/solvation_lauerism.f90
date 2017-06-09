@@ -75,7 +75,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   REAL(DP),    ALLOCATABLE :: wei(:)
   COMPLEX(DP), ALLOCATABLE :: ggz(:,:)
   !
-  REAL(DP),    PARAMETER   :: RHO_THR   = eps8
+  REAL(DP),    PARAMETER   :: RHO_THR   = 1.0E-8_DP
   REAL(DP),    PARAMETER   :: RHO_SMEAR = 2.0_DP  ! in bohr
   COMPLEX(DP), PARAMETER   :: C_ZERO = CMPLX(0.0_DP, 0.0_DP, kind=DP)
   !

@@ -185,43 +185,45 @@ CONTAINS
   SUBROUTINE ggent(fc)
     !--------------------------------------------------------------------
     !
-    USE kinds,              ONLY : DP
-    USE cell_base,          ONLY : at, bg, tpiba2
-    USE control_flags,      ONLY : gamma_only
-    USE constants,          ONLY : eps8, eps12
-    
+    USE kinds,          ONLY : DP
+    USE cell_base,      ONLY : at, bg, tpiba2
+    USE control_flags,  ONLY : gamma_only
+    USE constants,      ONLY : eps8
+    USE gvect,          ONLY : ngm, ngm_g, ig_l2g, mill
+    USE mp,             ONLY : mp_sum
+
     IMPLICIT NONE
     
     TYPE(fft_cus) :: fc
     
     !
-    REAL(DP) ::  t (3), tt, swap
+    REAL(DP) ::  t (3), tt
     !
-    INTEGER :: ngmx, n1, n2, n3, n1s, n2s, n3s
+    INTEGER :: i, j, k, ng
+    INTEGER :: ngmx, n1, n2, n3
     !
-    REAL(DP), ALLOCATABLE :: g2sort_g(:)
-    ! array containing all g vectors, on all processors: replicated data
-    INTEGER, ALLOCATABLE :: mill_g(:,:), mill_unsorted(:,:)
-    ! array containing all g vectors generators, on all processors:
-    !     replicated data
-    INTEGER, ALLOCATABLE :: igsrt(:)
+    INTEGER, ALLOCATABLE :: mill_g(:,:)
+    ! array containing all g vectors, on all processors
     !
-
 #if defined(__MPI)
     INTEGER :: m1, m2, mc
     !
 #endif
-    INTEGER :: i, j, k, ipol, ng, igl, iswap, indsw, ni, nj, nk
-    
-    
-!    ALLOCATE( fc%gt(3,fc%ngmt), fc%ggt(fc%ngmt) )
-!    ALLOCATE( fc%ig_l2gt( fc%ngmt_l ) )
-    ALLOCATE( mill_g( 3, fc%ngmt_g ), mill_unsorted( 3, fc%ngmt_g ) )
-    ALLOCATE( igsrt( fc%ngmt_g ) )
-    ALLOCATE( g2sort_g( fc%ngmt_g ) )
+
+    ALLOCATE( mill_g( 3, ngm_g ) )
     ALLOCATE( fc%ig1t(fc%ngmt), fc%ig2t(fc%ngmt), fc%ig3t(fc%ngmt) )
-   
-    g2sort_g(:) = 1.0d20
+
+    !
+    ! set mill_g: global miller indices of Dense-FFT
+    !
+    mill_g = 0
+    !
+    DO ng = 1, ngm
+       mill_g(:, ig_l2g(ng)) = mill(:, ng)
+    ENDDO
+    !
+    CALL mp_sum(mill_g, fc%dfftt%comm)
+
     !
     ! save present value of ngm in ngmx variable
     !
@@ -229,55 +231,30 @@ CONTAINS
     !
     fc%ngmt = 0
     !
-    ! max miller indices (same convention as in module stick_set)
+    ! loop of G vectors in Dense-FFT
     !
-    ni = (fc%dfftt%nr1-1)/2
-    nj = (fc%dfftt%nr2-1)/2
-    nk = (fc%dfftt%nr3-1)/2
-    !
-    iloop: DO i = -ni, ni
-       !
-       ! gamma-only: exclude space with x < 0
-       !
-       IF ( gamma_only .AND. i < 0) CYCLE iloop
-       jloop: DO j = -nj, nj
-          !
-          ! gamma-only: exclude plane with x = 0, y < 0
-          !
-          IF ( gamma_only .AND. i == 0 .AND. j < 0) CYCLE jloop
-          kloop: DO k = -nk, nk
-             !
-             ! gamma-only: exclude line with x = 0, y = 0, z < 0
-             !
-             IF ( gamma_only .AND. i == 0 .AND. j == 0 .AND. k < 0) CYCLE kloop
-             t(:) = i * bg (:,1) + j * bg (:,2) + k * bg (:,3)
-             tt = SUM(t(:)**2)
-             IF (tt <= fc%gcutmt) THEN
-                fc%ngmt = fc%ngmt + 1
-                IF (fc%ngmt > fc%ngmt_g) CALL errore ('ggent', 'too many g-vectors', fc%ngmt)
-                mill_unsorted( :, fc%ngmt ) = (/ i,j,k /)
-                IF ( tt > eps8 ) THEN
-                   g2sort_g(fc%ngmt) = tt
-                ELSE
-                   g2sort_g(fc%ngmt) = 0.d0
-                ENDIF
-             ENDIF
-          ENDDO kloop
-       ENDDO jloop
-    ENDDO iloop
-    
+    DO ng = 1, ngm_g
+
+       i = mill_g(1, ng)
+       j = mill_g(2, ng)
+       k = mill_g(3, ng)
+
+       t(:) = i * bg (:,1) + j * bg (:,2) + k * bg (:,3)
+       tt = SUM(t(:)**2)
+
+       IF (tt <= fc%gcutmt) THEN
+          fc%ngmt = fc%ngmt + 1
+          IF (fc%ngmt > fc%ngmt_g) CALL errore ('ggent', 'too many g-vectors', fc%ngmt)
+       ELSE
+          EXIT
+       ENDIF
+    ENDDO
+
     IF (fc%ngmt  /= fc%ngmt_g ) &
          CALL errore ('ggent', 'g-vectors missing !', ABS(fc%ngmt - fc%ngmt_g))
 
-    igsrt(1) = 0
-    !CALL hpsort_eps( fc%ngmt_g, g2sort_g, igsrt, eps8 )
-    CALL hpsort_eps( fc%ngmt_g, g2sort_g, igsrt, eps12 ) ! consistent with Dense-FFT
-    mill_g(1,:) = mill_unsorted(1,igsrt(:))
-    mill_g(2,:) = mill_unsorted(2,igsrt(:))
-    mill_g(3,:) = mill_unsorted(3,igsrt(:))
-    DEALLOCATE( g2sort_g, igsrt, mill_unsorted )
     fc%ngmt = 0
-    
+
     ngloop: DO ng = 1, fc%ngmt_g
 
        i = mill_g(1, ng)
@@ -324,16 +301,13 @@ CONTAINS
        fc%ig1t (ng) = n1 - 1
        IF (n1<1) n1 = n1 + fc%dfftt%nr1
        
-       
        n2 = NINT (SUM(fc%gt (:, ng) * at (:, 2))) + 1
        fc%ig2t (ng) = n2 - 1
        IF (n2<1) n2 = n2 + fc%dfftt%nr2
        
-       
        n3 = NINT (SUM(fc%gt (:, ng) * at (:, 3))) + 1
        fc%ig3t (ng) = n3 - 1
        IF (n3<1) n3 = n3 + fc%dfftt%nr3
-       
        
        IF (n1>fc%dfftt%nr1 .OR. n2>fc%dfftt%nr2 .OR. n3>fc%dfftt%nr3) &
             CALL errore('ggent','Mesh too small?',ng)
@@ -344,7 +318,6 @@ CONTAINS
 #else
        fc%nlt (ng) = n1 + (n2 - 1) * fc%dfftt%nr1x + (n3 - 1) * &
             & fc%dfftt%nr1x * fc%dfftt%nr2x 
-       
 #endif
     ENDDO
     !
@@ -393,7 +366,7 @@ CONTAINS
     !
     TYPE(fft_cus), INTENT(INOUT) :: fc
     !
-    INTEGER :: n1, n2, n3, n1s, n2s, n3s, ng
+    INTEGER :: n1, n2, n3, ng
     !
     DO ng = 1, fc%ngmt
        n1 = -fc%ig1t (ng) + 1
