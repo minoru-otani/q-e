@@ -1407,7 +1407,7 @@ CONTAINS
             !
             DO iz = izsta, izend
               z = zoffs + zstep * DBLE(iz - 1)
-              rhol(iz) = CMPLX(c2 - d2 * ABS(z - zedge), 0.0_DP, kind=DP)
+              rhol(iz) = CMPLX(c2 + d2 * (z - zedge), 0.0_DP, kind=DP)
             END DO
           END IF
           !
@@ -1493,7 +1493,7 @@ CONTAINS
             !
             DO iz = izsta, izend
               z = zoffs + zstep * DBLE(iz - 1)
-              rhol(iz) = CMPLX(c2 - d2 * ABS(z - zedge), 0.0_DP, kind=DP)
+              rhol(iz) = CMPLX(c2 + d2 * (z - zedge), 0.0_DP, kind=DP)
             END DO
           END IF
           !

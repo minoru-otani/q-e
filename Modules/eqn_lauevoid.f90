@@ -58,6 +58,7 @@ SUBROUTINE eqn_lauevoid(rismt, expand, ierr)
   REAL(DP)              :: zoffs
   REAL(DP)              :: zedge
   REAL(DP)              :: voppo
+  REAL(DP)              :: vsign
   REAL(DP)              :: cz
   REAL(DP)              :: dz
   REAL(DP), ALLOCATABLE :: c2(:)
@@ -99,25 +100,43 @@ SUBROUTINE eqn_lauevoid(rismt, expand, ierr)
   !
   ! ... set integral regions as index of long Z-stick (i.e. expanded cell)
   IF (rismt%lfft%xright) THEN
-    izsta  = rismt%lfft%izright_start
-    izend  = rismt%lfft%nrz
+    IF (expand) THEN
+      izsta = rismt%lfft%izright_start
+      izend = rismt%lfft%nrz
+    ELSE
+      izsta = rismt%lfft%izright_start
+      izend = rismt%lfft%izcell_end
+    END IF
+    !
     izsolv = izsta
     izvoid = izsta - 1
+    !
     IF (rismt%lfft%gxystart > 1) THEN
       voppo = DBLE(rismt%vleft(1)) / alat
+      vsign = -1.0_DP
     ELSE
       voppo = 0.0_DP
+      vsign = 0.0_DP
     END IF
     !
   ELSE !IF (rismt%lfft%xleft) THEN
-    izsta  = 1
-    izend  = rismt%lfft%izleft_end
+    IF (expand) THEN
+      izsta = 1
+      izend = rismt%lfft%izleft_end
+    ELSE
+      izsta = rismt%lfft%izcell_start
+      izend = rismt%lfft%izleft_end
+    END IF
+    !
     izsolv = izend
     izvoid = izend + 1
+    !
     IF (rismt%lfft%gxystart > 1) THEN
       voppo = DBLE(rismt%vright(1)) / alat
+      vsign = +1.0_DP
     ELSE
       voppo = 0.0_DP
+      vsign = 0.0_DP
     END IF
   END IF
   !
@@ -183,11 +202,11 @@ SUBROUTINE eqn_lauevoid(rismt, expand, ierr)
           izint  = iz - izsta + 1
           izdelt = ABS(iz - izvoid) + 1
           z  = zoffs + zstep * DBLE(iz - 1)
-          cz = c2(iiq2) + d2(iiq2) * ABS(z - zedge)
-          dz = d2(iiq2)
+          cz = c2(iiq2) + d2(iiq2) * (z - zedge)
+          dz = d2(iiq2) * vsign
           h1(izint) = h1(izint) &
           & + cz * rismt%xgs0(izdelt, iiq2, iq1) &
-          & - dz * rismt%xgs1(izdelt, iiq2, iq1)
+          & + dz * rismt%xgs1(izdelt, iiq2, iq1)
         END DO
 !$omp end parallel do
       END IF
