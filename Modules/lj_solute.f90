@@ -479,6 +479,7 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
     !
   ELSE !IF (iwall == IWALL_NULL) THEN
     IF (rismt%cfft%dfftt%nnr > 0) THEN
+      iiq = iq - rismt%mp_site%isite_start + 1
       rismt%uwr(1:rismt%cfft%dfftt%nnr, iiq) = 0.0_DP
     END IF
     RETURN
