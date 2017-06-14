@@ -75,8 +75,9 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   REAL(DP),    ALLOCATABLE :: wei(:)
   COMPLEX(DP), ALLOCATABLE :: ggz(:,:)
   !
-  REAL(DP),    PARAMETER   :: RHO_THR   = 1.0E-8_DP
-  REAL(DP),    PARAMETER   :: RHO_SMEAR = 2.0_DP  ! in bohr
+  REAL(DP),    PARAMETER   :: RHO_THR   = 1.0E-16_DP
+  REAL(DP),    PARAMETER   :: RHO_SMEAR = 1.0_DP  ! in bohr
+  REAL(DP),    PARAMETER   :: WEI_THR   = 1.0E-32_DP
   COMPLEX(DP), PARAMETER   :: C_ZERO = CMPLX(0.0_DP, 0.0_DP, kind=DP)
   !
   REAL(DP),    EXTERNAL    :: qe_erfc
@@ -299,12 +300,18 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
 !$omp parallel do default(shared) private(irz)
   DO irz = 1, rismt%lfft%izleft_gedge
     wei(irz) = 0.5_DP * qe_erfc(DBLE(izleft_tail - irz ) * dz / RHO_SMEAR)
+    IF (wei(irz) < WEI_THR) THEN
+      wei(irz) = 0.0_DP
+    END IF
   END DO
 !$omp end parallel do
   !
 !$omp parallel do default(shared) private(irz)
   DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
     wei(irz) = 0.5_DP * qe_erfc(DBLE(irz - izright_tail) * dz / RHO_SMEAR)
+    IF (wei(irz) < WEI_THR) THEN
+      wei(irz) = 0.0_DP
+    END IF
   END DO
 !$omp end parallel do
   !

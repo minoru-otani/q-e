@@ -79,8 +79,9 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
   REAL(DP), ALLOCATABLE :: qsol(:)
   !
   INTEGER,    PARAMETER :: HZ_EDGE  = 3  ! to avoid noise at edges of unit-cell
-  REAL(DP),   PARAMETER :: HZ_THR   = 1.0E-2_DP
+  REAL(DP),   PARAMETER :: HZ_THR   = 1.0E-3_DP
   REAL(DP),   PARAMETER :: HZ_SMEAR = 2.0_DP  ! in bohr
+  REAL(DP),   PARAMETER :: HW_THR   = 1.0E-8_DP
   !
   REAL(DP),   EXTERNAL  :: qe_erfc
   !
@@ -199,12 +200,18 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
 !$omp parallel do default(shared) private(irz)
     DO irz = 1, rismt%lfft%izleft_gedge
       hwei(irz, iiq) = 0.5_DP * qe_erfc(DBLE(izleft_tail(iiq) - irz ) * dz / HZ_SMEAR)
+      IF (hwei(irz, iiq) < HW_THR) THEN
+        hwei(irz, iiq) = 0.0_DP
+      END IF
     END DO
 !$omp end parallel do
     !
 !$omp parallel do default(shared) private(irz)
     DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
       hwei(irz, iiq) = 0.5_DP * qe_erfc(DBLE(irz - izright_tail(iiq)) * dz / HZ_SMEAR)
+      IF (hwei(irz, iiq) < HW_THR) THEN
+        hwei(irz, iiq) = 0.0_DP
+      END IF
     END DO
 !$omp end parallel do
     !
