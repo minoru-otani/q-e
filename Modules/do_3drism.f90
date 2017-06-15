@@ -29,6 +29,8 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
   USE kinds,          ONLY : DP
   USE mdiis,          ONLY : mdiis_type, allocate_mdiis, deallocate_mdiis, update_by_mdiis, reset_mdiis
   USE rism,           ONLY : rism_type, ITYPE_3DRISM
+  USE solvmol,        ONLY : get_nuniq_in_solVs, nsolV, solVs, iuniq_to_nsite, &
+                           & iuniq_to_isite, isite_to_isolV
   !
   IMPLICIT NONE
   !
@@ -40,6 +42,7 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
   REAL(DP),         INTENT(IN)    :: eta
   INTEGER,          INTENT(OUT)   :: ierr
   !
+  INTEGER                  :: nq
   INTEGER                  :: iter
   INTEGER                  :: ngrid
   LOGICAL                  :: lconv
@@ -73,6 +76,12 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
   END IF
   !
   IF (rismt%ng < rismt%cfft%ngmt) THEN
+    ierr = IERR_RISM_INCORRECT_DATA_TYPE
+    RETURN
+  END IF
+  !
+  nq = get_nuniq_in_solVs()
+  IF (rismt%mp_site%nsite < nq) THEN
     ierr = IERR_RISM_INCORRECT_DATA_TYPE
     RETURN
   END IF
@@ -134,9 +143,7 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
     END IF
     !
     ! ... Residual: G(r) -> dCs(r)
-    IF (rismt%nr * rismt%nsite > 0) THEN
-      dcsr = rismt%gr - rismt%hr - 1.0_DP
-    END IF
+    CALL make_dcsr()
     !
     ! ... clean date out of physical range
     CALL clean_out_of_range()
@@ -398,5 +405,39 @@ CONTAINS
 !$omp end parallel do
     !
   END SUBROUTINE clean_out_of_range
+  !
+  SUBROUTINE make_dcsr()
+    IMPLICIT NONE
+    INTEGER  :: iq
+    INTEGER  :: iiq
+    INTEGER  :: iv
+    INTEGER  :: nv
+    INTEGER  :: isolV
+    REAL(DP) :: rhov
+    REAL(DP) :: rhovt
+    !
+    rhovt = 0.0_DP
+    DO isolV = 1, nsolV
+      rhov  = solVs(isolV)%density
+      rhovt = rhovt + rhov
+    END DO
+    !
+    IF (rhovt <= 0.0_DP) THEN ! will not be occurred
+      CALL errore('do_3drism', 'rhovt is not positive', 1)
+    END IF
+    !
+    DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
+      iiq   = iq - rismt%mp_site%isite_start + 1
+      iv    = iuniq_to_isite(1, iq)
+      nv    = iuniq_to_nsite(iq)
+      isolV = isite_to_isolV(iv)
+      rhov  = solVs(isolV)%density
+      !
+      IF (rismt%nr > 0) THEN
+        dcsr(:, iiq) = (rhov / rhovt) * (rismt%gr(:, iiq) - rismt%hr(:, iiq) - 1.0_DP)
+      END IF
+    END DO
+    !
+  END SUBROUTINE make_dcsr
   !
 END SUBROUTINE do_3drism

@@ -34,6 +34,8 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
   USE mdiis,          ONLY : mdiis_type, allocate_mdiis, deallocate_mdiis, update_by_mdiis, reset_mdiis
   USE mp,             ONLY : mp_sum
   USE rism,           ONLY : rism_type, ITYPE_LAUERISM
+  USE solvmol,        ONLY : get_nuniq_in_solVs, nsolV, solVs, iuniq_to_nsite, &
+                           & iuniq_to_isite, isite_to_isolV
   !
   IMPLICIT NONE
   !
@@ -48,6 +50,7 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
   CHARACTER(LEN=*), INTENT(IN)    :: title
   INTEGER,          INTENT(OUT)   :: ierr
   !
+  INTEGER                  :: nq
   INTEGER                  :: iter
   INTEGER                  :: ngrid
   LOGICAL                  :: lconv
@@ -89,6 +92,12 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
   END IF
   !
   IF (rismt%ngxy < rismt%lfft%ngxy) THEN
+    ierr = IERR_RISM_INCORRECT_DATA_TYPE
+    RETURN
+  END IF
+  !
+  nq = get_nuniq_in_solVs()
+  IF (rismt%mp_site%nsite < nq) THEN
     ierr = IERR_RISM_INCORRECT_DATA_TYPE
     RETURN
   END IF
@@ -170,11 +179,7 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
     CALL barrier_gr()
     !
     ! ... Residual: G(r) -> dCs(r)
-    IF (rismt%nr * rismt%nsite > 0) THEN
-      dcsr = rismt%gr - rismt%hr - 1.0_DP
-    END IF
-    !
-    ! ... modify dCs(r)
+    CALL make_dcsr()
     CALL modify_edge_dcsr()
     !
     ! ... clean date out of physical range
@@ -535,6 +540,46 @@ CONTAINS
 !$omp end parallel do
     !
   END SUBROUTINE barrier_gr
+  !
+  SUBROUTINE make_dcsr()
+    IMPLICIT NONE
+    INTEGER  :: iq
+    INTEGER  :: iiq
+    INTEGER  :: iv
+    INTEGER  :: nv
+    INTEGER  :: isolV
+    REAL(DP) :: rhov
+    REAL(DP) :: rhov1
+    REAL(DP) :: rhov2
+    REAL(DP) :: rhovt
+    !
+    rhovt = 0.0_DP
+    DO isolV = 1, nsolV
+      rhov1 = solVs(isolV)%density
+      rhov2 = solVs(isolV)%subdensity
+      rhov  = 0.5_DP * (rhov1 + rhov2)
+      rhovt = rhovt + rhov
+    END DO
+    !
+    IF (rhovt <= 0.0_DP) THEN ! will not be occurred
+      CALL errore('do_lauerism', 'rhovt is not positive', 1)
+    END IF
+    !
+    DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
+      iiq   = iq - rismt%mp_site%isite_start + 1
+      iv    = iuniq_to_isite(1, iq)
+      nv    = iuniq_to_nsite(iq)
+      isolV = isite_to_isolV(iv)
+      rhov1 = solVs(isolV)%density
+      rhov2 = solVs(isolV)%subdensity
+      rhov  = 0.5_DP * (rhov1 + rhov2)
+      !
+      IF (rismt%nr > 0) THEN
+        dcsr(:, iiq) = (rhov / rhovt) * (rismt%gr(:, iiq) - rismt%hr(:, iiq) - 1.0_DP)
+      END IF
+    END DO
+    !
+  END SUBROUTINE make_dcsr
   !
   SUBROUTINE modify_edge_dcsr()
     IMPLICIT NONE

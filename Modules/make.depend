@@ -114,6 +114,7 @@ do_3drism.o : io_global.o
 do_3drism.o : kind.o
 do_3drism.o : mdiis.o
 do_3drism.o : rism.o
+do_3drism.o : solvmol.o
 do_lauerism.o : check_stop.o
 do_lauerism.o : control_flags.o
 do_lauerism.o : err_rism.o
@@ -123,6 +124,7 @@ do_lauerism.o : lauefft.o
 do_lauerism.o : mdiis.o
 do_lauerism.o : mp.o
 do_lauerism.o : rism.o
+do_lauerism.o : solvmol.o
 dylmr2.o : kind.o
 electrons_base.o : constants.o
 electrons_base.o : io_global.o
