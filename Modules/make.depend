@@ -202,6 +202,7 @@ fft_custom.o : io_global.o
 fft_custom.o : kind.o
 fft_custom.o : mp.o
 fft_custom.o : parallel_include.o
+fft_custom.o : recvec.o
 funct.o : io_global.o
 funct.o : kind.o
 funct.o : xc_rVV10.o
