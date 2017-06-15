@@ -67,7 +67,7 @@ CONTAINS
     END IF
     !
     ! ... return if out of intra group
-    IF (.NOT. rismt%in_intra) THEN
+    IF (.NOT. rismt%is_intra) THEN
       RETURN
     END IF
     !
@@ -141,7 +141,7 @@ CONTAINS
     END IF
     !
     ! ... return if out of intra group
-    IF (.NOT. rismt%in_intra) THEN
+    IF (.NOT. rismt%is_intra) THEN
       RETURN
     END IF
     !

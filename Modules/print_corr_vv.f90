@@ -53,7 +53,7 @@ SUBROUTINE print_corr_vv(rismt, label, ierr)
     RETURN
   END IF
   !
-  IF (.NOT. rismt%in_intra) THEN
+  IF (.NOT. rismt%is_intra) THEN
     ierr = IERR_RISM_NULL
     RETURN
   END IF

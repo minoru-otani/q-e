@@ -29,7 +29,7 @@ SUBROUTINE init_1drism(rismt, alpha, ierr)
   END IF
   !
   ! ... create potentials
-  IF (rismt%in_intra) THEN
+  IF (rismt%is_intra) THEN
     CALL potential_vv(rismt, ierr)
   ELSE
     ierr = IERR_RISM_NULL
@@ -41,7 +41,7 @@ SUBROUTINE init_1drism(rismt, alpha, ierr)
   END IF
   !
   ! ... create intra-molecular correlation
-  IF (rismt%in_intra) THEN
+  IF (rismt%is_intra) THEN
     CALL molecorr_vv(rismt, alpha, ierr)
   ELSE
     ierr = IERR_RISM_NULL

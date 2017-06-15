@@ -120,7 +120,7 @@ MODULE rism
     ! ... for MPI
     INTEGER              :: super_comm   ! parent group communicator
     INTEGER              :: super_root   ! root rank of parent group
-    LOGICAL              :: in_intra     ! this process is in intra group or not
+    LOGICAL              :: is_intra     ! this process is in intra group or not
     INTEGER              :: intra_comm   ! intra group communicator
     TYPE(mp_rism_site)   :: mp_site      ! MPI-data for site parallel
     TYPE(mp_rism_task)   :: mp_task      ! MPI-data for task parallel
@@ -157,7 +157,7 @@ MODULE rism
 CONTAINS
   !
   !--------------------------------------------------------------------------
-  SUBROUTINE allocate_1drism(rismt, nv, ngrid, rmax, super_comm, super_root, in_intra, intra_comm)
+  SUBROUTINE allocate_1drism(rismt, nv, ngrid, rmax, super_comm, super_root, is_intra, intra_comm)
     !--------------------------------------------------------------------------
     !
     ! ... initialize rism_type for 1D-RISM
@@ -168,7 +168,7 @@ CONTAINS
     ! ...   rmax:       maximum radius of R-space (in bohr)
     ! ...   super_comm: MPI's parent communicator
     ! ...   super_root: root rank of MPI's parent
-    ! ...   in_intra:   this process is in MPI's intra group
+    ! ...   is_intra:   this process is in MPI's intra group
     ! ...   intra_comm: MPI's intra communicator
     !
     IMPLICIT NONE
@@ -179,7 +179,7 @@ CONTAINS
     REAL(DP),        INTENT(IN)    :: rmax
     INTEGER,         INTENT(IN)    :: super_comm
     INTEGER,         INTENT(IN)    :: super_root
-    LOGICAL,         INTENT(IN)    :: in_intra
+    LOGICAL,         INTENT(IN)    :: is_intra
     INTEGER,         INTENT(IN)    :: intra_comm
     !
     INTEGER :: nvv
@@ -205,7 +205,7 @@ CONTAINS
     ! ... initialize MPI
     rismt%super_comm = super_comm
     rismt%super_root = super_root
-    rismt%in_intra   = in_intra
+    rismt%is_intra   = is_intra
     rismt%intra_comm = intra_comm
     CALL mp_start_rism_task_and_site(rismt%mp_site, rismt%mp_task, intra_comm)
     CALL mp_set_index_rism_site(rismt%mp_site, nsite)
@@ -256,7 +256,7 @@ CONTAINS
     ! ... initialize MPI
     rismt%super_comm = intra_comm
     rismt%super_root = 0
-    rismt%in_intra   = .TRUE.
+    rismt%is_intra   = .TRUE.
     rismt%intra_comm = intra_comm
     CALL mp_start_rism_task_on_site(rismt%mp_site, rismt%mp_task, itask_comm, intra_comm)
     CALL mp_set_index_rism_site(rismt%mp_site, nsite)
@@ -344,7 +344,7 @@ CONTAINS
     ! ... initialize MPI
     rismt%super_comm = intra_comm
     rismt%super_root = 0
-    rismt%in_intra   = .TRUE.
+    rismt%is_intra   = .TRUE.
     rismt%intra_comm = intra_comm
     CALL mp_start_rism_task_on_site(rismt%mp_site, rismt%mp_task, itask_comm, intra_comm)
     CALL mp_set_index_rism_site(rismt%mp_site, nsite)

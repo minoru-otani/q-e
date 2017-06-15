@@ -182,7 +182,7 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
     IF (rismlt%mp_site%isite_start <= iq1 .AND. iq1 <= rismlt%mp_site%isite_end) THEN
       IF (rismlt%mp_site%me_sitg == rismlt%mp_site%root_sitg) THEN
         rank_map(2, iq1) = rank_map(1, iq1) + 1
-        IF (rism1t%in_intra) THEN
+        IF (rism1t%is_intra) THEN
           root_spline(iq1) = rism1t%mp_task%me_task + 1
         END IF
       END IF
@@ -197,7 +197,7 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
       root_spline(iq1) = rism1t%mp_task%root_task
     END IF
     !
-    IF (rism1t%in_intra .AND. rism1t%mp_task%me_task == root_spline(iq1)) THEN
+    IF (rism1t%is_intra .AND. rism1t%mp_task%me_task == root_spline(iq1)) THEN
       rank_map(3, iq1) = rank_map(1, iq1) + 1
     END IF
     !
@@ -283,7 +283,7 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
         ivv = iw1 * (iw1 - 1) / 2 + iw2
         !
         ! ... create h21(g) or x21(g) of 1D-RISM
-        IF (rism1t%in_intra) THEN
+        IF (rism1t%is_intra) THEN
           IF (iv1 == iv2) THEN
             xg_1d(:) = rho2 * rism1t%hg(:, ivv)
           ELSE

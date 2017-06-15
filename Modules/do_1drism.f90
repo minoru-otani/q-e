@@ -135,12 +135,12 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     END IF
     !
     ! ... FFT: Cs(r) -> Cs(g)
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       CALL fft_csr_to_csg()
     END IF
     !
     ! ... 1D-RISM eq.: Cs(g) -> H(g)
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       !CALL eqn_1drism(rismt, gmax, lhand, ierr)
       CALL eqn_1drism(rismt, -1.0_DP, lhand, ierr)
     ELSE
@@ -152,12 +152,12 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     END IF
     !
     ! ... FFT: H(g) -> H(r)
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       CALL fft_hg_to_hr()
     END IF
     !
     ! ... Closure: H(r) -> G(r)
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       CALL closure(rismt, ierr)
     ELSE
       ierr = IERR_RISM_NULL
@@ -168,12 +168,12 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     END IF
     !
     ! ... Residual: G(r) -> dCs(r) * r
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       CALL make_residual()
     END IF
     !
     ! ... calculate RMS
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       CALL rms_residual(rismt%mp_task%nvec * rismt%nsite, &
       & rismt%nr * rismt%nsite, dcsrr, rmscurr, rismt%intra_comm)
       rmscurr = rmscurr / rismt%rfft%rgrid(rismt%rfft%ngrid) / SQRT(3.0_DP)
@@ -208,7 +208,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     END IF
     !
     ! ... check RMS to reset MDIIS
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       IF (rmscurr > (RMS_LARGE * rmssave)) THEN
         CALL reset_mdiis(mdiist)
         rmssave = rmscurr
@@ -218,7 +218,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     END IF
     !
     ! ... MDIIS: dCs(r) * r -> Cs(r)
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       CALL perform_mdiis()
     END IF
     !
@@ -238,7 +238,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     FLUSH(stdout)
     !
     ! ... remove large `g' components from Cs
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       IF (gmax > 0.0_DP) THEN
         ALLOCATE(csr_(rismt%nr, rismt%nsite))
         csr_ = rismt%csr
@@ -247,7 +247,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     END IF
     !
     ! ... correct correlations at G = 0 or R = 0
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       CALL correctat0_vv(rismt, ierr)
     ELSE
       ierr = IERR_RISM_NULL
@@ -258,7 +258,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     END IF
     !
     ! ... calculate chemical potential
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       CALL chempot(rismt, ierr)
     ELSE
       ierr = IERR_RISM_NULL
@@ -269,7 +269,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     END IF
     !
     ! ... print chemical potential
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       CALL print_chempot_vv(rismt, lhand, ierr)
     ELSE
       ierr = IERR_RISM_NULL
@@ -280,7 +280,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     END IF
     !
     ! ... restore Cs
-    IF (rismt%in_intra) THEN
+    IF (rismt%is_intra) THEN
       IF (gmax > 0.0_DP) THEN
 #if !defined (__RISM_SMOOTH_CSVV)
         IF (rismt%mp_task%ivec_start == 1) THEN

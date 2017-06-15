@@ -119,7 +119,7 @@ SUBROUTINE suscept_vv(rism1t, rism3t, ierr)
     IF (rism3t%mp_site%isite_start <= iq1 .AND. iq1 <= rism3t%mp_site%isite_end) THEN
       IF (rism3t%mp_site%me_sitg == rism3t%mp_site%root_sitg) THEN
         rank_map(2, iq1) = rank_map(1, iq1) + 1
-        IF (rism1t%in_intra) THEN
+        IF (rism1t%is_intra) THEN
           root_spline(iq1) = rism1t%mp_task%me_task + 1
         END IF
       END IF
@@ -134,7 +134,7 @@ SUBROUTINE suscept_vv(rism1t, rism3t, ierr)
       root_spline(iq1) = rism1t%mp_task%root_task
     END IF
     !
-    IF (rism1t%in_intra .AND. rism1t%mp_task%me_task == root_spline(iq1)) THEN
+    IF (rism1t%is_intra .AND. rism1t%mp_task%me_task == root_spline(iq1)) THEN
       rank_map(3, iq1) = rank_map(1, iq1) + 1
     END IF
     !
@@ -179,7 +179,7 @@ SUBROUTINE suscept_vv(rism1t, rism3t, ierr)
         ivv = iw1 * (iw1 - 1) / 2 + iw2
         !
         ! ... create x21(g) of 1D-RISM
-        IF (rism1t%in_intra) THEN
+        IF (rism1t%is_intra) THEN
           xg_1d(:) = rism1t%wg(:, ivv) + rho2 * rism1t%hg(:, ivv)
           CALL mp_gather(xg_1d, xg_spl, rism1t%mp_task%ilen_vecs, rism1t%mp_task%idis_vecs, &
                        & root_spline(iq2), rism1t%mp_task%itask_comm)

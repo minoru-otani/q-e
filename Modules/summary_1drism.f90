@@ -29,7 +29,7 @@ SUBROUTINE summary_1drism()
   INTEGER          :: ngrid
   CHARACTER(LEN=3) :: sclosure
   !
-  IF (.NOT. rism1t%in_intra) THEN
+  IF (.NOT. rism1t%is_intra) THEN
     RETURN
   END IF
   !
