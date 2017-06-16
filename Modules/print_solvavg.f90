@@ -1447,6 +1447,8 @@ CONTAINS
       END DO
     END IF
     !
+    CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
+    !
     DO iq = 1, nq
       iv         = iuniq_to_isite(1, iq)
       nv         = iuniq_to_nsite(iq)
@@ -1510,6 +1512,8 @@ CONTAINS
                 & owner_group_id, iq, rismt%mp_site%inter_sitg_comm)
       CALL mp_get(rhol, rhol, my_group_id, io_group_id, &
                 & owner_group_id, iq + nq, rismt%mp_site%inter_sitg_comm)
+      !
+      CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
       !
       DO iq2 = 1, nq
         iv2 = iuniq_to_isite(1, iq2)
