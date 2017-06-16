@@ -1513,8 +1513,6 @@ CONTAINS
       CALL mp_get(rhol, rhol, my_group_id, io_group_id, &
                 & owner_group_id, iq + nq, rismt%mp_site%inter_sitg_comm)
       !
-      CALL mp_barrier(rismt%mp_site%inter_sitg_comm)
-      !
       DO iq2 = 1, nq
         iv2 = iuniq_to_isite(1, iq2)
         iw  = MAX(iv, iv2)
@@ -1522,11 +1520,11 @@ CONTAINS
         ivv = iw * (iw - 1) / 2 + iw2
         !
         x12 = 0.0_DP
-        IF (rism1t%mp_task%ivec_start == 1) THEN
+        IF (rism1t%is_intra .AND. rism1t%mp_task%ivec_start == 1) THEN
           x12 = rism1t%wg(1, ivv) + rhov_right * rism1t%hg(1, ivv)
           !x12 = rism1t%wg(1, ivv) + rhov_left  * rism1t%hg(1, ivv)
         END IF
-        CALL mp_sum(x12, rism1t%intra_comm)
+        CALL mp_sum(x12, rismt%intra_comm)
         !
         rhor2 = rhor * (DBLE(nv) * x12)
         rhol2 = rhol * (DBLE(nv) * x12)
