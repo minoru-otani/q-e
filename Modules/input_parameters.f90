@@ -1460,7 +1460,7 @@ MODULE input_parameters
           ! convergence threshold for 1D-RISM calculation
           ! convergence is achieved when RMS of residual vector < rism1d_conv_thr
 
-        REAL(DP) :: rism3d_conv_thr = 1.0E-5_DP
+        REAL(DP) :: rism3d_conv_thr = 1.0E-4_DP
           ! convergence threshold for 3D-RISM calculation
           ! convergence is achieved when RMS of residual vector < rism3d_conv_thr
 
