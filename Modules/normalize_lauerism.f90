@@ -314,21 +314,45 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
     !
     IF (rismt%lfft%gxystart > 1) THEN
       !
-      ntmp = 0.0_DP
+      IF (expand) THEN
+        ! ... expand-cell
+        ntmp = 0.0_DP
 !$omp parallel do default(shared) private(irz) reduction(+:ntmp)
-      DO irz = 1, rismt%lfft%izleft_gedge
-        ntmp = ntmp + (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
-      END DO
+        DO irz = 1, rismt%lfft%izleft_gedge
+          ntmp = ntmp + (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
+        END DO
 !$omp end parallel do
-      nsol(iiq) = nsol(iiq) + rhov2 * dvol * ntmp
-      !
-      ntmp = 0.0_DP
+        nsol(iiq) = nsol(iiq) + rhov2 * dvol * ntmp
+        !
+        ntmp = 0.0_DP
 !$omp parallel do default(shared) private(irz) reduction(+:ntmp)
-      DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
-        ntmp = ntmp + (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
-      END DO
+        DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
+          ntmp = ntmp + (DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
+        END DO
 !$omp end parallel do
-      nsol(iiq) = nsol(iiq) + rhov1 * dvol * ntmp
+        nsol(iiq) = nsol(iiq) + rhov1 * dvol * ntmp
+        !
+      ELSE
+        ! ... unit-cell
+        ntmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:ntmp)
+        DO irz = 1, rismt%lfft%izleft_gedge
+          ntmp = ntmp + &
+               & (hwei(irz, iiq) * DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
+        END DO
+!$omp end parallel do
+        nsol(iiq) = nsol(iiq) + rhov2 * dvol * ntmp
+        !
+        ntmp = 0.0_DP
+!$omp parallel do default(shared) private(irz) reduction(+:ntmp)
+        DO irz = rismt%lfft%izright_gedge, rismt%lfft%nrz
+          ntmp = ntmp + &
+               & (hwei(irz, iiq) * DBLE(rismt%hsgz(irz, iiq) + rismt%hlgz(irz, iiq)) + 1.0_DP)
+        END DO
+!$omp end parallel do
+        nsol(iiq) = nsol(iiq) + rhov1 * dvol * ntmp
+        !
+      END IF
       !
     END IF
     !
