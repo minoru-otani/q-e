@@ -379,6 +379,7 @@ CONTAINS
     !
     REAL(DP),    PARAMETER   :: TR2_EXPON  = 0.50_DP
     REAL(DP),    PARAMETER   :: EPSV_EXPON = 0.50_DP
+    REAL(DP),    PARAMETER   :: EPSV_CEILING = 1.0E-2_DP
     !
     IF (.NOT. lrism) THEN
       esol = 0.0_DP
@@ -415,11 +416,11 @@ CONTAINS
           IF (dr2 >= (tr2 ** TR2_EXPON)) THEN
             epsv_new = 10.0_DP ** (LOG10(epsv) * LOG10(dr2) / LOG10(tr2 ** TR2_EXPON))
             epsv_new = MAX(epsv_new, epsv)
-            epsv_new = MIN(epsv_new, epsv ** EPSV_EXPON)
+            epsv_new = MIN(epsv_new, MAX(EPSV_CEILING, epsv ** EPSV_EXPON))
           END IF
         ELSE
           ! ... dr2 is negative or zero
-          epsv_new = epsv ** EPSV_EXPON
+          epsv_new = MAX(EPSV_CEILING, epsv ** EPSV_EXPON)
         END IF
       END IF
     END IF
