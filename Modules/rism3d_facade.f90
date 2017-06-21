@@ -14,10 +14,11 @@ MODULE rism3d_facade
   ! ... External codes, which utilize 3D-RISM, can access data and subroutines
   ! ... throught this module. Also, Laue-RISM is avairable.
   !
-  USE constants,     ONLY : eps12
+  USE constants,     ONLY : eps8, eps12
   USE control_flags, ONLY : gamma_only
   USE err_rism,      ONLY : stop_by_err_rism, IERR_RISM_NULL, &
-                          & IERR_RISM_NOT_CONVERGED, IERR_RISM_NONZERO_CHARGE
+                          & IERR_RISM_NOT_CONVERGED, IERR_RISM_NONZERO_CHARGE, &
+                          & IERR_RISM_NOT_ANY_IONS
   USE gvect,         ONLY : ngl
   USE io_global,     ONLY : stdout
   USE io_rism_xml,   ONLY : write_3drism, read_3drism
@@ -31,7 +32,7 @@ MODULE rism3d_facade
                           & deallocate_rism, ITYPE_3DRISM, ITYPE_LAUERISM
   USE solute,        ONLY : update_solU
   USE solvmol,       ONLY : get_nuniq_in_solVs, iuniq_to_isite, iuniq_to_nsite, &
-                          & isite_to_isolV, isite_to_iatom, solVs
+                          & isite_to_isolV, isite_to_iatom, solVs, nsolV
   !
   IMPLICIT NONE
   SAVE
@@ -186,21 +187,10 @@ CONTAINS
     !
     LOGICAL  :: laue_
     INTEGER  :: nq
-    INTEGER  :: iq
-    INTEGER  :: iiq
-    INTEGER  :: iv
-    INTEGER  :: nv
-    INTEGER  :: isolV
-    INTEGER  :: iatom
     REAL(DP) :: starting1_r
     REAL(DP) :: starting1_l
     REAL(DP) :: starting2_r
     REAL(DP) :: starting2_l
-    REAL(DP) :: rhotot1
-    REAL(DP) :: rhotot2
-    REAL(DP) :: rhov1
-    REAL(DP) :: rhov2
-    REAL(DP) :: qv
     !
     IF (.NOT. lrism3d) THEN
       RETURN
@@ -228,30 +218,7 @@ CONTAINS
     END IF
     !
     IF (rism3t%itype == ITYPE_LAUERISM) THEN
-      !
-      rhotot1 = 0.0_DP
-      rhotot2 = 0.0_DP
-      !
-      DO iq = rism3t%mp_site%isite_start, rism3t%mp_site%isite_end
-        iiq     = iq - rism3t%mp_site%isite_start + 1
-        iv      = iuniq_to_isite(1, iq)
-        nv      = iuniq_to_nsite(iq)
-        isolV   = isite_to_isolV(iv)
-        iatom   = isite_to_iatom(iv)
-        rhov1   = DBLE(nv) * solVs(isolV)%density
-        rhov2   = DBLE(nv) * solVs(isolV)%subdensity
-        qv      = solVs(isolV)%charge(iatom)
-        rhotot1 = rhotot1 + qv * rhov1
-        rhotot2 = rhotot2 + qv * rhov2
-      END DO
-      !
-      CALL mp_sum(rhotot1, rism3t%mp_site%inter_sitg_comm)
-      CALL mp_sum(rhotot2, rism3t%mp_site%inter_sitg_comm)
-      !
-      IF (ABS(rhotot1) > eps12 .OR. ABS(rhotot2) > eps12) THEN
-        CALL stop_by_err_rism('rism3d_initialize', IERR_RISM_NONZERO_CHARGE)
-      END IF
-      !
+      CALL check_solvent_is_neutral()
     END IF
     !
   END SUBROUTINE rism3d_initialize
@@ -447,9 +414,15 @@ CONTAINS
     ! ... calculate 3D-RISM
     IF (rism3t%itype == ITYPE_3DRISM) THEN
       CALL do_3drism(rism3t, niter, epsv_, mdiis_size, mdiis_step, '', ierr)
+      !
     ELSE !IF (rism3t%itype == ITYPE_LAUERISM) THEN
       CALL charge_esm(rhog, charge)
       qsol = -charge
+      !
+      IF (ABS(qsol) > eps8) THEN
+        CALL check_solvent_has_ions()
+      END IF
+      !
       CALL do_lauerism(rism3t, niter, epsv_, mdiis_size, mdiis_step, &
                      & qsol, both_hands, ireference, '', ierr)
     END IF
@@ -699,6 +672,87 @@ CONTAINS
     CALL print_clock('3DRISM_str')
     !
   END SUBROUTINE rism3d_print_clock
+  !
+  !----------------------------------------------------------------------------
+  SUBROUTINE check_solvent_is_neutral()
+    !----------------------------------------------------------------------------
+    !
+    IMPLICIT NONE
+    !
+    INTEGER  :: iq
+    INTEGER  :: iiq
+    INTEGER  :: iv
+    INTEGER  :: nv
+    INTEGER  :: isolV
+    INTEGER  :: iatom
+    REAL(DP) :: rhotot1
+    REAL(DP) :: rhotot2
+    REAL(DP) :: rhov1
+    REAL(DP) :: rhov2
+    REAL(DP) :: qv
+    !
+    rhotot1 = 0.0_DP
+    rhotot2 = 0.0_DP
+    !
+    DO iq = rism3t%mp_site%isite_start, rism3t%mp_site%isite_end
+      iiq     = iq - rism3t%mp_site%isite_start + 1
+      iv      = iuniq_to_isite(1, iq)
+      nv      = iuniq_to_nsite(iq)
+      isolV   = isite_to_isolV(iv)
+      iatom   = isite_to_iatom(iv)
+      rhov1   = DBLE(nv) * solVs(isolV)%density
+      rhov2   = DBLE(nv) * solVs(isolV)%subdensity
+      qv      = solVs(isolV)%charge(iatom)
+      rhotot1 = rhotot1 + qv * rhov1
+      rhotot2 = rhotot2 + qv * rhov2
+    END DO
+    !
+    CALL mp_sum(rhotot1, rism3t%mp_site%inter_sitg_comm)
+    CALL mp_sum(rhotot2, rism3t%mp_site%inter_sitg_comm)
+    !
+    IF (ABS(rhotot1) > eps12 .OR. ABS(rhotot2) > eps12) THEN
+      CALL stop_by_err_rism('rism3d_initialize', IERR_RISM_NONZERO_CHARGE)
+    END IF
+    !
+  END SUBROUTINE check_solvent_is_neutral()
+  !
+  !----------------------------------------------------------------------------
+  SUBROUTINE check_solvent_has_ions()
+    !----------------------------------------------------------------------------
+    !
+    IMPLICIT NONE
+    !
+    INTEGER               :: iq
+    INTEGER               :: iiq
+    INTEGER               :: iv
+    INTEGER               :: nv
+    INTEGER               :: isolV
+    INTEGER               :: iatom
+    REAL(DP)              :: qv
+    REAL(DP), ALLOCATABLE :: qmol(:)
+    !
+    ALLOCATE(qmol(nsolV))
+    qmol = 0.0_DP
+    !
+    DO iq = rism3t%mp_site%isite_start, rism3t%mp_site%isite_end
+      iiq     = iq - rism3t%mp_site%isite_start + 1
+      iv      = iuniq_to_isite(1, iq)
+      nv      = iuniq_to_nsite(iq)
+      isolV   = isite_to_isolV(iv)
+      iatom   = isite_to_iatom(iv)
+      qv      = solVs(isolV)%charge(iatom)
+      qmol(isolV) = qmol(isolV) + DBLE(nv) * qv
+    END DO
+    !
+    CALL mp_sum(qmol, rism3t%mp_site%inter_sitg_comm)
+    !
+    IF (.NOT. ANY(ABS(qmol(:)) > eps12)) THEN
+      CALL stop_by_err_rism('rism3d_initialize', IERR_RISM_NOT_ANY_IONS)
+    END IF
+    !
+    DEALLOCATE(qmol)
+    !
+  END SUBROUTINE check_solvent_has_ions()
   !
 END MODULE rism3d_facade
 

@@ -36,10 +36,12 @@ MODULE err_rism
   INTEGER, PARAMETER :: IERR_RISM_CANNOT_DGETRS       = 7
   ! charge of solvent is not zero (in Laue-RISM)
   INTEGER, PARAMETER :: IERR_RISM_NONZERO_CHARGE      = 8
+  ! solvent does not have any ions (in Laue-RISM)
+  INTEGER, PARAMETER :: IERR_RISM_NOT_ANY_IONS        = 9
   ! fail to make potential smooth (in Laue-RISM)
-  INTEGER, PARAMETER :: IERR_RISM_FAIL_SMOOTH         = 9
+  INTEGER, PARAMETER :: IERR_RISM_FAIL_SMOOTH         = 10
   ! too large box of Laue-FFT (in Laue-RISM)
-  INTEGER, PARAMETER :: IERR_RISM_LARGE_LAUE_BOX      = 10
+  INTEGER, PARAMETER :: IERR_RISM_LARGE_LAUE_BOX      = 11
   !
   ! ... public components
   PUBLIC :: stop_by_err_rism
@@ -53,6 +55,7 @@ MODULE err_rism
   PUBLIC :: IERR_RISM_CANNOT_DGETRF
   PUBLIC :: IERR_RISM_CANNOT_DGETRS
   PUBLIC :: IERR_RISM_NONZERO_CHARGE
+  PUBLIC :: IERR_RISM_NOT_ANY_IONS
   PUBLIC :: IERR_RISM_FAIL_SMOOTH
   PUBLIC :: IERR_RISM_LARGE_LAUE_BOX
   !
@@ -114,6 +117,10 @@ CONTAINS
     CASE (IERR_RISM_NONZERO_CHARGE)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
          & ' in RISM, charge of solvent is not zero ', stat_)
+      !
+    CASE (IERR_RISM_NOT_ANY_IONS)
+      CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
+         & ' in RISM, solvent does not have any ions ', stat_)
       !
     CASE (IERR_RISM_FAIL_SMOOTH)
       CALL errore(' ' // TRIM(ADJUSTL(parent)) // ' ', &
