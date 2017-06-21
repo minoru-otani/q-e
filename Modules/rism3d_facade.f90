@@ -714,7 +714,7 @@ CONTAINS
       CALL stop_by_err_rism('rism3d_initialize', IERR_RISM_NONZERO_CHARGE)
     END IF
     !
-  END SUBROUTINE check_solvent_is_neutral()
+  END SUBROUTINE check_solvent_is_neutral
   !
   !----------------------------------------------------------------------------
   SUBROUTINE check_solvent_has_ions()
@@ -752,7 +752,7 @@ CONTAINS
     !
     DEALLOCATE(qmol)
     !
-  END SUBROUTINE check_solvent_has_ions()
+  END SUBROUTINE check_solvent_has_ions
   !
 END MODULE rism3d_facade
 
