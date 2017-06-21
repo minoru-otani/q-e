@@ -377,7 +377,7 @@ CONTAINS
     COMPLEX(DP), ALLOCATABLE :: chgg(:)
     LOGICAL                  :: conv_rism3d
     !
-    REAL(DP),    PARAMETER   :: TR2_EXPON  = 0.50_DP
+    REAL(DP),    PARAMETER   :: TR2_EXPON  = 0.55_DP
     REAL(DP),    PARAMETER   :: EPSV_EXPON = 0.50_DP
     REAL(DP),    PARAMETER   :: EPSV_CEILING = 1.0E-2_DP
     !
