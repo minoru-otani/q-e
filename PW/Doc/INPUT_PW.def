@@ -2666,14 +2666,14 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
         }
 
         var rism1d_maxstep -type INTEGER {
-            default { 40000 }
+            default { 50000 }
             info {
                 Maximum number of iterations in a 1D-RISM step.
             }
         }
 
         var rism3d_maxstep -type INTEGER {
-            default { 2000 }
+            default { 5000 }
             info {
                 Maximum number of iterations in a 3D-RISM step.
             }

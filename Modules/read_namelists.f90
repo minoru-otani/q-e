@@ -712,8 +712,8 @@ MODULE read_namelists_module
        !
        smear1d               = 2.0_DP
        smear3d               = 2.0_DP
-       rism1d_maxstep        = 40000
-       rism3d_maxstep        = 2000
+       rism1d_maxstep        = 50000
+       rism3d_maxstep        = 5000
        rism1d_conv_thr       = 1.0E-8_DP
        rism3d_conv_thr       = 1.0E-5_DP
        mdiis1d_size          = 20

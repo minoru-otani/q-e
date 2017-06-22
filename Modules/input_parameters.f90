@@ -1450,10 +1450,10 @@ MODULE input_parameters
         REAL(DP) :: smear3d = 2.0_DP
           ! smearing radius for 3D-RISM (in bohr)
 
-        INTEGER :: rism1d_maxstep = 40000
+        INTEGER :: rism1d_maxstep = 50000
           ! maximum number of steps in 1D-RISM calculation
 
-        INTEGER :: rism3d_maxstep = 2000
+        INTEGER :: rism3d_maxstep = 5000
           ! maximum number of steps in 3D-RISM calculation
 
         REAL(DP) :: rism1d_conv_thr = 1.0E-8_DP
