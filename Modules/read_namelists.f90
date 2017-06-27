@@ -715,7 +715,7 @@ MODULE read_namelists_module
        rism1d_maxstep        = 50000
        rism3d_maxstep        = 5000
        rism1d_conv_thr       = 1.0E-8_DP
-       rism3d_conv_thr       = 1.0E-4_DP
+       rism3d_conv_thr       = 1.0E-5_DP
        mdiis1d_size          = 20
        mdiis3d_size          = 10
        mdiis1d_step          = -1.0_DP  ! will initialize at iosys_1drism
