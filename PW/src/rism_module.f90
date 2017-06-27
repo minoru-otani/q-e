@@ -37,7 +37,7 @@ MODULE rism_module
   USE io_global,        ONLY : stdout, ionode, ionode_id
   USE ions_base,        ONLY : nat, tau
   USE kinds,            ONLY : DP
-  USE klist,            ONLY : nkstot, xk
+  USE klist,            ONLY : nkstot, xk, nelec
   USE lsda_mod,         ONLY : lsda, nspin
   USE mp,               ONLY : mp_sum, mp_bcast
   USE mp_images,        ONLY : intra_image_comm
@@ -372,11 +372,13 @@ CONTAINS
     !
     INTEGER                  :: is
     REAL(DP)                 :: epsv_new
+    REAL(DP)                 :: tr2_
     REAL(DP),    ALLOCATABLE :: vpot(:)
     COMPLEX(DP), ALLOCATABLE :: vpog(:)
     COMPLEX(DP), ALLOCATABLE :: chgg(:)
     LOGICAL                  :: conv_rism3d
     !
+    REAL(DP),    PARAMETER   :: TR2_SCALE  = 10.0_DP
     REAL(DP),    PARAMETER   :: TR2_EXPON  = 0.55_DP
     REAL(DP),    PARAMETER   :: EPSV_EXPON = 0.50_DP
     REAL(DP),    PARAMETER   :: EPSV_CEILING = 1.0E-2_DP
@@ -410,14 +412,18 @@ CONTAINS
     ! ... set convergence threshold
     IF (ionode) THEN
       epsv_new = epsv
-      IF (0.0_DP < epsv .AND. 0.0_DP < tr2) THEN
+      tr2_ = tr2 * DBLE(nelec) / TR2_SCALE
+      tr2_ = tr2_ ** TR2_EXPON
+      !
+      IF (0.0_DP < epsv .AND. 0.0_DP < tr2_) THEN
         IF (0.0_DP < dr2) THEN
           ! ... dr2 is positive
-          IF (dr2 >= (tr2 ** TR2_EXPON)) THEN
-            epsv_new = 10.0_DP ** (LOG10(epsv) * LOG10(dr2) / LOG10(tr2 ** TR2_EXPON))
+          IF (dr2 >= tr2_) THEN
+            epsv_new = 10.0_DP ** (LOG10(epsv) * LOG10(dr2) / LOG10(tr2_))
             epsv_new = MAX(epsv_new, epsv)
             epsv_new = MIN(epsv_new, MAX(EPSV_CEILING, epsv ** EPSV_EXPON))
           END IF
+          !
         ELSE
           ! ... dr2 is negative or zero
           epsv_new = MAX(EPSV_CEILING, epsv ** EPSV_EXPON)
