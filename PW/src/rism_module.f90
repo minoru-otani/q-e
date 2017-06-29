@@ -238,13 +238,16 @@ CONTAINS
   END SUBROUTINE rism_iosys
   !
   !----------------------------------------------------------------------------
-  SUBROUTINE rism_calc1d()
+  SUBROUTINE rism_calc1d(lmust)
     !----------------------------------------------------------------------------
     !
     ! ... calculate 1D-RISM.
     !
     IMPLICIT NONE
     !
+    LOGICAL, INTENT(IN), OPTIONAL :: lmust
+    !
+    LOGICAL :: lmust_
     LOGICAL :: conv_rism1d
     !
     IF (.NOT. lrism) THEN
@@ -256,6 +259,15 @@ CONTAINS
     END IF
     !
     CALL rism_check()
+    !
+    lmust_ = .FALSE.
+    IF (PRESENT(lmust)) THEN
+      lmust_ = lmust
+    END IF
+    !
+    IF ((.NOT. lmust_) .AND. rism1d_is_avail()) THEN
+      RETURN
+    END IF
     !
     CALL rism1d_summary()
     CALL rism1d_prepare()
