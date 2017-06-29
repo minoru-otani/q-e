@@ -841,6 +841,7 @@ CONTAINS
     IF (ASSOCIATED(rismt%hg ))      rismt%hg       = R_ZERO
     IF (ASSOCIATED(rismt%hgz ))     rismt%hgz      = C_ZERO
     IF (ASSOCIATED(rismt%hsgz))     rismt%hsgz     = C_ZERO
+    IF (ASSOCIATED(rismt%hlgz))     rismt%hlgz     = C_ZERO
     IF (ASSOCIATED(rismt%gr ))      rismt%gr       = R_ZERO
     IF (ASSOCIATED(rismt%nsol))     rismt%nsol     = R_ZERO
     IF (ASSOCIATED(rismt%qsol))     rismt%qsol     = R_ZERO
