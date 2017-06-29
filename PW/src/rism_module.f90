@@ -207,10 +207,10 @@ CONTAINS
     IF (lall) THEN
       CALL rism1d_finalize()
       CALL deallocate_solVs()
-      CALL deallocate_solU()
     END IF
     !
     CALL rism3d_finalize(lall)
+    CALL deallocate_solU(lall)
     !
   END SUBROUTINE deallocate_rism
   !

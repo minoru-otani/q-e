@@ -117,28 +117,43 @@ CONTAINS
   END SUBROUTINE allocate_solU
   !
   !--------------------------------------------------------------------------
-  SUBROUTINE deallocate_solU()
+  SUBROUTINE deallocate_solU(lall)
     !--------------------------------------------------------------------------
     !
     ! ... finalize this module
     !
+    ! ... if lall=.TRUE., deallocate all data.
+    ! ... if lall=.FALSE., deallocate data, which depend on FFT box.
+    !
     IMPLICIT NONE
     !
-    solU_nat = 0
+    LOGICAL, INTENT(IN) :: lall
     !
-    IF (ALLOCATED(solU_tau))     DEALLOCATE(solU_tau)
-    IF (ALLOCATED(solU_ljeps))   DEALLOCATE(solU_ljeps)
-    IF (ALLOCATED(solU_ljsig))   DEALLOCATE(solU_ljsig)
-    IF (ALLOCATED(solU_ljname))  DEALLOCATE(solU_ljname)
-    IF (ALLOCATED(isup_to_iuni)) DEALLOCATE(isup_to_iuni)
-    !
-    init_wall  = .FALSE.
-    iwall      = IWALL_NULL
-    wall_tau   = 0.0_DP
-    wall_rho   = 0.0_DP
-    wall_ljeps = 0.0_DP
-    wall_ljsig = 0.0_DP
-    wall_lj6   = .FALSE.
+    IF (lall) THEN
+      !
+      ! ... deallocate all
+      solU_nat = 0
+      !
+      IF (ALLOCATED(solU_tau))     DEALLOCATE(solU_tau)
+      IF (ALLOCATED(solU_ljeps))   DEALLOCATE(solU_ljeps)
+      IF (ALLOCATED(solU_ljsig))   DEALLOCATE(solU_ljsig)
+      IF (ALLOCATED(solU_ljname))  DEALLOCATE(solU_ljname)
+      IF (ALLOCATED(isup_to_iuni)) DEALLOCATE(isup_to_iuni)
+      !
+      init_wall  = .FALSE.
+      iwall      = IWALL_NULL
+      wall_tau   = 0.0_DP
+      wall_rho   = 0.0_DP
+      wall_ljeps = 0.0_DP
+      wall_ljsig = 0.0_DP
+      wall_lj6   = .FALSE.
+      !
+    ELSE
+      !
+      ! ... deallocate repulsive-wall, which depends on FFT box
+      init_wall = .FALSE.
+      !
+    END IF
     !
   END SUBROUTINE deallocate_solU
   !
