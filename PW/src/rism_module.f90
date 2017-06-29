@@ -266,6 +266,7 @@ CONTAINS
     END IF
     !
     IF ((.NOT. lmust_) .AND. rism1d_is_avail()) THEN
+      CALL rism1d_write_to_restart()
       RETURN
     END IF
     !
