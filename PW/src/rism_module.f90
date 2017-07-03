@@ -829,7 +829,7 @@ CONTAINS
     !
     IMPLICIT NONE
     !
-    REAL(DP), PARAMETER :: TR2_EXPON = 0.50_DP
+    REAL(DP), PARAMETER :: TR2_EXPON = 0.50_DP * LOG10(2.0_DP)
     !
     IF (.NOT. lrism) THEN
       RETURN
