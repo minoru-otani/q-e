@@ -19,7 +19,7 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
   ! ...
   ! ... x21 depends on norm of gxy, and is even along z'-z.
   !
-  USE constants, ONLY : pi, sqrtpi, eps8, eps12
+  USE constants, ONLY : pi, sqrtpi, eps12
   USE cell_base, ONLY : alat, tpiba2
   USE err_rism,  ONLY : IERR_RISM_NULL, IERR_RISM_INCORRECT_DATA_TYPE, &
                       & IERR_RISM_1DRISM_IS_NOT_AVAIL, IERR_RISM_LARGE_LAUE_BOX
@@ -477,8 +477,8 @@ CONTAINS
       CALL mp_sum(qsqr, rismlt%mp_site%inter_sitg_comm)
       !
       ! ... renormalize: to correct total charge
-      IF (ABS(qtot) > eps8) THEN
-        IF (ABS(qsqr) <= eps8) THEN  ! will not be occurred
+      IF (ABS(qtot) > eps12) THEN
+        IF (ABS(qsqr) <= eps12) THEN  ! will not be occurred
           CALL errore('renormalize_g0', 'qsqr is zero', 1)
         END IF
         !
