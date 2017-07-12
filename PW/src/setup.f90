@@ -419,7 +419,7 @@ SUBROUTINE setup()
   ! ... Compute the cut-off of the G vectors
   !
   doublegrid = ( dual > 4.D0 )
-  IF ( doublegrid .AND. (.NOT.okvan .AND. .not.okpaw) ) &
+  IF ( doublegrid .AND. (.NOT.okvan .AND. .NOT.okpaw .AND. .NOT. lrism) ) &
      CALL infomsg ( 'setup', 'no reason to have ecutrho>4*ecutwfc' )
   gcutm = dual * ecutwfc / tpiba2
   gcutw = ecutwfc / tpiba2
