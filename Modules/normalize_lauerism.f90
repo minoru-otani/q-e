@@ -132,10 +132,8 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
   IF (rismt%nsite > 0) THEN
     ALLOCATE(nsol(rismt%nsite))
   END IF
-  IF (nsolV > 0) THEN
-    ALLOCATE(msol(nsolV))
-    ALLOCATE(qsol(nsolV))
-  END IF
+  ALLOCATE(msol(nsolV))
+  ALLOCATE(qsol(nsolV))
   !
   ! ... set variables
   dz      = rismt%lfft%zstep * alat
@@ -360,10 +358,8 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
   !
   ! ... sum numbers and charges of solvent atoms in a molecule
   ! ... NOTE: msol and qsol are defined only if gxystart > 1
-  IF (nsolV > 0) THEN
-    msol(:) = 0.0_DP
-    qsol(:) = 0.0_DP
-  END IF
+  msol(:) = 0.0_DP
+  qsol(:) = 0.0_DP
   !
   DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
     iiq   = iq - rismt%mp_site%isite_start + 1
@@ -379,10 +375,8 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
     END IF
   END DO
   !
-  IF (nsolV > 0) THEN
-    CALL mp_sum(msol, rismt%mp_site%inter_sitg_comm)
-    CALL mp_sum(qsol, rismt%mp_site%inter_sitg_comm)
-  END IF
+  CALL mp_sum(msol, rismt%mp_site%inter_sitg_comm)
+  CALL mp_sum(qsol, rismt%mp_site%inter_sitg_comm)
   !
   DO isolV = 1, nsolV
     IF (solVs(isolV)%natom > 0) THEN
@@ -572,9 +566,7 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
   IF (rismt%nsite > 0) THEN
     DEALLOCATE(nsol)
   END IF
-  IF (nsolV > 0) THEN
-    DEALLOCATE(msol)
-    DEALLOCATE(qsol)
-  END IF
+  DEALLOCATE(msol)
+  DEALLOCATE(qsol)
   !
 END SUBROUTINE normalize_lauerism

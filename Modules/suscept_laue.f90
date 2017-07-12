@@ -19,7 +19,7 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
   ! ...
   ! ... x21 depends on norm of gxy, and is even along z'-z.
   !
-  USE constants, ONLY : pi, sqrtpi, eps12
+  USE constants, ONLY : pi, sqrtpi, eps8, eps12
   USE cell_base, ONLY : alat, tpiba2
   USE err_rism,  ONLY : IERR_RISM_NULL, IERR_RISM_INCORRECT_DATA_TYPE, &
                       & IERR_RISM_1DRISM_IS_NOT_AVAIL, IERR_RISM_LARGE_LAUE_BOX
@@ -29,7 +29,7 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
   USE mp,        ONLY : mp_size, mp_rank, mp_max, mp_sum, mp_get, mp_gather, mp_bcast, mp_barrier
   USE rism,      ONLY : rism_type, ITYPE_1DRISM, ITYPE_LAUERISM
   USE solvavg,   ONLY : solvavg_init, solvavg_clear, solvavg_print, solvavg_put
-  USE solvmol,   ONLY : solVs, get_nsite_in_solVs, get_nuniq_in_solVs, &
+  USE solvmol,   ONLY : nsolV, solVs, get_nsite_in_solVs, get_nuniq_in_solVs, &
                       & iuniq_to_nsite, iuniq_to_isite, isite_to_isolV, isite_to_iatom
   USE splinelib, ONLY : spline, splint
   !
@@ -51,6 +51,7 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
   CHARACTER(LEN=6)      :: satom1, satom2
   INTEGER               :: iiq2
   INTEGER               :: nv2, iiv2
+  REAL(DP)              :: qv2
   INTEGER               :: ivv
   INTEGER               :: irz
   INTEGER               :: igz
@@ -370,8 +371,11 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
     END DO
   END DO
   !
-  ! ... correct at G = 0
-  CALL correct_g0()
+  ! ... renormalize at G = 0
+  CALL renormalize_g0()
+  !
+  ! ... correct at Gxy = 0
+  CALL correct_gxy0()
   !
   ! ... print data
   CALL print_x21()
@@ -403,7 +407,99 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
   !
 CONTAINS
   !
-  SUBROUTINE correct_g0()
+  SUBROUTINE renormalize_g0()
+    IMPLICIT NONE
+    !
+    REAL(DP), ALLOCATABLE :: msol(:)
+    REAL(DP), ALLOCATABLE :: qsol(:)
+    REAL(DP)              :: qtot
+    REAL(DP)              :: qsqr
+    !
+    ALLOCATE(msol(nsolV))
+    ALLOCATE(qsol(nsolV))
+    !
+    DO iq1 = 1, nq
+      !
+      ! ... sum numbers and charges of solvent atoms in a molecule
+      msol = 0.0_DP
+      qsol = 0.0_DP
+      !
+      DO iq2 = rismlt%mp_site%isite_start, rismlt%mp_site%isite_end
+        iiq2   = iq2 - rismlt%mp_site%isite_start + 1
+        iv2    = iuniq_to_isite(1, iq2)
+        nv2    = iuniq_to_nsite(iq2)
+        isolV2 = isite_to_isolV(iv2)
+        iatom2 = isite_to_iatom(iv2)
+        qv2    = solVs(isolV2)%charge(iatom2)
+        !
+        msol(isolV2) = msol(isolV2) + xg_0(iiq2, iq1)
+        qsol(isolV2) = qsol(isolV2) + DBLE(nv2) * qv2
+      END DO
+      !
+      CALL mp_sum(msol, rismlt%mp_site%inter_sitg_comm)
+      CALL mp_sum(qsol, rismlt%mp_site%inter_sitg_comm)
+      !
+      DO isolV2 = 1, nsolV
+        IF (solVs(isolV2)%natom > 0) THEN
+          msol(isolV2) = msol(isolV2) / DBLE(solVs(isolV2)%natom)
+          qsol(isolV2) = qsol(isolV2) / DBLE(solVs(isolV2)%natom)
+        ELSE
+          msol(isolV2) = 0.0_DP
+          qsol(isolV2) = 0.0_DP
+        END IF
+      END DO
+      !
+      ! ... renormalize: to correct stoichiometry
+      DO iq2 = rismlt%mp_site%isite_start, rismlt%mp_site%isite_end
+        iiq2   = iq2 - rismlt%mp_site%isite_start + 1
+        iv2    = iuniq_to_isite(1, iq2)
+        nv2    = iuniq_to_nsite(iq2)
+        isolV2 = isite_to_isolV(iv2)
+        !
+        xg_0(iiq2, iq1) = DBLE(nv2) * msol(isolV2)
+      END DO
+      !
+      ! ... total charge and square sum of charge
+      qtot = 0.0_DP
+      qsqr = 0.0_DP
+      !
+      DO iq2 = rismlt%mp_site%isite_start, rismlt%mp_site%isite_end
+        iiq2   = iq2 - rismlt%mp_site%isite_start + 1
+        iv2    = iuniq_to_isite(1, iq2)
+        nv2    = iuniq_to_nsite(iq2)
+        isolV2 = isite_to_isolV(iv2)
+        !
+        qtot = qtot + qsol(isolV2) * xg_0(iiq2, iq1)
+        qsqr = qsqr + DBLE(nv2) * qsol(isolV2) * qsol(isolV2)
+      END DO
+      !
+      CALL mp_sum(qtot, rismlt%mp_site%inter_sitg_comm)
+      CALL mp_sum(qsqr, rismlt%mp_site%inter_sitg_comm)
+      !
+      ! ... renormalize: to correct total charge
+      IF (ABS(qtot) > eps8) THEN
+        IF (ABS(qsqr) <= eps8) THEN  ! will not be occurred
+          CALL errore('renormalize_g0', 'qsqr is zero', 1)
+        END IF
+        !
+        DO iq2 = rismlt%mp_site%isite_start, rismlt%mp_site%isite_end
+          iiq2   = iq2 - rismlt%mp_site%isite_start + 1
+          iv2    = iuniq_to_isite(1, iq2)
+          nv2    = iuniq_to_nsite(iq2)
+          isolV2 = isite_to_isolV(iv2)
+          !
+          xg_0(iiq2, iq1) = xg_0(iiq2, iq1) - DBLE(nv2) * qsol(isolV2) * qtot / qsqr
+        END DO
+      END IF
+      !
+    END DO
+    !
+    DEALLOCATE(msol)
+    DEALLOCATE(qsol)
+    !
+  END SUBROUTINE renormalize_g0
+  !
+  SUBROUTINE correct_gxy0()
     IMPLICIT NONE
     REAL(DP) :: dz
     REAL(DP) :: xg_int
@@ -458,7 +554,7 @@ CONTAINS
       END DO
     END DO
     !
-  END SUBROUTINE correct_g0
+  END SUBROUTINE correct_gxy0
   !
   SUBROUTINE print_x21()
     IMPLICIT NONE

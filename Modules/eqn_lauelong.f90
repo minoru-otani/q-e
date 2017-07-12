@@ -595,8 +595,6 @@ CONTAINS
     REAL(DP), INTENT(IN) :: xgs(1:ndim, 1:*)
     INTEGER,  INTENT(IN) :: ndim
     !
-    REAL(DP) :: xg_int
-    !
     IF (rismt%nrzl * rismt%ngs > 0) THEN
       xgz = 0.0_DP
     END IF
@@ -618,23 +616,6 @@ CONTAINS
     !
     IF (rismt%nrzl * rismt%ngs > 0) THEN
       CALL mp_sum(xgz, rismt%mp_site%inter_sitg_comm)
-    END IF
-    !
-    ! ... correct at G = 0
-    IF (rismt%lfft%gxystart > 1) THEN
-      xg_int = 0.0_DP
-!$omp parallel do default(shared) private(irz) reduction(+:xg_int)
-      DO irz = 2, rismt%lfft%nrz
-        xg_int = xg_int + 2.0_DP * rstep * xgz(irz)
-      END DO
-!$omp end parallel do
-      xg_int = xg_int + rstep * xgz(1)
-      !
-!$omp parallel do default(shared) private(irz)
-      DO irz = 1, rismt%lfft%nrz
-        xgz(irz) = xgz(irz) - xg_int / rstep / DBLE(2 * (rismt%lfft%nrz - 1) + 1)
-      END DO
-!$omp end parallel do
     END IF
     !
   END SUBROUTINE reduce_xgs
