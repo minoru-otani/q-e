@@ -387,6 +387,7 @@ CONTAINS
     INTEGER :: isite
     INTEGER :: jsite
     !
+#if defined (__RISM_RADFFT_OLD)
     ! ... csr -> work
     CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
     & rismt%mp_task%nvec, work, rismt%nr, rismt%csr, +1)
@@ -401,6 +402,11 @@ CONTAINS
     CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
     & rismt%mp_task%nvec, work, rismt%ng, rismt%csg, -1)
     !
+#else
+    ! ... Fourier Transform, with BLAS level-3
+    CALL fw_radfft(rismt%rfft, rismt%csr, rismt%csg, rismt%nsite)
+    !
+#endif
   END SUBROUTINE fft_csr_to_csg
   !
   SUBROUTINE fft_hg_to_hr()
@@ -408,6 +414,7 @@ CONTAINS
     INTEGER :: isite
     INTEGER :: jsite
     !
+#if defined (__RISM_RADFFT_OLD)
     ! ... hg -> work
     CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
     & rismt%mp_task%nvec, work(1, 1), rismt%ng, rismt%hg(1, 1), +1)
@@ -422,6 +429,11 @@ CONTAINS
     CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
     & rismt%mp_task%nvec, work(1, 1), rismt%nr, rismt%hr(1, 1), -1)
     !
+#else
+    ! ... Fourier Transform, with BLAS level-3
+    CALL inv_radfft(rismt%rfft, rismt%hg, rismt%hr, rismt%nsite)
+    !
+#endif
   END SUBROUTINE fft_hg_to_hr
   !
   SUBROUTINE remove_glarge_csr()
@@ -441,6 +453,7 @@ CONTAINS
       END DO
     END DO
     !
+#if defined (__RISM_RADFFT_OLD)
     ! ... csg -> work
     CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
     & rismt%mp_task%nvec, work(1, 1), rismt%ng, rismt%csg(1, 1), +1)
@@ -455,6 +468,11 @@ CONTAINS
     CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
     & rismt%mp_task%nvec, work(1, 1), rismt%nr, rismt%csr(1, 1), -1)
     !
+#else
+    ! ... Fourier Transform, with BLAS level-3
+    CALL inv_radfft(rismt%rfft, rismt%csg, rismt%csr, rismt%nsite)
+    !
+#endif
   END SUBROUTINE remove_glarge_csr
   !
 END SUBROUTINE do_1drism

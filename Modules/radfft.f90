@@ -23,6 +23,7 @@ MODULE radfft
   USE fft_scalar,  ONLY : cft_1z
   USE fft_support, ONLY : good_fft_order
   USE kinds,       ONLY : DP
+  USE mp,          ONLY : mp_sum
   !
   IMPLICIT NONE
   SAVE
@@ -30,16 +31,22 @@ MODULE radfft
   !
   ! ... define variables
   TYPE radfft_type
-    INTEGER           :: ngrid     ! number of grids
-    INTEGER           :: mgrid     ! number of grids for FFT-box
-    INTEGER           :: lgrid     ! modified mgrid
-    REAL(DP), POINTER :: rgrid(:)  ! grids in R-space
-    REAL(DP), POINTER :: ggrid(:)  ! grids in G-space
+    INTEGER           :: ngrid        ! number of grids
+    INTEGER           :: mgrid        ! number of grids for FFT-box
+    INTEGER           :: lgrid        ! modified mgrid
+    INTEGER           :: igrid_start  ! starting index of grids (for MPI)
+    INTEGER           :: igrid_end    ! ending index of grids (for MPI)
+    INTEGER           :: igrid_len    ! length of grids (for MPI)
+    INTEGER           :: comm         ! MPI-communicator
+    REAL(DP), POINTER :: rgrid(:)     ! grids in R-space
+    REAL(DP), POINTER :: ggrid(:)     ! grids in G-space
+    REAL(DP), POINTER :: singr(:,:)   ! sin(g*r) for Fourier Transform, with BLAS level-3
   END TYPE radfft_type
   !
   ! ... public components
   PUBLIC :: radfft_type
   PUBLIC :: allocate_radfft
+  PUBLIC :: init_mpi_radfft
   PUBLIC :: deallocate_radfft
   PUBLIC :: fw_radfft
   PUBLIC :: inv_radfft
@@ -54,9 +61,9 @@ CONTAINS
     !
     IMPLICIT NONE
     !
-    TYPE(radfft_type),  INTENT(INOUT) :: radfft0
-    INTEGER,            INTENT(IN)    :: nr
-    REAL(DP),           INTENT(IN)    :: rmax
+    TYPE(radfft_type), INTENT(INOUT) :: radfft0
+    INTEGER,           INTENT(IN)    :: nr
+    REAL(DP),          INTENT(IN)    :: rmax
     !
     INTEGER  :: igrid
     INTEGER  :: ngrid
@@ -91,6 +98,53 @@ CONTAINS
   END SUBROUTINE allocate_radfft
   !
   !--------------------------------------------------------------------------
+  SUBROUTINE init_mpi_radfft(radfft0, comm_, igrid1, igrid2)
+    !--------------------------------------------------------------------------
+    !
+    ! ... initialize radfft_type about MPI
+    !
+    IMPLICIT NONE
+    !
+    TYPE(radfft_type), INTENT(INOUT) :: radfft0
+    INTEGER,           INTENT(IN)    :: comm_
+    INTEGER,           INTENT(IN)    :: igrid1
+    INTEGER,           INTENT(IN)    :: igrid2
+    !
+    INTEGER  :: ir, ig
+    INTEGER  :: iir
+    REAL(DP) :: r, g
+    !
+#if !defined (__RISM_RADFFT_OLD)
+    ! MPI-communicator
+    radfft0%comm = comm_
+    !
+    ! size of grids for MPI
+    radfft0%igrid_start = MAX(igrid1, 1)
+    radfft0%igrid_end   = MIN(igrid2, radfft0%ngrid)
+    radfft0%igrid_len   = radfft0%igrid_end - radfft0%igrid_start + 1
+    !
+    IF (radfft0%igrid_len < 1) THEN
+      RETURN
+    END IF
+    !
+    ! calculate sin(g*r)
+    ALLOCATE(singr(radfft0%ngrid, radfft0%igrid_len))
+    !
+!$omp parallel do default(shared) private(ir, iir, r, ig, g)
+    DO ir = radfft0%igrid_start, radfft0%igrid_end
+      iir = ir - radfft0%igrid_start + 1
+      r = radfft0%rgrid(ir)
+      DO ig = 1, radfft0%ngrid
+        g = radfft0%ggrid(ig)
+        radfft0%singr(ig, iir) = SIN(g * r)
+      END DO
+    END DO
+!$omp end parallel do
+    !
+#endif
+  END SUBROUTINE init_mpi_radfft
+  !
+  !--------------------------------------------------------------------------
   SUBROUTINE deallocate_radfft(radfft0)
     !--------------------------------------------------------------------------
     !
@@ -100,14 +154,20 @@ CONTAINS
     !
     TYPE(radfft_type), INTENT(INOUT) :: radfft0
     !
-    radfft0%ngrid = 0
-    radfft0%mgrid = 0
-    radfft0%lgrid = 0
+    radfft0%ngrid       = 0
+    radfft0%mgrid       = 0
+    radfft0%lgrid       = 0
+    radfft0%igrid_start = 0
+    radfft0%igrid_end   = 0
+    radfft0%igrid_len   = 0
+    radfft0%comm        = 0
     IF (ASSOCIATED(radfft0%rgrid)) DEALLOCATE(radfft0%rgrid)
     IF (ASSOCIATED(radfft0%ggrid)) DEALLOCATE(radfft0%ggrid)
+    IF (ASSOCIATED(radfft0%singr)) DEALLOCATE(radfft0%singr)
     !
   END SUBROUTINE deallocate_radfft
   !
+#if defined (__RISM_RADFFT_OLD)
   !--------------------------------------------------------------------------
   SUBROUTINE fw_radfft(radfft0, cr, cg)
     !--------------------------------------------------------------------------
@@ -202,4 +262,160 @@ CONTAINS
     !
   END SUBROUTINE inv_radfft
   !
+#else
+  !--------------------------------------------------------------------------
+  SUBROUTINE fw_radfft(radfft0, cr, cg, mult)
+    !--------------------------------------------------------------------------
+    !
+    ! ... FFT R -> G
+    !
+    IMPLICIT NONE
+    !
+    TYPE(radfft_type), INTENT(IN)  :: radfft0
+    REAL(DP),          INTENT(IN)  :: cr(1:*)
+    REAL(DP),          INTENT(OUT) :: cg(1:*)
+    INTEGER,           INTENT(IN)  :: mult
+    !
+    INTEGER               :: i
+    INTEGER               :: igrid
+    INTEGER               :: jgrid
+    INTEGER               :: mgrid
+    INTEGER               :: iigrid_start
+    REAL(DP)              :: dr
+    REAL(DP)              :: fac
+    REAL(DP), ALLOCATABLE :: crr(:)
+    REAL(DP), ALLOCATABLE :: cgg(:)
+    !
+    IF (mult < 1) RETURN
+    !
+    ! allocate memory
+    ALLOCATE(crr(radfft0%igrid_len, mult))
+    ALLOCATE(cgg(radfft0%ngrid,     mult))
+    !
+    cgg = 0.0_DP
+    !
+    IF (radfft0%igrid_len > 0) THEN
+      ! cr -> crr
+      DO i = 1, mult
+        mgrid = (i - 1) * radfft0%igrid_len
+!$omp parallel do default(shared) private(igrid, jgrid)
+        DO igrid = radfft0%igrid_start, radfft0%igrid_end
+          jgrid = igrid - radfft0%igrid_start + 1
+          crr(jgrid, i) = cr(jgrid + mgrid) * radfft0%rgrid(igrid)
+        END DO
+!$omp end parallel do
+      END DO
+      !
+      ! perform integration
+      dr  = radfft0%rgrid(2) - radfft0%rgrid(1)
+      fac = 2.0_DP * dr * tpi
+      CALL dgemm('N', 'N', radfft0%ngrid, mult, radfft0%igrid_len, &
+               & fac, radfft0%singr, radfft0%ngrid, crr, radfft0%igrid_len, &
+               & 0.0_DP, cgg, radfft0%ngrid)
+    END IF
+    !
+    CALL mp_sum(cgg, radfft0%comm)
+    !
+    IF (radfft0%igrid_len > 0) THEN
+      ! cgg -> cg
+      DO i = 1, mult
+        mgrid = (i - 1) * radfft0%igrid_len
+        iigrid_start = radfft0%igrid_start
+        IF (iigrid_start == 1) THEN
+          iigrid_start = 2
+          cg(1 + mgrid) = 0.0_DP
+        END IF
+!$omp parallel do default(shared) private(igrid, jgrid)
+        DO igrid = iigrid_start, radfft0%igrid_end
+          jgrid = igrid - radfft0%igrid_start + 1
+          cg(jgrid + mgrid) = cgg(igrid, i) / radfft0%ggrid(igrid)
+        END DO
+!$omp end parallel do
+      END DO
+    END IF
+    !
+    ! deallocate memory
+    DEALLOCATE(crr)
+    DEALLOCATE(cgg)
+    !
+  END SUBROUTINE fw_radfft
+  !
+  !--------------------------------------------------------------------------
+  SUBROUTINE inv_radfft(radfft0, cg, cr, mult)
+    !--------------------------------------------------------------------------
+    !
+    ! ... FFT G -> R
+    !
+    IMPLICIT NONE
+    !
+    TYPE(radfft_type), INTENT(IN)  :: radfft0
+    REAL(DP),          INTENT(IN)  :: cg(1:*)
+    REAL(DP),          INTENT(OUT) :: cr(1:*)
+    INTEGER,           INTENT(IN)  :: mult
+    !
+    INTEGER               :: i
+    INTEGER               :: igrid
+    INTEGER               :: jgrid
+    INTEGER               :: mgrid
+    INTEGER               :: iigrid_start
+    REAL(DP)              :: dg
+    REAL(DP)              :: fac
+    REAL(DP), ALLOCATABLE :: cgg(:)
+    REAL(DP), ALLOCATABLE :: crr(:)
+    !
+    IF (mult < 1) RETURN
+    !
+    ! allocate memory
+    ALLOCATE(cgg(radfft0%ngrid,     mult))
+    ALLOCATE(crr(radfft0%igrid_len, mult))
+    !
+    cgg = 0.0_DP
+    !
+    IF (radfft0%igrid_len > 0) THEN
+      ! cg -> cgg
+      DO i = 1, mult
+        mgrid = (i - 1) * radfft0%igrid_len
+!$omp parallel do default(shared) private(igrid, jgrid)
+        DO igrid = radfft0%igrid_start, radfft0%igrid_end
+          jgrid = igrid - radfft0%igrid_start + 1
+          cgg(igrid, i) = cg(jgrid + mgrid) * radfft0%ggrid(igrid)
+        END DO
+!$omp end parallel do
+      END DO
+    END IF
+    !
+    CALL mp_sum(cgg, radfft0%comm)
+    !
+    IF (radfft0%igrid_len > 0) THEN
+      ! perform integration
+      dg  = radfft0%ggrid(2) - radfft0%ggrid(1)
+      fac = 2.0_DP * dg / tpi / tpi
+      CALL dgemm('T', 'N', radfft0%igrid_len, mult, radfft0%ngrid, &
+               & fac, radfft0%singr, radfft0%ngrid, cgg, radfft0%ngrid, &
+               & 0.0_DP, crr, radfft0%igrid_len)
+      !
+      ! crr -> cr
+      DO i = 1, mult
+        mgrid = (i - 1) * radfft0%igrid_len
+        iigrid_start = radfft0%igrid_start
+        IF (iigrid_start == 1) THEN
+          iigrid_start = 2
+          cr(1 + mgrid) = 0.0_DP
+        END IF
+!$omp parallel do default(shared) private(igrid, jgrid)
+        DO igrid = iigrid_start, radfft0%igrid_end
+          jgrid = igrid - radfft0%igrid_start + 1
+          cr(jgrid + mgrid) = crr(jgrid, i) / radfft0%rgrid(igrid)
+        END DO
+!$omp end parallel do
+      END DO
+    END IF
+    !
+    ! deallocate memory
+    DEALLOCATE(cgg)
+    DEALLOCATE(crr)
+    !
+  END SUBROUTINE inv_radfft
+  !
+#endif
 END MODULE radfft

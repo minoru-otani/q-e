@@ -127,8 +127,8 @@ SUBROUTINE correctat0_vv(rismt, ierr)
     !
     IF (rismt%mp_task%ivec_start == 1) THEN
       rismt%csr(1, ivv) = csr0
-      !rismt%hr( 1, ivv) = hr0
-      rismt%hr( 1, ivv) = -1.0_DP
+      rismt%hr( 1, ivv) = hr0
+      !rismt%hr( 1, ivv) = -1.0_DP
     END IF
     !
   END DO

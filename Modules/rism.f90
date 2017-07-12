@@ -20,7 +20,8 @@ MODULE rism
   USE mp_rism,    ONLY : mp_rism_site, mp_rism_task, mp_set_index_rism_site, &
                        & mp_set_index_rism_task, mp_start_rism_task_and_site, &
                        & mp_start_rism_task_on_site, mp_end_rism
-  USE radfft,     ONLY : radfft_type, allocate_radfft, deallocate_radfft
+  USE radfft,     ONLY : radfft_type, allocate_radfft, init_mpi_radfft, &
+                       & deallocate_radfft
   !
   IMPLICIT NONE
   SAVE
@@ -213,6 +214,8 @@ CONTAINS
     !
     ! ... initialize radial FFT
     CALL allocate_radfft(rismt%rfft, ngrid, rmax)
+    CALL init_mpi_radfft(rismt%rfft, rismt%mp_task%itask_comm, &
+                       & rismt%mp_task%ivec_start, rismt%mp_task%ivec_end)
     !
     ! ... initialize rismt
     mgrid = rismt%mp_task%ivec_end - rismt%mp_task%ivec_start + 1
