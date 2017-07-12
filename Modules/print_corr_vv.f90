@@ -160,8 +160,9 @@ CONTAINS
     INTEGER,  INTENT(IN) :: iun
     REAL(DP), INTENT(IN) :: zvv(:,:)
     !
-    INTEGER, PARAMETER :: LEN_STR = 6
-    INTEGER, PARAMETER :: LEN_COL = 15
+    INTEGER,  PARAMETER :: LEN_STR = 6
+    INTEGER,  PARAMETER :: LEN_COL = 15
+    REAL(DP), PARAMETER :: RMAX = 100.0_DP ! angs.
     !
     INTEGER                             :: io_proc
     INTEGER                             :: iproc
@@ -296,6 +297,10 @@ CONTAINS
       IF (rismt%mp_task%me_task == io_proc) THEN
         DO ir = 1, nr
           r = rismt%rfft%rgrid(ir + mr) * BOHR_RADIUS_ANGS
+#if !defined (__DEBUG_RISM)
+          IF (r > RMAX) EXIT
+#endif
+          !
           WRITE(iun, '(E15.6e3)', advance='no') r
           DO iqq = 1, nqq
             WRITE(iun, '(E15.6e3)', advance='no') yvv(ir, ivv(iqq))
