@@ -121,6 +121,8 @@ SUBROUTINE potential_vv(rismt, ierr)
         jr = 1
       END IF
       ! ...   in case R /= 0
+!$omp parallel do default(shared) private(ir, iir, r, sr, sr2, sr6, sr12, &
+!$omp          ulj_r, utc_r, usc_r, ulc_r, erf0)
       DO ir = jr, rismt%nr
         iir = rismt%mp_task%ivec_start + ir - 1
         r = rismt%rfft%rgrid(iir)
@@ -136,6 +138,7 @@ SUBROUTINE potential_vv(rismt, ierr)
         rismt%usr(ir, ivv) = ulj_r + usc_r
         rismt%ulr(ir, ivv) = ulc_r
       END DO
+!$omp end parallel do
       !
       ! ... long-range potential in G-space
       ! ...   in case G = 0
@@ -146,12 +149,14 @@ SUBROUTINE potential_vv(rismt, ierr)
         jg = 1
       END IF
       ! ...   in case G /= 0
+!$omp parallel do default(shared) private(ig, iig, g, ulc_g)
       DO ig = jg, rismt%ng
         iig = rismt%mp_task%ivec_start + ig - 1
         g = rismt%rfft%ggrid(iig)
         ulc_g = ele2 * fpi * q12 * EXP(-0.25_DP * g * g * tau * tau) / g / g
         rismt%ulg(ig, ivv) = ulc_g
       END DO
+!$omp end parallel do
       !
     END DO
   END DO
