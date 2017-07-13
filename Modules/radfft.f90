@@ -20,8 +20,10 @@ MODULE radfft
   ! ...               2 * pi^2    / 0
   !
   USE constants,   ONLY : tpi
+#if defined (__RISM_RADFFT_OLD)
   USE fft_scalar,  ONLY : cft_1z
   USE fft_support, ONLY : good_fft_order
+#endif
   USE kinds,       ONLY : DP
   USE mp,          ONLY : mp_sum
   !
@@ -79,7 +81,11 @@ CONTAINS
     ngrid         = nr
     radfft0%ngrid = ngrid
     radfft0%mgrid = 2 * ngrid - 1
+#if defined (__RISM_RADFFT_OLD)
     radfft0%lgrid = good_fft_order(2 * ngrid - 1)
+#else
+    radfft0%lgrid = radfft0%mgrid
+#endif
     !
     ! R-space
     ALLOCATE(radfft0%rgrid(ngrid))
