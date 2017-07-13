@@ -20,10 +20,8 @@ MODULE radfft
   ! ...               2 * pi^2    / 0
   !
   USE constants,   ONLY : tpi
-#if defined (__RISM_RADFFT_OLD)
   USE fft_scalar,  ONLY : cft_1z
   USE fft_support, ONLY : good_fft_order
-#endif
   USE kinds,       ONLY : DP
   USE mp,          ONLY : mp_sum
   !
@@ -40,6 +38,7 @@ MODULE radfft
     INTEGER           :: igrid_end    ! ending index of grids (for MPI)
     INTEGER           :: igrid_len    ! length of grids (for MPI)
     INTEGER           :: comm         ! MPI-communicator
+    LOGICAL           :: lmpi         ! use MPI, or not ?
     REAL(DP), POINTER :: rgrid(:)     ! grids in R-space
     REAL(DP), POINTER :: ggrid(:)     ! grids in G-space
     REAL(DP), POINTER :: singr(:,:)   ! sin(g*r) for Fourier Transform, with BLAS level-3
@@ -52,6 +51,8 @@ MODULE radfft
   PUBLIC :: deallocate_radfft
   PUBLIC :: fw_radfft
   PUBLIC :: inv_radfft
+  PUBLIC :: fw_mpi_radfft
+  PUBLIC :: inv_mpi_radfft
   !
 CONTAINS
   !
@@ -81,11 +82,10 @@ CONTAINS
     ngrid         = nr
     radfft0%ngrid = ngrid
     radfft0%mgrid = 2 * ngrid - 1
-#if defined (__RISM_RADFFT_OLD)
-    radfft0%lgrid = good_fft_order(2 * ngrid - 1)
-#else
-    radfft0%lgrid = radfft0%mgrid
-#endif
+    radfft0%lgrid = -1 ! do it after
+    !
+    ! not MPI (as default)
+    radfft0%lmpi = .FALSE.
     !
     ! R-space
     ALLOCATE(radfft0%rgrid(ngrid))
@@ -120,8 +120,8 @@ CONTAINS
     INTEGER  :: iir
     REAL(DP) :: r, g
     !
-#if !defined (__RISM_RADFFT_OLD)
-    ! MPI-communicator
+    ! set MPI
+    radfft0%lmpi = .TRUE.
     radfft0%comm = comm_
     !
     ! size of grids for MPI
@@ -147,7 +147,6 @@ CONTAINS
     END DO
 !$omp end parallel do
     !
-#endif
   END SUBROUTINE init_mpi_radfft
   !
   !--------------------------------------------------------------------------
@@ -167,13 +166,13 @@ CONTAINS
     radfft0%igrid_end   = 0
     radfft0%igrid_len   = 0
     radfft0%comm        = 0
+    radfft0%lmpi        = .FALSE.
     IF (ASSOCIATED(radfft0%rgrid)) DEALLOCATE(radfft0%rgrid)
     IF (ASSOCIATED(radfft0%ggrid)) DEALLOCATE(radfft0%ggrid)
     IF (ASSOCIATED(radfft0%singr)) DEALLOCATE(radfft0%singr)
     !
   END SUBROUTINE deallocate_radfft
   !
-#if defined (__RISM_RADFFT_OLD)
   !--------------------------------------------------------------------------
   SUBROUTINE fw_radfft(radfft0, cr, cg)
     !--------------------------------------------------------------------------
@@ -191,6 +190,11 @@ CONTAINS
     REAL(DP)                 :: fac
     COMPLEX(DP), ALLOCATABLE :: crr(:)
     COMPLEX(DP), ALLOCATABLE :: cgg(:)
+    !
+    ! init lgrid
+    IF (radfft0%lgrid < 1) THEN
+      radfft0%lgrid = good_fft_order(radfft0%mgrid)
+    END IF
     !
     ! allocate memory
     ALLOCATE(crr(radfft0%lgrid))
@@ -239,6 +243,11 @@ CONTAINS
     COMPLEX(DP), ALLOCATABLE :: cgg(:)
     COMPLEX(DP), ALLOCATABLE :: crr(:)
     !
+    ! init lgrid
+    IF (radfft0%lgrid < 1) THEN
+      radfft0%lgrid = good_fft_order(radfft0%mgrid)
+    END IF
+    !
     ! allocate memory
     ALLOCATE(cgg(radfft0%lgrid))
     ALLOCATE(crr(radfft0%lgrid))
@@ -268,9 +277,8 @@ CONTAINS
     !
   END SUBROUTINE inv_radfft
   !
-#else
   !--------------------------------------------------------------------------
-  SUBROUTINE fw_radfft(radfft0, cr, cg, mult)
+  SUBROUTINE fw_mpi_radfft(radfft0, cr, cg, mult)
     !--------------------------------------------------------------------------
     !
     ! ... FFT R -> G
@@ -345,10 +353,10 @@ CONTAINS
     DEALLOCATE(crr)
     DEALLOCATE(cgg)
     !
-  END SUBROUTINE fw_radfft
+  END SUBROUTINE fw_mpi_radfft
   !
   !--------------------------------------------------------------------------
-  SUBROUTINE inv_radfft(radfft0, cg, cr, mult)
+  SUBROUTINE inv_mpi_radfft(radfft0, cg, cr, mult)
     !--------------------------------------------------------------------------
     !
     ! ... FFT G -> R
@@ -423,7 +431,6 @@ CONTAINS
     DEALLOCATE(cgg)
     DEALLOCATE(crr)
     !
-  END SUBROUTINE inv_radfft
+  END SUBROUTINE inv_mpi_radfft
   !
-#endif
 END MODULE radfft

@@ -1479,11 +1479,7 @@ MODULE input_parameters
         REAL(DP) :: rism1d_bond_width = 0.0_DP
           ! gaussian width of bonds in 1D-RISM calculation
 
-#if defined (__RISM_RADFFT_OLD)
-        INTEGER :: rism1d_nproc = 8
-#else
         INTEGER :: rism1d_nproc = 128
-#endif
           ! number of processes to calculate 1D-RISM
 
         LOGICAL :: rism3d_conv_always = .FALSE.

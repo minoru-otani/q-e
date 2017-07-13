@@ -32,7 +32,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
   USE kinds,         ONLY : DP
   USE mdiis,         ONLY : mdiis_type, allocate_mdiis, deallocate_mdiis, update_by_mdiis, reset_mdiis
   USE mp,            ONLY : mp_bcast
-  USE radfft,        ONLY : fw_radfft, inv_radfft
+  USE radfft,        ONLY : fw_radfft, inv_radfft, fw_mpi_radfft, inv_mpi_radfft
   USE rism,          ONLY : rism_type, ITYPE_1DRISM
   !
   IMPLICIT NONE
@@ -387,26 +387,27 @@ CONTAINS
     INTEGER :: isite
     INTEGER :: jsite
     !
-#if defined (__RISM_RADFFT_OLD)
-    ! ... csr -> work
-    CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
-    & rismt%mp_task%nvec, work, rismt%nr, rismt%csr, +1)
+    IF (rismt%rfft%lmpi) THEN
+      ! ... Fourier Transform, with BLAS level-3
+      CALL fw_mpi_radfft(rismt%rfft, rismt%csr, rismt%csg, rismt%nsite)
+      !
+    ELSE
+      ! ... csr -> work
+      CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
+      & rismt%mp_task%nvec, work, rismt%nr, rismt%csr, +1)
+      !
+      ! ... FFT work
+      DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
+        jsite = isite - rismt%mp_site%isite_start + 1
+        CALL fw_radfft(rismt%rfft, work(:, jsite), work(:, jsite))
+      END DO
+      !
+      ! ... work -> csg
+      CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
+      & rismt%mp_task%nvec, work, rismt%ng, rismt%csg, -1)
+      !
+    END IF
     !
-    ! ... FFT work
-    DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
-      jsite = isite - rismt%mp_site%isite_start + 1
-      CALL fw_radfft(rismt%rfft, work(:, jsite), work(:, jsite))
-    END DO
-    !
-    ! ... work -> csg
-    CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
-    & rismt%mp_task%nvec, work, rismt%ng, rismt%csg, -1)
-    !
-#else
-    ! ... Fourier Transform, with BLAS level-3
-    CALL fw_radfft(rismt%rfft, rismt%csr, rismt%csg, rismt%nsite)
-    !
-#endif
   END SUBROUTINE fft_csr_to_csg
   !
   SUBROUTINE fft_hg_to_hr()
@@ -414,26 +415,27 @@ CONTAINS
     INTEGER :: isite
     INTEGER :: jsite
     !
-#if defined (__RISM_RADFFT_OLD)
-    ! ... hg -> work
-    CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
-    & rismt%mp_task%nvec, work(1, 1), rismt%ng, rismt%hg(1, 1), +1)
+    IF (rismt%rfft%lmpi) THEN
+      ! ... Fourier Transform, with BLAS level-3
+      CALL inv_mpi_radfft(rismt%rfft, rismt%hg, rismt%hr, rismt%nsite)
+      !
+    ELSE
+      ! ... hg -> work
+      CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
+      & rismt%mp_task%nvec, work(1, 1), rismt%ng, rismt%hg(1, 1), +1)
+      !
+      ! ... FFT work
+      DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
+        jsite = isite - rismt%mp_site%isite_start + 1
+        CALL inv_radfft(rismt%rfft, work(:, jsite), work(:, jsite))
+      END DO
+      !
+      ! ... work -> hr
+      CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
+      & rismt%mp_task%nvec, work(1, 1), rismt%nr, rismt%hr(1, 1), -1)
+      !
+    END IF
     !
-    ! ... FFT work
-    DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
-      jsite = isite - rismt%mp_site%isite_start + 1
-      CALL inv_radfft(rismt%rfft, work(:, jsite), work(:, jsite))
-    END DO
-    !
-    ! ... work -> hr
-    CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
-    & rismt%mp_task%nvec, work(1, 1), rismt%nr, rismt%hr(1, 1), -1)
-    !
-#else
-    ! ... Fourier Transform, with BLAS level-3
-    CALL inv_radfft(rismt%rfft, rismt%hg, rismt%hr, rismt%nsite)
-    !
-#endif
   END SUBROUTINE fft_hg_to_hr
   !
   SUBROUTINE remove_glarge_csr()
@@ -453,26 +455,27 @@ CONTAINS
       END DO
     END DO
     !
-#if defined (__RISM_RADFFT_OLD)
-    ! ... csg -> work
-    CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
-    & rismt%mp_task%nvec, work(1, 1), rismt%ng, rismt%csg(1, 1), +1)
+    IF (rismt%rfft%lmpi) THEN
+      ! ... Fourier Transform, with BLAS level-3
+      CALL inv_mpi_radfft(rismt%rfft, rismt%csg, rismt%csr, rismt%nsite)
+      !
+    ELSE
+      ! ... csg -> work
+      CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
+      & rismt%mp_task%nvec, work(1, 1), rismt%ng, rismt%csg(1, 1), +1)
+      !
+      ! ... FFT work
+      DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
+        jsite = isite - rismt%mp_site%isite_start + 1
+        CALL inv_radfft(rismt%rfft, work(:, jsite), work(:, jsite))
+      END DO
+      !
+      ! ... work -> csr
+      CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
+      & rismt%mp_task%nvec, work(1, 1), rismt%nr, rismt%csr(1, 1), -1)
+      !
+    END IF
     !
-    ! ... FFT work
-    DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
-      jsite = isite - rismt%mp_site%isite_start + 1
-      CALL inv_radfft(rismt%rfft, work(:, jsite), work(:, jsite))
-    END DO
-    !
-    ! ... work -> csr
-    CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
-    & rismt%mp_task%nvec, work(1, 1), rismt%nr, rismt%csr(1, 1), -1)
-    !
-#else
-    ! ... Fourier Transform, with BLAS level-3
-    CALL inv_radfft(rismt%rfft, rismt%csg, rismt%csr, rismt%nsite)
-    !
-#endif
   END SUBROUTINE remove_glarge_csr
   !
 END SUBROUTINE do_1drism

@@ -158,7 +158,8 @@ MODULE rism
 CONTAINS
   !
   !--------------------------------------------------------------------------
-  SUBROUTINE allocate_1drism(rismt, nv, ngrid, rmax, super_comm, super_root, is_intra, intra_comm)
+  SUBROUTINE allocate_1drism(rismt, nv, ngrid, rmax, mpi_radfft, &
+                           & super_comm, super_root, is_intra, intra_comm)
     !--------------------------------------------------------------------------
     !
     ! ... initialize rism_type for 1D-RISM
@@ -167,6 +168,7 @@ CONTAINS
     ! ...   nv:         number of solvent's sites
     ! ...   ngrid:      number of grids
     ! ...   rmax:       maximum radius of R-space (in bohr)
+    ! ...   mpi_radfft: use MPI for radial FFT
     ! ...   super_comm: MPI's parent communicator
     ! ...   super_root: root rank of MPI's parent
     ! ...   is_intra:   this process is in MPI's intra group
@@ -178,6 +180,7 @@ CONTAINS
     INTEGER,         INTENT(IN)    :: nv
     INTEGER,         INTENT(IN)    :: ngrid
     REAL(DP),        INTENT(IN)    :: rmax
+    LOGICAL,         INTENT(IN)    :: mpi_radfft
     INTEGER,         INTENT(IN)    :: super_comm
     INTEGER,         INTENT(IN)    :: super_root
     LOGICAL,         INTENT(IN)    :: is_intra
@@ -214,8 +217,11 @@ CONTAINS
     !
     ! ... initialize radial FFT
     CALL allocate_radfft(rismt%rfft, ngrid, rmax)
-    CALL init_mpi_radfft(rismt%rfft, rismt%mp_task%itask_comm, &
-                       & rismt%mp_task%ivec_start, rismt%mp_task%ivec_end)
+    !
+    IF (mpi_radfft) THEN
+      CALL init_mpi_radfft(rismt%rfft, rismt%mp_task%itask_comm, &
+                         & rismt%mp_task%ivec_start, rismt%mp_task%ivec_end)
+    END IF
     !
     ! ... initialize rismt
     mgrid = rismt%mp_task%ivec_end - rismt%mp_task%ivec_start + 1

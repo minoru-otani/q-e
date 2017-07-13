@@ -141,6 +141,9 @@ CONTAINS
     INTEGER :: rism1d_comm
     INTEGER :: rism1d_root
     LOGICAL :: rism1d_primal
+    LOGICAL :: mpi_radfft
+    !
+    INTEGER, PARAMETER :: NPROC_MPI_RADFFT = 8
     !
     IF (.NOT. lrism1d) THEN
       RETURN
@@ -148,18 +151,20 @@ CONTAINS
     !
     nv = get_nsite_in_solVs()
     !
+    mpi_radfft = (nproc_sub > NPROC_MPI_RADFFT)
+    !
     ! ... initialize MPI's information
     CALL rism1d_mpi_init(rism1d_comm, rism1d_root, rism1d_primal)
     !
     ! ... initialize rism1t_right
     init_rism1t_right = .TRUE.
-    CALL allocate_1drism(rism1t_right, nv, ngrid, rmax, &
+    CALL allocate_1drism(rism1t_right, nv, ngrid, rmax, mpi_radfft, &
     & intra_image_comm, rism1d_root, rism1d_primal, rism1d_comm)
     !
     IF (lboth) THEN
       ! ... initialize rism1t_left
       init_rism1t_left = .TRUE.
-      CALL allocate_1drism(rism1t_left, nv, ngrid, rmax, &
+      CALL allocate_1drism(rism1t_left, nv, ngrid, rmax, mpi_radfft, &
       & intra_image_comm, rism1d_root, rism1d_primal, rism1d_comm)
     END IF
     !
