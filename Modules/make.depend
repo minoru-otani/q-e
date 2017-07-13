@@ -552,6 +552,7 @@ radfft.o : ../FFTXlib/fft_scalar.o
 radfft.o : ../FFTXlib/fft_support.o
 radfft.o : constants.o
 radfft.o : kind.o
+radfft.o : mp.o
 radial_gradients.o : kind.o
 radial_grids.o : constants.o
 radial_grids.o : kind.o
