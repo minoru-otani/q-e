@@ -128,7 +128,7 @@ CONTAINS
     END IF
     !
     ! calculate sin(g*r)
-    ALLOCATE(singr(radfft0%ngrid, radfft0%igrid_len))
+    ALLOCATE(radfft0%singr(radfft0%ngrid, radfft0%igrid_len))
     !
 !$omp parallel do default(shared) private(ir, iir, r, ig, g)
     DO ir = radfft0%igrid_start, radfft0%igrid_end
@@ -283,8 +283,8 @@ CONTAINS
     INTEGER               :: iigrid_start
     REAL(DP)              :: dr
     REAL(DP)              :: fac
-    REAL(DP), ALLOCATABLE :: crr(:)
-    REAL(DP), ALLOCATABLE :: cgg(:)
+    REAL(DP), ALLOCATABLE :: crr(:,:)
+    REAL(DP), ALLOCATABLE :: cgg(:,:)
     !
     IF (mult < 1) RETURN
     !
@@ -360,8 +360,8 @@ CONTAINS
     INTEGER               :: iigrid_start
     REAL(DP)              :: dg
     REAL(DP)              :: fac
-    REAL(DP), ALLOCATABLE :: cgg(:)
-    REAL(DP), ALLOCATABLE :: crr(:)
+    REAL(DP), ALLOCATABLE :: cgg(:,:)
+    REAL(DP), ALLOCATABLE :: crr(:,:)
     !
     IF (mult < 1) RETURN
     !
