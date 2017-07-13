@@ -69,6 +69,9 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
     RETURN
   END IF
   !
+  ! ... initialize as `normally done'
+  ierr = IERR_RISM_NULL
+  !
   ! ... beta = 1 / (kB * T)
   beta = 1.0_DP / K_BOLTZMANN_RY / rismt%temp
   !
@@ -79,9 +82,6 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   ELSE
     jg = 1
   END IF
-  !
-  ! ... initialize as `normally done'
-  ierr = IERR_RISM_NULL
   !
   ! ... in case G /= 0
   ! ... 1D-RISM equation for each ig

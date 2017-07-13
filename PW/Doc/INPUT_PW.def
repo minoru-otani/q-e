@@ -2730,7 +2730,7 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
         }
 
         var rism1d_nproc -type INTEGER {
-            default { 8 }
+            default { 128 }
             info {
                 Number of processes to calculate 1D-RISM.
             }
