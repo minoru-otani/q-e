@@ -181,9 +181,9 @@ CONTAINS
     !
     IMPLICIT NONE
     !
-    TYPE(radfft_type), INTENT(IN)  :: radfft0
-    REAL(DP),          INTENT(IN)  :: cr(:)
-    REAL(DP),          INTENT(OUT) :: cg(:)
+    TYPE(radfft_type), INTENT(INOUT) :: radfft0
+    REAL(DP),          INTENT(IN)    :: cr(:)
+    REAL(DP),          INTENT(OUT)   :: cg(:)
     !
     INTEGER                  :: igrid
     REAL(DP)                 :: dr
@@ -233,9 +233,9 @@ CONTAINS
     !
     IMPLICIT NONE
     !
-    TYPE(radfft_type), INTENT(IN)  :: radfft0
-    REAL(DP),          INTENT(IN)  :: cg(:)
-    REAL(DP),          INTENT(OUT) :: cr(:)
+    TYPE(radfft_type), INTENT(INOUT) :: radfft0
+    REAL(DP),          INTENT(IN)    :: cg(:)
+    REAL(DP),          INTENT(OUT)   :: cr(:)
     !
     INTEGER                  :: igrid
     REAL(DP)                 :: dg
