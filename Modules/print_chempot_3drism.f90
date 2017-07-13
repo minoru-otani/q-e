@@ -111,7 +111,7 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
     label1 = solVs(isolV)%name
     WRITE(stdout, 100) label1, nsol(isolV)
     !
-100 FORMAT(5X,A10,X,F10.6)
+100 FORMAT(5X,A10,X,F12.6)
     !
   END DO
   !
@@ -128,7 +128,7 @@ SUBROUTINE print_chempot_3drism(rismt, ierr)
     END IF
     WRITE(stdout, 200) label1, qsol(isolV)
     !
-200 FORMAT(5X,A10,X,F10.6,' e')
+200 FORMAT(5X,A10,X,F12.6,' e')
     !
   END DO
   !
