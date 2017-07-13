@@ -73,13 +73,7 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   beta = 1.0_DP / K_BOLTZMANN_RY / rismt%temp
   !
   ! ... allocate working memory
-  ALLOCATE(ipiv(nv))
   ALLOCATE(rho(nv))
-  ALLOCATE(hvv(nv, nv))
-  ALLOCATE(cvv(nv, nv))
-  ALLOCATE(wvv(nv, nv))
-  ALLOCATE(avv(nv, nv))
-  ALLOCATE(bvv(nv, nv))
   !
   ! ... make rho
   DO iv1 = 1, nv
@@ -101,14 +95,29 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   !
   ! ... in case G /= 0
   ! ... 1D-RISM equation for each ig
+!$omp parallel default(shared) private(ig, iig, iv1, iv2, ivv, &
+!$omp          ilapack, ierr, ipiv, hvv, cvv, wvv, avv, bvv)
+  !
+  ! ... allocate working memory for OpenMP
+  ALLOCATE(ipiv(nv))
+  ALLOCATE(hvv(nv, nv))
+  ALLOCATE(cvv(nv, nv))
+  ALLOCATE(wvv(nv, nv))
+  ALLOCATE(avv(nv, nv))
+  ALLOCATE(bvv(nv, nv))
+  !
+!$omp do reduction(max:ierr)
   DO ig = jg, rismt%ng
+    !
+    ! ... initialize as `normally done'
+    ierr = IERR_RISM_NULL
     !
     ! ... check gmax
     IF (gmax > 0.0_DP) THEN
       iig = rismt%mp_task%ivec_start + ig - 1
       IF (rismt%rfft%ggrid(iig) > gmax) THEN
-        hvv = 0.0_DP
-        GOTO 100
+        rismt%hg(ig, :) = 0.0_DP
+        CYCLE
       END IF
     END IF
     !
@@ -140,16 +149,16 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
     CALL dgetrf(nv, nv, avv, nv, ipiv, ilapack)
     IF (ilapack /= 0) THEN
       ierr = IERR_RISM_CANNOT_DGETRF
-      GOTO 200
+      EXIT
     END IF
+    !
     CALL dgetrs('N', nv, nv, avv, nv, ipiv, hvv, nv, ilapack)
     IF (ilapack /= 0) THEN
       ierr = IERR_RISM_CANNOT_DGETRS
-      GOTO 200
+      EXIT
     END IF
     !
     ! ... set hvv to rismt
-100 CONTINUE
     DO iv1 = 1, nv
       DO iv2 = 1, iv1
         ivv = iv1 * (iv1 - 1) / 2 + iv2
@@ -158,19 +167,20 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
     END DO
     !
   END DO
+!$omp end do
   !
-  ! ... normally done
-  ierr = IERR_RISM_NULL
-  !
-  ! ... deallocate working memory
-200 CONTINUE
+  ! ... deallocate working memory for OpenMP
   DEALLOCATE(ipiv)
-  DEALLOCATE(rho)
   DEALLOCATE(hvv)
   DEALLOCATE(cvv)
   DEALLOCATE(wvv)
   DEALLOCATE(avv)
   DEALLOCATE(bvv)
+  !
+!$omp end parallel
+  !
+  ! ... deallocate working memory
+  DEALLOCATE(rho)
   !
   ! ... merge error code through all processies
   CALL merge_ierr_rism(ierr, rismt%mp_site%inter_sitg_comm)

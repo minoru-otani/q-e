@@ -331,6 +331,7 @@ CONTAINS
           iigrid_start = 2
           cg(1 + mgrid) = 0.0_DP
         END IF
+        !
 !$omp parallel do default(shared) private(igrid, jgrid)
         DO igrid = iigrid_start, radfft0%igrid_end
           jgrid = igrid - radfft0%igrid_start + 1
@@ -408,6 +409,7 @@ CONTAINS
           iigrid_start = 2
           cr(1 + mgrid) = 0.0_DP
         END IF
+        !
 !$omp parallel do default(shared) private(igrid, jgrid)
         DO igrid = iigrid_start, radfft0%igrid_end
           jgrid = igrid - radfft0%igrid_start + 1
