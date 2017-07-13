@@ -32,7 +32,8 @@ MODULE rism1d_facade
   !
   ! ... define variables
   LOGICAL                :: lrism1d       = .FALSE.  ! to calculate 1D-RISM, or not
-  INTEGER                :: nproc_sub     = 0        ! size of MPI's subspace
+  INTEGER                :: nproc_sub     = 0        ! total size of MPI's subspace
+  INTEGER                :: nproc_switch  = 0        ! size of MPI's subspace to switch algorithm
   LOGICAL                :: has_any_corr  = .FALSE.  ! has nonzero correlations
   CHARACTER(LEN=LEN_STR) :: starting_corr = ''       ! initial correlations: 'zero', 'file', 'fix'
   INTEGER                :: niter         = 0        ! maximum number of iteration
@@ -143,15 +144,13 @@ CONTAINS
     LOGICAL :: rism1d_primal
     LOGICAL :: mpi_radfft
     !
-    INTEGER, PARAMETER :: NPROC_MPI_RADFFT = 8
-    !
     IF (.NOT. lrism1d) THEN
       RETURN
     END IF
     !
     nv = get_nsite_in_solVs()
     !
-    mpi_radfft = (nproc_sub > NPROC_MPI_RADFFT)
+    mpi_radfft = (nproc_sub > nproc_switch)
     !
     ! ... initialize MPI's information
     CALL rism1d_mpi_init(rism1d_comm, rism1d_root, rism1d_primal)

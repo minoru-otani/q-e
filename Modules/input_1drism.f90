@@ -24,7 +24,7 @@ SUBROUTINE iosys_1drism(laue)
   USE molecule_const,   ONLY : BOHRm3_TO_MOLCMm3, BOHRm3_TO_MOLLm1
   USE read_solv_module, ONLY : read_solvents
   USE rism,             ONLY : CLOSURE_HNC, CLOSURE_KH
-  USE rism1d_facade,    ONLY : nproc_sub, starting_corr, niter, epsv, bond_width, &
+  USE rism1d_facade,    ONLY : nproc_sub, nproc_switch, starting_corr, niter, epsv, bond_width, &
                              & mdiis_size, mdiis_step, rism1t, rism1d_initialize, &
                              & rism1d_activate_right, rism1d_activate_left
   USE solvmol,          ONLY : nsolV_ => nsolV, solVs, get_nsite_in_solVs
@@ -37,7 +37,7 @@ SUBROUTINE iosys_1drism(laue)
   !
   USE input_parameters, ONLY : nsolv, closure, starting1d, tempv, permittivity, rmax1d, &
                                smear1d, rism1d_maxstep, rism1d_conv_thr, rism1d_bond_width, &
-                               rism1d_nproc, mdiis1d_size, mdiis1d_step, &
+                               rism1d_nproc, rism1d_nproc_switch, mdiis1d_size, mdiis1d_step, &
                                laue_expand_right, laue_expand_left, laue_both_hands
   !
   ! ... SOLVENTS card
@@ -101,6 +101,7 @@ SUBROUTINE iosys_1drism(laue)
   nsolV_        = nsolv
   starting_corr = starting1d
   nproc_sub     = rism1d_nproc
+  nproc_switch  = rism1d_nproc_switch
   niter         = rism1d_maxstep
   epsv          = rism1d_conv_thr
   bond_width    = rism1d_bond_width

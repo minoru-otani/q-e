@@ -1482,6 +1482,9 @@ MODULE input_parameters
         INTEGER :: rism1d_nproc = 128
           ! number of processes to calculate 1D-RISM
 
+        INTEGER :: rism1d_nproc_switch = 8
+          ! number of processes to calculate 1D-RISM
+
         LOGICAL :: rism3d_conv_always = .FALSE.
           ! converge 3D-RISM always competely, or not
 
@@ -1555,7 +1558,8 @@ MODULE input_parameters
                           starting1d, starting3d, smear1d, smear3d, &
                           rism1d_maxstep, rism3d_maxstep, rism1d_conv_thr, rism3d_conv_thr, &
                           mdiis1d_size, mdiis3d_size, mdiis1d_step, mdiis3d_step, &
-                          rism1d_bond_width, rism1d_nproc, rism3d_conv_always, rism3d_planar_average, &
+                          rism1d_bond_width, rism1d_nproc, rism1d_nproc_switch, &
+                          rism3d_conv_always, rism3d_planar_average, &
                           laue_nfit, laue_expand_right, laue_expand_left, &
                           laue_starting_right, laue_starting_left, &
                           laue_buffer_right, laue_buffer_left, laue_both_hands, laue_reference, &
