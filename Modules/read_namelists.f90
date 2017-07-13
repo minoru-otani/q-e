@@ -701,7 +701,7 @@ MODULE read_namelists_module
        solute_epsilon  = -1.0_DP
        solute_sigma    = -1.0_DP
        rmax_lj         = 5.0_DP
-       rmax1d          = 250.0_DP
+       rmax1d          = 1500.0_DP
        starting1d      = 'zero'
        !
        ! ... ( 'zero' | 'file' | 'fix' )
@@ -721,7 +721,11 @@ MODULE read_namelists_module
        mdiis1d_step          = -1.0_DP  ! will initialize at iosys_1drism
        mdiis3d_step          = -1.0_DP  ! will initialize at iosys_3drism
        rism1d_bond_width     = 0.0_DP
+#if defined (__RISM_RADFFT_OLD)
+       rism1d_nproc          = 8
+#else
        rism1d_nproc          = 128
+#endif
        rism3d_conv_always    = .FALSE.
        rism3d_planar_average = .FALSE.
        laue_nfit             = 4
