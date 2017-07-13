@@ -96,7 +96,7 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   ! ... in case G /= 0
   ! ... 1D-RISM equation for each ig
 !$omp parallel default(shared) private(ig, iig, iv1, iv2, ivv, &
-!$omp          ilapack, ierr, ipiv, hvv, cvv, wvv, avv, bvv)
+!$omp          ilapack, ipiv, hvv, cvv, wvv, avv, bvv)
   !
   ! ... allocate working memory for OpenMP
   ALLOCATE(ipiv(nv))
@@ -110,7 +110,11 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   DO ig = jg, rismt%ng
     !
     ! ... initialize as `normally done'
-    ierr = IERR_RISM_NULL
+    ierr = MAX(ierr, IERR_RISM_NULL)
+    !
+    IF (ierr /= IERR_RISM_NULL) THEN
+      CYCLE
+    END IF
     !
     ! ... check gmax
     IF (gmax > 0.0_DP) THEN
@@ -149,13 +153,13 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
     CALL dgetrf(nv, nv, avv, nv, ipiv, ilapack)
     IF (ilapack /= 0) THEN
       ierr = IERR_RISM_CANNOT_DGETRF
-      EXIT
+      CYCLE
     END IF
     !
     CALL dgetrs('N', nv, nv, avv, nv, ipiv, hvv, nv, ilapack)
     IF (ilapack /= 0) THEN
       ierr = IERR_RISM_CANNOT_DGETRS
-      EXIT
+      CYCLE
     END IF
     !
     ! ... set hvv to rismt
