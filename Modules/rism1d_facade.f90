@@ -52,6 +52,7 @@ MODULE rism1d_facade
   ! ... public components
   PUBLIC :: lrism1d
   PUBLIC :: nproc_sub
+  PUBLIC :: nproc_switch
   PUBLIC :: starting_corr
   PUBLIC :: niter
   PUBLIC :: epsv
