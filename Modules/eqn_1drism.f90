@@ -72,8 +72,30 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   ! ... beta = 1 / (kB * T)
   beta = 1.0_DP / K_BOLTZMANN_RY / rismt%temp
   !
-  ! ... allocate working memory
+  ! ... in case G = 0
+  IF (rismt%mp_task%ivec_start == 1) THEN
+    jg = 2
+    rismt%hg(1, :) = 0.0_DP
+  ELSE
+    jg = 1
+  END IF
+  !
+  ! ... initialize as `normally done'
+  ierr = IERR_RISM_NULL
+  !
+  ! ... in case G /= 0
+  ! ... 1D-RISM equation for each ig
+!$omp parallel default(shared) private(ig, iig, iv1, iv2, ivv, isolV, &
+!$omp          ilapack, rho, ipiv, hvv, cvv, wvv, avv, bvv)
+  !
+  ! ... allocate working memory for OpenMP
   ALLOCATE(rho(nv))
+  ALLOCATE(ipiv(nv))
+  ALLOCATE(hvv(nv, nv))
+  ALLOCATE(cvv(nv, nv))
+  ALLOCATE(wvv(nv, nv))
+  ALLOCATE(avv(nv, nv))
+  ALLOCATE(bvv(nv, nv))
   !
   ! ... make rho
   DO iv1 = 1, nv
@@ -85,31 +107,9 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
     END IF
   END DO
   !
-  ! ... in case G = 0
-  IF (rismt%mp_task%ivec_start == 1) THEN
-    jg = 2
-    rismt%hg(1, :) = 0.0_DP
-  ELSE
-    jg = 1
-  END IF
-  !
-  ! ... in case G /= 0
-  ! ... 1D-RISM equation for each ig
-!$omp parallel default(shared) private(ig, iig, iv1, iv2, ivv, &
-!$omp          ilapack, ipiv, hvv, cvv, wvv, avv, bvv)
-  !
-  ! ... allocate working memory for OpenMP
-  ALLOCATE(ipiv(nv))
-  ALLOCATE(hvv(nv, nv))
-  ALLOCATE(cvv(nv, nv))
-  ALLOCATE(wvv(nv, nv))
-  ALLOCATE(avv(nv, nv))
-  ALLOCATE(bvv(nv, nv))
-  !
 !$omp do reduction(max:ierr)
   DO ig = jg, rismt%ng
     !
-    ! ... initialize as `normally done'
     ierr = MAX(ierr, IERR_RISM_NULL)
     !
     IF (ierr /= IERR_RISM_NULL) THEN
@@ -174,6 +174,7 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
 !$omp end do
   !
   ! ... deallocate working memory for OpenMP
+  DEALLOCATE(rho)
   DEALLOCATE(ipiv)
   DEALLOCATE(hvv)
   DEALLOCATE(cvv)
@@ -182,9 +183,6 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   DEALLOCATE(bvv)
   !
 !$omp end parallel
-  !
-  ! ... deallocate working memory
-  DEALLOCATE(rho)
   !
   ! ... merge error code through all processies
   CALL merge_ierr_rism(ierr, rismt%mp_site%inter_sitg_comm)
