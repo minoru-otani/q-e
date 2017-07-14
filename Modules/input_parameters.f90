@@ -1424,7 +1424,7 @@ MODULE input_parameters
         REAL(DP) :: rmax_lj = 5.0_DP
           ! maximum radius of Lennard-Jones for 3D-RISM (in sigma)
 
-        REAL(DP) :: rmax1d = 1500.0_DP
+        REAL(DP) :: rmax1d = 1000.0_DP
           ! maximum inter-site radius for 1D-RISM (in bohr)
 
         CHARACTER(len=80) :: starting1d = 'zero'

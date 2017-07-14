@@ -701,7 +701,7 @@ MODULE read_namelists_module
        solute_epsilon  = -1.0_DP
        solute_sigma    = -1.0_DP
        rmax_lj         = 5.0_DP
-       rmax1d          = 1500.0_DP
+       rmax1d          = 1000.0_DP
        starting1d      = 'zero'
        !
        ! ... ( 'zero' | 'file' | 'fix' )
