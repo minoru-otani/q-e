@@ -1482,7 +1482,7 @@ MODULE input_parameters
         INTEGER :: rism1d_nproc = 128
           ! number of processes to calculate 1D-RISM
 
-        INTEGER :: rism1d_nproc_switch = 8
+        INTEGER :: rism1d_nproc_switch = 16
           ! number of processes to calculate 1D-RISM
 
         LOGICAL :: rism3d_conv_always = .FALSE.

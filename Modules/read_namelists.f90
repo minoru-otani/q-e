@@ -722,7 +722,7 @@ MODULE read_namelists_module
        mdiis3d_step          = -1.0_DP  ! will initialize at iosys_3drism
        rism1d_bond_width     = 0.0_DP
        rism1d_nproc          = 128
-       rism1d_nproc_switch   = 8
+       rism1d_nproc_switch   = 16
        rism3d_conv_always    = .FALSE.
        rism3d_planar_average = .FALSE.
        laue_nfit             = 4

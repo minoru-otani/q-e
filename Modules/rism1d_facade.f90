@@ -151,10 +151,8 @@ CONTAINS
     !
     nv = get_nsite_in_solVs()
     !
-    mpi_radfft = (nproc_sub > nproc_switch)
-    !
     ! ... initialize MPI's information
-    CALL rism1d_mpi_init(rism1d_comm, rism1d_root, rism1d_primal)
+    CALL rism1d_mpi_init(rism1d_comm, rism1d_root, rism1d_primal, mpi_radfft)
     !
     ! ... initialize rism1t_right
     init_rism1t_right = .TRUE.
@@ -174,7 +172,7 @@ CONTAINS
   END SUBROUTINE rism1d_initialize
   !
   !----------------------------------------------------------------------------
-  SUBROUTINE rism1d_mpi_init(rism1d_comm, rism1d_root, rism1d_primal)
+  SUBROUTINE rism1d_mpi_init(rism1d_comm, rism1d_root, rism1d_primal, mpi_radfft)
     !----------------------------------------------------------------------------
     !
     IMPLICIT NONE
@@ -182,6 +180,7 @@ CONTAINS
     INTEGER, INTENT(OUT) :: rism1d_comm
     INTEGER, INTENT(OUT) :: rism1d_root
     LOGICAL, INTENT(OUT) :: rism1d_primal
+    LOGICAL, INTENT(OUT) :: mpi_radfft
     !
     INTEGER :: color
     INTEGER :: irank
@@ -206,6 +205,12 @@ CONTAINS
       CALL mp_comm_split(intra_image_comm, color, irank, rism1d_comm)
       CALL mp_sum(rism1d_root, intra_image_comm)
       rism1d_primal = (color == 0)
+    END IF
+    !
+    IF (MIN(nproc, nproc_sub) > nproc_switch) THEN
+      mpi_radfft = .TRUE.
+    ELSE
+      mpi_radfft = .FALSE.
     END IF
     !
   END SUBROUTINE rism1d_mpi_init
