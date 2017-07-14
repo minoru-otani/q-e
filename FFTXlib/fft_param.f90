@@ -20,7 +20,7 @@ MODULE fft_param
   !! Number of different FFT tables that the module
   !!could keep into memory without reinitialization
 
-  INTEGER, PARAMETER :: nfftx = 4097
+  INTEGER, PARAMETER :: nfftx = 16385
   !!Max allowed fft dimension
 
   INTEGER, PARAMETER :: DP = selected_real_kind(14,200)
