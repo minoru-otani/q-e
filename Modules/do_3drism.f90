@@ -45,6 +45,7 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
   INTEGER                  :: nq
   INTEGER                  :: iter
   INTEGER                  :: ngrid
+  INTEGER                  :: nsite
   LOGICAL                  :: lconv
   REAL(DP)                 :: rmscurr
   REAL(DP)                 :: rmssave
