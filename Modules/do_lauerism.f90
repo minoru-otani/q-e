@@ -34,8 +34,8 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
   USE mdiis,          ONLY : mdiis_type, allocate_mdiis, deallocate_mdiis, update_by_mdiis, reset_mdiis
   USE mp,             ONLY : mp_sum
   USE rism,           ONLY : rism_type, ITYPE_LAUERISM
-  USE solvmol,        ONLY : get_nuniq_in_solVs, nsolV, solVs, iuniq_to_nsite, &
-                           & iuniq_to_isite, isite_to_isolV
+  USE solvmol,        ONLY : get_nuniq_in_solVs, get_nsite_in_solVs, nsolV, solVs, &
+                           & iuniq_to_nsite, iuniq_to_isite, isite_to_isolV
   !
   IMPLICIT NONE
   !
@@ -53,6 +53,7 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
   INTEGER                  :: nq
   INTEGER                  :: iter
   INTEGER                  :: ngrid
+  INTEGER                  :: nsite
   LOGICAL                  :: lconv
   REAL(DP)                 :: rmscurr
   REAL(DP)                 :: rmssave
@@ -187,13 +188,16 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
     CALL mp_sum(ngrid, rismt%mp_site%intra_sitg_comm)
     !
     ! ... calculate RMS
+    nsite = get_nsite_in_solVs()
+    !
     IF (rismt%nr * rismt%nsite > 0) THEN
-      CALL rms_residual(ngrid * rismt%mp_site%nsite, rismt%nr * rismt%nsite, &
+      CALL rms_residual(ngrid * nsite, rismt%nr * rismt%nsite, &
                       & dcsr, rmscurr, rismt%intra_comm)
     ELSE
-      CALL rms_residual(ngrid * rismt%mp_site%nsite, rismt%nr * rismt%nsite, &
+      CALL rms_residual(ngrid * nsite, rismt%nr * rismt%nsite, &
                       & dcsr_, rmscurr, rismt%intra_comm)
     END IF
+    !
     IF (rmscurr < rmsconv) THEN
       lconv = .TRUE.
     END IF
@@ -574,7 +578,7 @@ CONTAINS
       isolV = isite_to_isolV(iv)
       rhov1 = solVs(isolV)%density
       rhov2 = solVs(isolV)%subdensity
-      rhov  = 0.5_DP * (rhov1 + rhov2) * DBLE(nv)
+      rhov  = 0.5_DP * (rhov1 + rhov2) * SQRT(DBLE(nv))
       !
       IF (rismt%nr > 0) THEN
         dcsr(:, iiq) = (rhov / rhovt) * (rismt%gr(:, iiq) - rismt%hr(:, iiq) - 1.0_DP)

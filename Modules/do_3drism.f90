@@ -29,8 +29,8 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
   USE kinds,          ONLY : DP
   USE mdiis,          ONLY : mdiis_type, allocate_mdiis, deallocate_mdiis, update_by_mdiis, reset_mdiis
   USE rism,           ONLY : rism_type, ITYPE_3DRISM
-  USE solvmol,        ONLY : get_nuniq_in_solVs, nsolV, solVs, iuniq_to_nsite, &
-                           & iuniq_to_isite, isite_to_isolV
+  USE solvmol,        ONLY : get_nuniq_in_solVs, get_nsite_in_solVs, nsolV, solVs, &
+                           & iuniq_to_nsite, iuniq_to_isite, isite_to_isolV
   !
   IMPLICIT NONE
   !
@@ -150,13 +150,16 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
     !
     ! ... calculate RMS
     ngrid = rismt%cfft%dfftt%nr1 * rismt%cfft%dfftt%nr2 * rismt%cfft%dfftt%nr3
+    nsite = get_nsite_in_solVs()
+    !
     IF (rismt%nr * rismt%nsite > 0) THEN
-      CALL rms_residual(ngrid * rismt%mp_site%nsite, rismt%nr * rismt%nsite, &
+      CALL rms_residual(ngrid * nsite, rismt%nr * rismt%nsite, &
                       & dcsr, rmscurr, rismt%intra_comm)
     ELSE
-      CALL rms_residual(ngrid * rismt%mp_site%nsite, rismt%nr * rismt%nsite, &
+      CALL rms_residual(ngrid * nsite, rismt%nr * rismt%nsite, &
                       & dcsr_, rmscurr, rismt%intra_comm)
     END IF
+    !
     IF (rmscurr < rmsconv) THEN
       lconv = .TRUE.
     END IF
@@ -433,7 +436,7 @@ CONTAINS
       iv    = iuniq_to_isite(1, iq)
       nv    = iuniq_to_nsite(iq)
       isolV = isite_to_isolV(iv)
-      rhov  = solVs(isolV)%density * DBLE(nv)
+      rhov  = solVs(isolV)%density * SQRT(DBLE(nv))
       !
       IF (rismt%nr > 0) THEN
         dcsr(:, iiq) = (rhov / rhovt) * (rismt%gr(:, iiq) - rismt%hr(:, iiq) - 1.0_DP)
