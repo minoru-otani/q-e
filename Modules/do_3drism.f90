@@ -413,13 +413,15 @@ CONTAINS
     INTEGER  :: iv
     INTEGER  :: nv
     INTEGER  :: isolV
+    INTEGER  :: natom
     REAL(DP) :: rhov
     REAL(DP) :: rhovt
     !
     rhovt = 0.0_DP
     DO isolV = 1, nsolV
+      natom = solVs(isolV)%natom
       rhov  = solVs(isolV)%density
-      rhovt = rhovt + rhov
+      rhovt = rhovt + rhov * DBLE(natom)
     END DO
     !
     IF (rhovt <= 0.0_DP) THEN ! will not be occurred
@@ -431,7 +433,7 @@ CONTAINS
       iv    = iuniq_to_isite(1, iq)
       nv    = iuniq_to_nsite(iq)
       isolV = isite_to_isolV(iv)
-      rhov  = solVs(isolV)%density
+      rhov  = solVs(isolV)%density * DBLE(nv)
       !
       IF (rismt%nr > 0) THEN
         dcsr(:, iiq) = (rhov / rhovt) * (rismt%gr(:, iiq) - rismt%hr(:, iiq) - 1.0_DP)
