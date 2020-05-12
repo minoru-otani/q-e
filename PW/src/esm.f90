@@ -7230,6 +7230,7 @@ SUBROUTINE esm_summary ()
       !
       USE io_global,        ONLY : stdout, ionode
       USE constants,        ONLY : rytoev, BOHR_RADIUS_ANGS
+      USE klist,            ONLY : tot_charge
       !
       IMPLICIT NONE
       !
@@ -7258,6 +7259,7 @@ SUBROUTINE esm_summary ()
               FMT  = '(5x, "Boundary Conditions: Vacuum-Slab-smooth ESM)")' )
       END SELECT
       !
+      WRITE( UNIT = stdout, FMT = 9055 ) tot_charge
       IF( esm_efield /= 0.0_DP ) THEN
          WRITE( UNIT = stdout, FMT = 9051 ) esm_efield
       END IF
@@ -7274,11 +7276,12 @@ SUBROUTINE esm_summary ()
       !
       WRITE( stdout, * )
       !
-9051  FORMAT( '     field strength                   = ', F8.2,' Ry/a.u.')
+9051  FORMAT( '     field strength                   = ', F8.4,' Ry/a.u.')
 9052  FORMAT( '     ESM offset from cell edge        = ', F8.2,' A' &
              /'                                      = ', F8.2,' a.u.')
 9053  FORMAT( '     grid points for fit at edges     = ', I8,' ')
 9054  FORMAT( '     smoothness parameter             = ', F8.2,' 1/a.u.' )
+9055  FORMAT( '     total charge in unit cell        = ', F8.4)
 
 END SUBROUTINE esm_summary
 
