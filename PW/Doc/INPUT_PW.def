@@ -2989,6 +2989,24 @@ input_description -distribution {Quantum Espresso} -package PWscf -program pw.x 
             }
         }
 
+        var rism1d_dielectric -type REAL {
+            default { -1.0D0 }
+            info {
+                Dielectric constant for 1D-RISM.
+                If @ref rism1d_dielectric > 0, dielectrically consistent RISM (DRISM) is performed.
+                See [J.S.Perkyns and B.M.Pettitt, CPL 1992, 190, 626], for details of DRISM.
+            }
+        }
+
+        var rism1d_molesize -type REAL {
+            default { 2.0D0 }
+            info {
+                Size of solvent molecules (a.u.) for 1D-RISM.
+                This is used only if @ref rism1d_dielectric > 0.
+                If you have large molecules, you have to set ~ 20 a.u. .
+            }
+        }
+
         var rism1d_nproc -type INTEGER {
             default { 128 }
             info {

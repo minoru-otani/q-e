@@ -362,6 +362,11 @@ mm_dispersion.o : kind.o
 mm_dispersion.o : mp.o
 mm_dispersion.o : mp_images.o
 mm_dispersion.o : parameters.o
+molebridge_vv.o : constants.o
+molebridge_vv.o : err_rism.o
+molebridge_vv.o : kind.o
+molebridge_vv.o : rism.o
+molebridge_vv.o : solvmol.o
 molecorr_vv.o : constants.o
 molecorr_vv.o : err_rism.o
 molecorr_vv.o : kind.o

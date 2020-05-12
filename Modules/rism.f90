@@ -61,7 +61,6 @@ MODULE rism
     INTEGER              :: itype   = ITYPE_NULL    ! data for 1D-RISM or 3D-RISM or Laue-RISM ?
     INTEGER              :: closure = CLOSURE_NULL  ! type of Closure equation
     REAL(DP)             :: temp    = 300.0_DP      ! temperature of solvent system
-    REAL(DP)             :: perm    = 1.0_DP        ! permittivity of solvent system
     REAL(DP)             :: tau     = 1.0_DP        ! coulomb smearing radius
     !
     ! ... dimensions of data
@@ -106,6 +105,7 @@ MODULE rism
     REAL(DP),    POINTER :: gr   (:,:)   ! distribution functions in R-space
     REAL(DP),    POINTER :: gg0  (:,:)   ! distribution functions when Gxy = 0 (Laue-RISM)
     REAL(DP),    POINTER :: wg   (:,:)   ! intra-molecular correlations in G-space
+    REAL(DP),    POINTER :: zg   (:,:)   ! intra-molecular dielectric bridge in G-space (for DRISM)
     REAL(DP),    POINTER :: xgs  (:,:,:) ! inter-site susceptibility in G-shell or Laue-rep.
     REAL(DP),    POINTER :: xgs0 (:,:,:) ! integrated xgs       (Laue-RISM).
     REAL(DP),    POINTER :: xgs1 (:,:,:) ! integrated (z * xgs) (Laue-RISM).
@@ -531,6 +531,7 @@ CONTAINS
         ALLOCATE(rismt%ulg(ng, nsite))
         ALLOCATE(rismt%hg( ng, nsite))
         ALLOCATE(rismt%wg( ng, nsite))
+        ALLOCATE(rismt%zg( ng, nsite))
       END IF
       !
     ELSE IF (itype == ITYPE_3DRISM) THEN
@@ -804,7 +805,6 @@ CONTAINS
       rismt%itype    = ITYPE_NULL
       rismt%closure  = CLOSURE_NULL
       rismt%temp     = 0.0_DP
-      rismt%perm     = 0.0_DP
       rismt%tau      = 0.0_DP
       rismt%nsite    = 0
       rismt%qtot     = 0.0_DP
@@ -858,6 +858,7 @@ CONTAINS
     IF (ASSOCIATED(rismt%gr ))       DEALLOCATE(rismt%gr)
     IF (ASSOCIATED(rismt%gg0))       DEALLOCATE(rismt%gg0)
     IF (ASSOCIATED(rismt%wg ))       DEALLOCATE(rismt%wg)
+    IF (ASSOCIATED(rismt%zg ))       DEALLOCATE(rismt%zg)
     IF (ASSOCIATED(rismt%xgs))       DEALLOCATE(rismt%xgs)
     IF (ASSOCIATED(rismt%xgs0))      DEALLOCATE(rismt%xgs0)
     IF (ASSOCIATED(rismt%xgs1))      DEALLOCATE(rismt%xgs1)

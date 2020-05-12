@@ -18,9 +18,11 @@ SUBROUTINE summary_1drism()
   !
   USE control_flags, ONLY : iverbosity
   USE io_global,     ONLY : stdout
+  USE kinds,         ONLY : DP
   USE mp,            ONLY : mp_size
   USE rism,          ONLY : CLOSURE_HNC, CLOSURE_KH
-  USE rism1d_facade, ONLY : rism1t, niter, epsv, bond_width, mdiis_size, mdiis_step
+  USE rism1d_facade, ONLY : rism1t, niter, epsv, bond_width, &
+                          & dielectric, molesize, mdiis_size, mdiis_step
   USE solvmol,       ONLY : get_nsite_in_solVs
   !
   IMPLICIT NONE
@@ -70,6 +72,12 @@ SUBROUTINE summary_1drism()
   WRITE(stdout, '(5X,"size of MDIIS           = ",I12)')               mdiis_size
   WRITE(stdout, '(5X,"step of MDIIS           = ",0PF12.4)')           mdiis_step
   WRITE(stdout, '(5X,"number of processes     = ",I12)')               mp_size(rism1t%intra_comm)
+  IF (dielectric > 0.0_DP) THEN
+  WRITE(stdout, '()')
+  WRITE(stdout, '(5X,"--- Dielectrically Consistent RISM is used. ---")')
+  WRITE(stdout, '(5X,"dielectric constant     = ",F12.4)')             dielectric
+  WRITE(stdout, '(5X,"size of molecule        = ",F12.4,"  bohr")')    molesize
+  END IF
   WRITE(stdout, '()')
   !
   CALL print_radfft_info(iverbosity)
@@ -85,7 +93,7 @@ SUBROUTINE print_solv_info(iverbosity)
   !-----------------------------------------------------------------------
   !
   USE cell_base,      ONLY : omega
-  USE constants,      ONLY : BOHR_RADIUS_ANGS, eps32
+  USE constants,      ONLY : BOHR_RADIUS_ANGS, BOHR_RADIUS_SI, ELECTRON_SI, AU_DEBYE, eps32
   USE io_files,       ONLY : pseudo_dir, molfile
   USE io_global,      ONLY : stdout
   USE kinds,          ONLY : DP
@@ -103,6 +111,7 @@ SUBROUTINE print_solv_info(iverbosity)
   INTEGER  :: nuniq, iuniq
   INTEGER  :: irho, nrho
   REAL(DP) :: rhov
+  REAL(DP) :: dipv
   !
   DO isolV = 1, nsolV
     !
@@ -140,6 +149,14 @@ SUBROUTINE print_solv_info(iverbosity)
     IF (solVs(isolV)%permittivity > 0.0_DP) THEN
       WRITE(stdout, '(5X,"Permittivity:")')
       WRITE(stdout, '(5X,F12.6)') solVs(isolV)%permittivity
+    END IF
+    !
+    IF (solVs(isolV)%is_polar) THEN
+      dipv = solVs(isolV)%dipole
+      WRITE(stdout, '(5X,"Dipole-moment:")')
+      WRITE(stdout, '(5X,2X,E16.8," e*bohr")') dipv
+      WRITE(stdout, '(5X,2X,E16.8," debye")')  dipv * AU_DEBYE
+      WRITE(stdout, '(5X,2X,E16.8," C*m")')    dipv * ELECTRON_SI * BOHR_RADIUS_SI
     END IF
     !
     WRITE(stdout, '(5X,"Number of atoms: ",I3)') solVs(isolV)%natom

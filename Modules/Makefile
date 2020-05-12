@@ -196,6 +196,7 @@ lauefft_subs.o \
 lj_forcefield.o \
 lj_solute.o \
 molecorr_vv.o \
+molebridge_vv.o \
 molecule_const.o \
 molecule_types.o \
 mp_rism.o \

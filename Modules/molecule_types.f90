@@ -40,8 +40,10 @@ MODULE molecule_types
     REAL(DP)                          :: density      ! density of molecule        (in 1/bohr^3)
     REAL(DP)                          :: subdensity   ! second density of molecule (in 1/bohr^3)
     REAL(DP)                          :: permittivity ! relative permittivity
+    REAL(DP)                          :: dipole       ! dipole moment              (in e*bohr)
     LOGICAL                           :: has_charge   ! if .true. includes charge
     LOGICAL                           :: has_lj       ! if .true. includes Lennard-Jones
+    LOGICAL                           :: is_polar     ! if .true. this is a polar molecule
     CHARACTER(LEN=LEN_ANAME), POINTER :: aname(:)     ! name of atoms
     REAL(DP),                 POINTER :: coord(:,:)   ! xyz-coordinate of atoms (in bohr)
     REAL(DP),                 POINTER :: charge(:)    ! charge of atoms         (in e)
@@ -79,8 +81,10 @@ CONTAINS
     mol%density      = 0.0_DP
     mol%subdensity   = 0.0_DP
     mol%permittivity = 0.0_DP
+    mol%dipole       = 0.0_DP
     mol%has_charge   = .FALSE.
     mol%has_lj       = .FALSE.
+    mol%is_polar     = .FALSE.
     NULLIFY(mol%aname)
     NULLIFY(mol%coord)
     NULLIFY(mol%charge)

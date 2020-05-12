@@ -186,6 +186,11 @@ SUBROUTINE write_rism_type(rismt)
     CALL write_rarray(rismt%ng, rismt%nsite, rismt%wg)
   END IF
   !
+  IF (ASSOCIATED(rismt%zg)) THEN
+    WRITE(stdout, '(5X,"[Z(g)]")')
+    CALL write_rarray(rismt%ng, rismt%nsite, rismt%zg)
+  END IF
+  !
   IF (ASSOCIATED(rismt%xgs)) THEN
     DO isite = 1, rismt%mp_site%nsite
       IF (.NOT. laue) THEN

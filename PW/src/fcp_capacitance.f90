@@ -83,9 +83,10 @@ CONTAINS
   SUBROUTINE get_solvent_data(epsr, zsol, rho0)
     !----------------------------------------------------------------------------
     !
-    USE constants, ONLY : eps8
-    USE solvmol,   ONLY : nsolV, solVs, get_nuniq_in_solVs, &
-                        & iuniq_to_nsite, iuniq_to_isite, isite_to_isolV, isite_to_iatom
+    USE constants,     ONLY : eps8
+    USE rism1d_facade, ONLY : dielectric
+    USE solvmol,       ONLY : nsolV, solVs, get_nuniq_in_solVs, &
+                            & iuniq_to_nsite, iuniq_to_isite, isite_to_isolV, isite_to_iatom
     !
     IMPLICIT NONE
     !
@@ -170,6 +171,12 @@ CONTAINS
        !
        rho0 = 0.5_DP * rho0 / zsol
        !
+    END IF
+    !
+    IF (dielectric > 0.0_DP) THEN
+      !
+      epsr = dielectric
+      !
     END IF
     !
     IF (epsr < eps8) epsr = EPSR_DEF

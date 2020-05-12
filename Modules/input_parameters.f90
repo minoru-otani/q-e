@@ -1473,10 +1473,6 @@ MODULE input_parameters
           ! value of the solvent temperature (in Kelvin)
           ! during 1D- and 3D-RISM calculations.
 
-        REAL(DP) :: permittivity = 0.0_DP
-          ! value of the solvent permittivity
-          ! during 1D- and 3D-RISM calculations.
-
         REAL(DP) :: ecutsolv = 0.0_DP
           ! energy cutoff for 3D-RISM in k-space (in Rydberg)
           ! by default its value is "4 * ecutwfc"
@@ -1553,6 +1549,12 @@ MODULE input_parameters
 
         REAL(DP) :: rism1d_bond_width = 0.0_DP
           ! gaussian width of bonds in 1D-RISM calculation
+
+        REAL(DP) :: rism1d_dielectric = -1.0_DP
+          ! dielectric constant for DRISM
+
+        REAL(DP) :: rism1d_molesize = 2.0_DP
+          ! size of solvent molecule for DRISM (in bohr)
 
         INTEGER :: rism1d_nproc = 128
           ! number of processes to calculate 1D-RISM
@@ -1644,12 +1646,13 @@ MODULE input_parameters
         LOGICAL :: laue_wall_lj6 = .FALSE.
           ! use attractive term of Lennard-Jones: -(1/r)^6, or not
 
-        NAMELIST / rism / nsolv, closure, tempv, permittivity, ecutsolv, solute_lj, &
+        NAMELIST / rism / nsolv, closure, tempv, ecutsolv, solute_lj, &
                           solute_epsilon, solute_sigma, rmax_lj, rmax1d, &
                           starting1d, starting3d, smear1d, smear3d, &
                           rism1d_maxstep, rism3d_maxstep, rism1d_conv_thr, rism3d_conv_thr, &
                           mdiis1d_size, mdiis3d_size, mdiis1d_step, mdiis3d_step, &
-                          rism1d_bond_width, rism1d_nproc, rism1d_nproc_switch, &
+                          rism1d_bond_width, rism1d_dielectric, rism1d_molesize, &
+                          rism1d_nproc, rism1d_nproc_switch, &
                           rism3d_conv_level, rism3d_planar_average, &
                           laue_nfit, laue_expand_right, laue_expand_left, &
                           laue_starting_right, laue_starting_left, &

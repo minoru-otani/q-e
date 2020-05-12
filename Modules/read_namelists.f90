@@ -756,7 +756,6 @@ MODULE read_namelists_module
        !
        closure                = 'kh'
        tempv                  = 300.0_DP
-       permittivity           = 0.0_DP
        ecutsolv               = 0.0_DP
        !
        ! ... ( 'none' | 'uff' | 'clayff' | 'opls-aa' )
@@ -785,6 +784,8 @@ MODULE read_namelists_module
        mdiis1d_step           = -1.0_DP  ! will initialize at iosys_1drism
        mdiis3d_step           = -1.0_DP  ! will initialize at iosys_3drism
        rism1d_bond_width      = 0.0_DP
+       rism1d_dielectric      = -1.0_DP
+       rism1d_molesize        = 2.0_DP
        rism1d_nproc           = 128
        rism1d_nproc_switch    = 16
        rism3d_conv_level      = -1.0_DP  ! will initialize at iosys_3drism
@@ -1448,7 +1449,6 @@ MODULE read_namelists_module
        CALL mp_bcast( nsolv,                  ionode_id, intra_image_comm )
        CALL mp_bcast( closure,                ionode_id, intra_image_comm )
        CALL mp_bcast( tempv,                  ionode_id, intra_image_comm )
-       CALL mp_bcast( permittivity,           ionode_id, intra_image_comm )
        CALL mp_bcast( ecutsolv,               ionode_id, intra_image_comm )
        CALL mp_bcast( solute_lj,              ionode_id, intra_image_comm )
        CALL mp_bcast( solute_epsilon,         ionode_id, intra_image_comm )
@@ -1468,6 +1468,8 @@ MODULE read_namelists_module
        CALL mp_bcast( mdiis1d_step,           ionode_id, intra_image_comm )
        CALL mp_bcast( mdiis3d_step,           ionode_id, intra_image_comm )
        CALL mp_bcast( rism1d_bond_width,      ionode_id, intra_image_comm )
+       CALL mp_bcast( rism1d_dielectric,      ionode_id, intra_image_comm )
+       CALL mp_bcast( rism1d_molesize,        ionode_id, intra_image_comm )
        CALL mp_bcast( rism1d_nproc,           ionode_id, intra_image_comm )
        CALL mp_bcast( rism1d_nproc_switch,    ionode_id, intra_image_comm )
        CALL mp_bcast( rism3d_conv_level,      ionode_id, intra_image_comm )
@@ -1997,9 +1999,6 @@ MODULE read_namelists_module
        IF( tempv <= 0.0_DP ) &
           CALL errore( sub_name,' tempv out of range ', 1 )
        !
-       !IF( permittivity <= 0.0_DP ) &
-       !   CALL errore( sub_name,' permittivity out of range ', 1 )
-       !
        IF( ecutsolv < 0.0_DP ) &
           CALL errore( sub_name,' ecutsolv out of range ', 1 )
        !
@@ -2072,6 +2071,9 @@ MODULE read_namelists_module
        !
        IF( rism1d_bond_width < 0.0_DP ) &
           CALL errore( sub_name,' rism1d_bond_width out of range ', 1 )
+       !
+       IF( rism1d_dielectric > 0.0_DP .AND. rism1d_molesize <= 0.0_DP ) &
+          CALL errore( sub_name,' rism1d_molesize out of range ', 1 )
        !
        IF( rism1d_nproc <= 0 ) &
           CALL errore( sub_name,' rism1d_nproc out of range ', 1 )

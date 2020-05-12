@@ -41,6 +41,8 @@ MODULE rism1d_facade
   REAL(DP)               :: bond_width    = 0.0_DP   ! gaussian width of bonds (in bohr)
   INTEGER                :: mdiis_size    = 0        ! size of MDIIS
   REAL(DP)               :: mdiis_step    = 0.0_DP   ! step of MDIIS
+  REAL(DP)               :: dielectric    = 0.0_DP   ! dielectric constant (for DRISM)
+  REAL(DP)               :: molesize      = 0.0_DP   ! size of molecule (in bohr, for DRISM)
   !
   ! ... define 1D-RISM's main data
   TYPE(rism_type), POINTER :: rism1t => NULL()
@@ -59,6 +61,8 @@ MODULE rism1d_facade
   PUBLIC :: bond_width
   PUBLIC :: mdiis_size
   PUBLIC :: mdiis_step
+  PUBLIC :: dielectric
+  PUBLIC :: molesize
   !
   PUBLIC :: rism1t
   PUBLIC :: rism1d_iosys
@@ -333,9 +337,9 @@ CONTAINS
     !
     CALL start_clock('1DRISM_pre')
     !
-    ! ... initial calculation (potential, intra-molecular correlation)
+    ! ... initial calculation (potential, intra-molecular correlation, dielectric bridge)
     IF (init_rism1t_right) THEN
-      CALL init_1drism(rism1t_right, bond_width, ierr)
+      CALL init_1drism(rism1t_right, bond_width, dielectric, molesize, ierr)
       !
       IF (ierr /= IERR_RISM_NULL) THEN
         CALL stop_by_err_rism('rism1d_prepare', ierr)
@@ -343,7 +347,7 @@ CONTAINS
     END IF
     !
     IF (init_rism1t_left) THEN
-      CALL init_1drism(rism1t_left,  bond_width, ierr)
+      CALL init_1drism(rism1t_left, bond_width, dielectric, molesize, ierr)
       !
       IF (ierr /= IERR_RISM_NULL) THEN
         CALL stop_by_err_rism('rism1d_prepare', ierr)

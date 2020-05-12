@@ -184,30 +184,6 @@ CONTAINS
       lg = LEBEDEV974
     CASE (1202)
       lg = LEBEDEV1202
-    CASE (1454)
-      lg = LEBEDEV1454
-    CASE (1730)
-      lg = LEBEDEV1730
-    CASE (2030)
-      lg = LEBEDEV2030
-    CASE (2354)
-      lg = LEBEDEV2354
-    CASE (2702)
-      lg = LEBEDEV2702
-    CASE (3074)
-      lg = LEBEDEV3074
-    CASE (3470)
-      lg = LEBEDEV3470
-    CASE (3890)
-      lg = LEBEDEV3890
-    CASE (4334)
-      lg = LEBEDEV4334
-    CASE (4802)
-      lg = LEBEDEV4802
-    CASE (5294)
-      lg = LEBEDEV5294
-    CASE (5810)
-      lg = LEBEDEV5810
     CASE DEFAULT
       CALL errore('plot_sphere_bspline', 'incorrect Lebedev grid', 1)
     END SELECT

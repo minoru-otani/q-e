@@ -16,7 +16,7 @@ SUBROUTINE iosys_1drism(laue)
   ! ...        ecutrho(gvect), dual(gvecs).
   !
   USE cell_base,        ONLY : alat, at, omega
-  USE constants,        ONLY : tpi
+  USE constants,        ONLY : pi, tpi, eps8, eps12
   USE gvecs,            ONLY : dual
   USE gvect,            ONLY : ecutrho
   USE io_files,         ONLY : molfile
@@ -24,7 +24,8 @@ SUBROUTINE iosys_1drism(laue)
   USE molecule_const,   ONLY : BOHRm3_TO_MOLCMm3, BOHRm3_TO_MOLLm1
   USE read_solv_module, ONLY : read_solvents
   USE rism,             ONLY : CLOSURE_HNC, CLOSURE_KH
-  USE rism1d_facade,    ONLY : nproc_sub, nproc_switch, starting_corr, niter, epsv, bond_width, &
+  USE rism1d_facade,    ONLY : nproc_sub, nproc_switch, starting_corr, niter, epsv, &
+                             & bond_width, dielectric, molesize, &
                              & mdiis_size, mdiis_step, rism1t, rism1d_initialize, &
                              & rism1d_activate_right, rism1d_activate_left
   USE solvmol,          ONLY : nsolV_ => nsolV, solVs, get_nsite_in_solVs
@@ -35,8 +36,9 @@ SUBROUTINE iosys_1drism(laue)
   !
   ! ... RISM namelist
   !
-  USE input_parameters, ONLY : nsolv, closure, starting1d, tempv, permittivity, rmax1d, &
-                               smear1d, rism1d_maxstep, rism1d_conv_thr, rism1d_bond_width, &
+  USE input_parameters, ONLY : nsolv, closure, starting1d, tempv, rmax1d, &
+                               smear1d, rism1d_maxstep, rism1d_conv_thr, &
+                               rism1d_bond_width, rism1d_dielectric, rism1d_molesize, &
                                rism1d_nproc, rism1d_nproc_switch, mdiis1d_size, mdiis1d_step, &
                                laue_expand_right, laue_expand_left, laue_both_hands
   !
@@ -51,6 +53,7 @@ SUBROUTINE iosys_1drism(laue)
   INTEGER                        :: ngrid
   INTEGER                        :: nsite
   INTEGER                        :: isolV
+  INTEGER                        :: iatom
   REAL(DP)                       :: z0
   REAL(DP)                       :: zright
   REAL(DP)                       :: zleft
@@ -59,6 +62,10 @@ SUBROUTINE iosys_1drism(laue)
   REAL(DP),          ALLOCATABLE :: sdens2(:)
   REAL(DP)                       :: pertot, per1
   REAL(DP)                       :: dentot, den1
+  REAL(DP)                       :: rsol(3)
+  REAL(DP)                       :: qsol
+  REAL(DP)                       :: dsol(3)
+  REAL(DP)                       :: dtot
   INTEGER                        :: ihand
   INTEGER                        :: nhand
   !
@@ -105,6 +112,8 @@ SUBROUTINE iosys_1drism(laue)
   niter         = rism1d_maxstep
   epsv          = rism1d_conv_thr
   bond_width    = rism1d_bond_width
+  dielectric    = rism1d_dielectric
+  molesize      = rism1d_molesize
   mdiis_size    = mdiis1d_size
   mdiis_step    = mdiis1d_step
   !
@@ -162,7 +171,60 @@ SUBROUTINE iosys_1drism(laue)
       END IF
     END IF
     !
+    ! ... dipole moment, and rotation of coordinate, if DRISM
+    solVs(isolV)%dipole   = 0.0_DP
+    solVs(isolV)%is_polar = .FALSE.
+    !
+    IF (dielectric > 0.0_DP) THEN
+      !
+      rsol = 0.0_DP
+      DO iatom = 1, solVs(isolV)%natom
+        rsol = rsol + solVs(isolV)%coord(:, iatom)
+      END DO
+      !
+      rsol = rsol / DBLE(solVs(isolV)%natom)
+      !
+      qsol = 0.0_DP
+      dsol = 0.0_DP
+      DO iatom = 1, solVs(isolV)%natom
+        qsol = qsol + solVs(isolV)%charge(iatom)
+        dsol = dsol + solVs(isolV)%charge(iatom) * (solVs(isolV)%coord(:, iatom) - rsol)
+      END DO
+      !
+      dtot = SQRT(dsol(1) * dsol(1) + dsol(2) * dsol(2) + dsol(3) * dsol(3))
+      !
+      IF (ABS(qsol) <= eps8 .AND. dtot > eps8) THEN
+        DO iatom = 1, solVs(isolV)%natom
+          solVs(isolV)%coord(:, iatom) = solVs(isolV)%coord(:, iatom) - rsol
+        END DO
+        !
+        CALL rotate_coord(isolV, dsol)
+        !
+        dsol = 0.0_DP
+        DO iatom = 1, solVs(isolV)%natom
+          dsol = dsol + solVs(isolV)%charge(iatom) * solVs(isolV)%coord(:, iatom)
+        END DO
+        !
+        IF (ABS(dsol(1)) > eps8 .OR. ABS(dsol(2)) > eps8 .OR. ABS(dtot - dsol(3)) > eps8) THEN
+          CALL errore('iosys_1drism', 'error in rotation of molecule', isolV)
+        END IF
+        !
+        solVs(isolV)%dipole   = dsol(3)
+        solVs(isolV)%is_polar = .TRUE.
+      END IF
+      !
+    END IF
+    !
   END DO
+  !
+  ! ... modify rism1d_dielectric
+  IF (rism1d_dielectric > 0.0_DP) THEN
+    IF(.NOT. ANY(solVs(:)%is_polar)) THEN
+      rism1d_dielectric = -1.0_DP
+      dielectric = rism1d_dielectric
+      CALL infomsg('iosys_1drism', 'there are no polar solvents, DRISM is not used.')
+    END IF
+  END IF
   !
   ! ... modify mdiis1d_step (this operation must be after read_solvents)
   IF (mdiis1d_step < 0.0_DP) THEN
@@ -173,26 +235,6 @@ SUBROUTINE iosys_1drism(laue)
       mdiis1d_step = MDIIS_STEP_DEF2
     END IF
     mdiis_step = mdiis1d_step
-  END IF
-  !
-  ! ... modify permittivity (this operation must be after read_solvents)
-  IF (permittivity <= 0.0_DP) THEN
-    pertot = 0.0_DP
-    dentot = 0.0_DP
-    DO isolV = 1, nsolV_
-      per1 = solVs(isolV)%permittivity
-      den1 = 0.5_DP * (solVs(isolV)%density + solVs(isolV)%subdensity)
-      IF (per1 > 0.0_DP)  THEN
-        pertot = pertot + per1 * den1
-        dentot = dentot + den1
-      END IF
-    END DO
-    !
-    IF (dentot > 0.0_DP) THEN
-      permittivity = pertot / dentot
-    ELSE
-      permittivity = 0.0_DP
-    END IF
   END IF
   !
   ! ... initialize rism1d_facade
@@ -215,7 +257,6 @@ SUBROUTINE iosys_1drism(laue)
       rism1t%closure = CLOSURE_KH
     END IF
     rism1t%temp = tempv
-    rism1t%perm = permittivity
     rism1t%tau  = smear1d
   END DO
   !
@@ -232,7 +273,7 @@ CONTAINS
     IMPLICIT NONE
     CHARACTER(LEN=*), INTENT(IN)    :: dens_format
     INTEGER,          INTENT(IN)    :: isolV
-    REAL (DP),        INTENT(INOUT) :: dens
+    REAL(DP),         INTENT(INOUT) :: dens
     !
     SELECT CASE (dens_format)
     CASE ('1/cell')
@@ -250,6 +291,127 @@ CONTAINS
       !
     END SELECT
   END SUBROUTINE convert_dens
+  !
+  SUBROUTINE rotate_coord(isolV, ax)
+    IMPLICIT NONE
+    INTEGER,  INTENT(IN) :: isolV
+    REAL(DP), INTENT(IN) :: ax(3)
+    !
+    INTEGER  :: iatom
+    REAL(DP) :: er
+    REAL(DP) :: e0(3)
+    REAL(DP) :: e1(3), r1, s1
+    REAL(DP) :: e2(3), r2, s2
+    REAL(DP) :: e3(3), r3, s3
+    REAL(DP) :: cos0, sin0, tan0
+    REAL(DP) :: x, y, z
+    REAL(DP) :: xx, yy, xy
+    REAL(DP) :: phi
+    !
+    e3 = ax
+    er = SQRT(MAX(0.0_DP, e3(1) * e3(1) + e3(2) * e3(2) + e3(3) * e3(3)))
+    IF (er <= 0.0_DP) CALL errore('iosys_1drism', 'e3 = 0', isolV)
+    e3 = e3 / er
+    !
+    IF (ABS(e3(1)) > eps12 .OR. ABS(e3(2)) > eps12) THEN
+      !
+      e0(1) = 0.0_DP
+      e0(2) = 0.0_DP
+      e0(3) = 1.0_DP
+      !
+      cos0 = e0(1) * e3(1) + e0(2) * e3(2) + e0(3) * e3(3)
+      sin0 = -SQRT(MAX(0.0_DP, 1.0_DP - cos0 * cos0))
+      !
+      e1(1) = e0(2) * e3(3) - e0(3) * e3(2)
+      e1(2) = e0(3) * e3(1) - e0(1) * e3(3)
+      e1(3) = e0(1) * e3(2) - e0(2) * e3(1)
+      er = SQRT(MAX(0.0_DP, e1(1) * e1(1) + e1(2) * e1(2) + e1(3) * e1(3)))
+      IF (er <= 0.0_DP) CALL errore('iosys_1drism', 'e1 = 0', isolV)
+      e1 = e1 / er
+      !
+      e2(1) = e3(2) * e1(3) - e3(3) * e1(2)
+      e2(2) = e3(3) * e1(1) - e3(1) * e1(3)
+      e2(3) = e3(1) * e1(2) - e3(2) * e1(1)
+      er = SQRT(MAX(0.0_DP, e2(1) * e2(1) + e2(2) * e2(2) + e2(3) * e2(3)))
+      IF (er <= 0.0_DP) CALL errore('iosys_1drism', 'e2 = 0', isolV)
+      e2 = e2 / er
+      !
+      DO iatom = 1, solVs(isolV)%natom
+        !
+        x = solVs(isolV)%coord(1, iatom)
+        y = solVs(isolV)%coord(2, iatom)
+        z = solVs(isolV)%coord(3, iatom)
+        !
+        r1 = x * e1(1) + y * e1(2) + z * e1(3)
+        r2 = x * e2(1) + y * e2(2) + z * e2(3)
+        r3 = x * e3(1) + y * e3(2) + z * e3(3)
+        !
+        s1 = r1
+        s2 = r2 * cos0 - r3 * sin0
+        s3 = r2 * sin0 + r3 * cos0
+        !
+        x = s1 * e1(1) + s2 * e2(1) + s3 * e3(1)
+        y = s1 * e1(2) + s2 * e2(2) + s3 * e3(2)
+        z = s1 * e1(3) + s2 * e2(3) + s3 * e3(3)
+        !
+        solVs(isolV)%coord(1, iatom) = x
+        solVs(isolV)%coord(2, iatom) = y
+        solVs(isolV)%coord(3, iatom) = z
+        !
+      END DO
+      !
+    ELSE IF (e3(3) < 0.0_DP) THEN
+      !
+      DO iatom = 1, solVs(isolV)%natom
+        !
+        x = solVs(isolV)%coord(1, iatom)
+        y = solVs(isolV)%coord(2, iatom)
+        z = solVs(isolV)%coord(3, iatom)
+        !
+        solVs(isolV)%coord(1, iatom) = +x ! rotate with x-axis
+        solVs(isolV)%coord(2, iatom) = -y
+        solVs(isolV)%coord(3, iatom) = -z
+        !
+      END DO
+      !
+    END IF
+    !
+    xx = 0.0_DP
+    yy = 0.0_DP
+    xy = 0.0_DP
+    !
+    DO iatom = 1, solVs(isolV)%natom
+      !
+      x = solVs(isolV)%coord(1, iatom)
+      y = solVs(isolV)%coord(2, iatom)
+      !
+      xx = xx + x * x
+      yy = yy + y * y
+      xy = xy + x * y
+      !
+    END DO
+    !
+    IF (ABS(xx - yy) > eps12) THEN
+      tan0 = -2.0_DP * xy / (xx - yy)
+      phi  = ATAN(tan0) / 2.0_DP
+    ELSE
+      phi  = pi / 4.0_DP
+    END IF
+    !
+    cos0 = COS(phi)
+    sin0 = SIN(phi)
+    !
+    DO iatom = 1, solVs(isolV)%natom
+      !
+      x = solVs(isolV)%coord(1, iatom)
+      y = solVs(isolV)%coord(2, iatom)
+      !
+      solVs(isolV)%coord(1, iatom) = x * cos0 - y * sin0
+      solVs(isolV)%coord(2, iatom) = x * sin0 + y * cos0
+      !
+    END DO
+    !
+  END SUBROUTINE rotate_coord
   !
   FUNCTION number_of_grids(rmax) RESULT(nr)
     IMPLICIT NONE

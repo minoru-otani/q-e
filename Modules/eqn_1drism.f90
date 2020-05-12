@@ -10,10 +10,15 @@
 SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   !---------------------------------------------------------------------------
   !
-  ! ... solve 1D-RISM equation, which is defined as
-  ! ...   [1 - w * c * rho] * h = w * c * w  (in G-space)
+  ! ... solve 1D-RISM equation, which is defined in G-space as
+  ! ...   [1 - w * c * rho] * h = w * c * w
   ! ...
   ! ... (F.Hirata et al., Chem. Phys. Lett. 1981, 83, 329-334)
+  ! ...
+  ! ... also, dielectrically consistent RISM (DRISM) is available.
+  ! ...   [1 - (w + rho*z) * c * rho] * (h - z) = (w + rho*z) * c * (w + rho*z)
+  ! ...
+  ! ... (J.S.Perkyns and B.M.Pettitt, CPL 1992, 190, 626)
   !
   USE constants, ONLY : K_BOLTZMANN_RY
   USE err_rism,  ONLY : IERR_RISM_NULL, IERR_RISM_INCORRECT_DATA_TYPE, &
@@ -135,14 +140,14 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
         ivv = iv1 * (iv1 - 1) / 2 + iv2
         cvv(iv2, iv1) = rismt%csg(ig, ivv) - beta * rismt%ulg(ig, ivv)
         cvv(iv1, iv2) = cvv(iv2, iv1)
-        wvv(iv2, iv1) = rismt%wg(ig, ivv)
-        wvv(iv1, iv2) = wvv(iv2, iv1)
+        wvv(iv2, iv1) = rismt%wg(ig, ivv) + rho(iv2) * rismt%zg(ig, ivv)
+        wvv(iv1, iv2) = rismt%wg(ig, ivv) + rho(iv1) * rismt%zg(ig, ivv)
       END DO
     END DO
     !
     ! ... make tvv, avv and bvv
     ! ... b -> w * c
-    CALL dgemm('T', 'N', nv, nv, nv, 1.0_DP, wvv, nv, cvv, nv, 0.0_DP, bvv, nv)
+    CALL dgemm('N', 'N', nv, nv, nv, 1.0_DP, wvv, nv, cvv, nv, 0.0_DP, bvv, nv)
     ! ... a -> 1 - b * rho
     DO iv1 = 1, nv
       avv(:, iv1) = -bvv(:, iv1) * rho(iv1)
@@ -170,7 +175,7 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
     DO iv1 = 1, nv
       DO iv2 = 1, iv1
         ivv = iv1 * (iv1 - 1) / 2 + iv2
-        rismt%hg(ig, ivv) = hvv(iv2, iv1)
+        rismt%hg(ig, ivv) = hvv(iv2, iv1) + rismt%zg(ig, ivv)
       END DO
     END DO
     !

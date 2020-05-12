@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !---------------------------------------------------------------------------
-SUBROUTINE init_1drism(rismt, alpha, ierr)
+SUBROUTINE init_1drism(rismt, alpha, eps, tau, ierr)
   !---------------------------------------------------------------------------
   !
   ! ... initialize 1D-RISM
@@ -19,7 +19,9 @@ SUBROUTINE init_1drism(rismt, alpha, ierr)
   IMPLICIT NONE
   !
   TYPE(rism_type), INTENT(INOUT) :: rismt
-  REAL(DP),        INTENT(IN)    :: alpha
+  REAL(DP),        INTENT(IN)    :: alpha ! bond-width for Laue-RISM
+  REAL(DP),        INTENT(IN)    :: eps   ! dielectric constant for DRISM
+  REAL(DP),        INTENT(IN)    :: tau   ! molecular size for DRISM
   INTEGER,         INTENT(OUT)   :: ierr
   !
   ! ... check data type
@@ -43,6 +45,18 @@ SUBROUTINE init_1drism(rismt, alpha, ierr)
   ! ... create intra-molecular correlation
   IF (rismt%is_intra) THEN
     CALL molecorr_vv(rismt, alpha, ierr)
+  ELSE
+    ierr = IERR_RISM_NULL
+  END IF
+  !
+  CALL merge_ierr_rism(ierr, rismt%super_comm)
+  IF (ierr /= IERR_RISM_NULL) THEN
+    RETURN
+  END IF
+  !
+  ! ... create intra-molecular dielectric bridge (for DRISM)
+  IF (rismt%is_intra) THEN
+    CALL molebridge_vv(rismt, eps, tau, ierr)
   ELSE
     ierr = IERR_RISM_NULL
   END IF
