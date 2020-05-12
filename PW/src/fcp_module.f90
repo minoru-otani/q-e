@@ -54,6 +54,7 @@ MODULE fcp_module
   REAL(DP)          :: fcp_eps0 = 0.0_DP   ! initial convergence threshold (in Ry)
   CHARACTER(LEN=16) :: fcp_calc = ''       ! type of calculation
                                            ! {bfgs|lm|newton|damp|verlet|velocity-verlet}
+  LOGICAL           :: freeze_all_atoms = .FALSE.  ! freeze all atoms during FCP calculation
   !
   ! ... public components
   PUBLIC :: lfcp
@@ -71,6 +72,7 @@ MODULE fcp_module
   PUBLIC :: fcp_new_conv_thr
   PUBLIC :: fcp_is_dynamics
   PUBLIC :: output_fcp
+  PUBLIC :: freeze_all_atoms
   !
 CONTAINS
   !

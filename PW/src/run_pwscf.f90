@@ -42,6 +42,7 @@ SUBROUTINE run_pwscf ( exit_status )
   USE qmmm,             ONLY : qmmm_initialization, qmmm_shutdown, &
                                qmmm_update_positions, qmmm_update_forces
   USE qexsd_module,     ONLY:   qexsd_set_status
+  USE fcp_module,       ONLY : freeze_all_atoms
   !
 
   IMPLICIT NONE
@@ -131,7 +132,11 @@ SUBROUTINE run_pwscf ( exit_status )
      !
      ! ... force calculation
      !
-     IF ( lforce .AND. ANY( if_pos(:,:) == 1 ) ) CALL forces()
+     IF ( freeze_all_atoms ) THEN
+        force(:,:) = 0.D0
+     ELSEIF ( lforce ) THEN
+        CALL forces()
+     ENDIF
      !
      ! ... stress calculation
      !

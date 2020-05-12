@@ -19,7 +19,7 @@ SUBROUTINE iosys_fcp()
                                   & fcpdyn_prm_velocity, fcpdyn_prm_temp
   USE fcp_module,            ONLY : fcp_mu_ => fcp_mu, &
                                   & fcp_eps, fcp_eps0, fcp_calc, fcp_check, &
-                                  & fcp_is_dynamics
+                                  & fcp_is_dynamics, freeze_all_atoms_ => freeze_all_atoms
   USE fcp_relaxation,        ONLY : fcprlx_init, fcprlx_prm
   USE ions_base,             ONLY : if_pos
   USE kinds,                 ONLY : DP
@@ -178,11 +178,7 @@ SUBROUTINE iosys_fcp()
   !
   ! ... freeze all atoms
   !
-  IF (freeze_all_atoms) THEN
-     !
-     if_pos(:, :) = 0
-     !
-  END IF
+  freeze_all_atoms_ = freeze_all_atoms
   !
   ! ... check condition
   !
