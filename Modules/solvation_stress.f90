@@ -133,7 +133,7 @@ SUBROUTINE solvation_stress_ion( rismt, sigma, vloc, dvloc, ierr )
   real(DP) :: fact, evloc, evlocg, arg
   integer :: nt, is, ig, la, mu, ia
   COMPLEX(DP)  :: strf(rismt%cfft%ngmt)
-#if defined(_OPENMP)
+#if defined(__OPENMP)
   REAL(DP) :: sgomp(3, 3)
 #endif
   !
@@ -187,7 +187,7 @@ SUBROUTINE solvation_stress_ion( rismt, sigma, vloc, dvloc, ierr )
 
     ! no G=0 contribution
 !$omp parallel default(shared) private(ig,la,mu,sgomp)
-#if defined(_OPENMP)
+#if defined(__OPENMP)
     sgomp = 0.0_DP
 #endif
 !$omp do
@@ -257,7 +257,7 @@ SUBROUTINE solvation_stress_har( rismt, sigma, rhog_ele, ierr )
   COMPLEX(DP), POINTER :: rhog_liq(:)
   real(DP) :: evhar, svhar, g2
   integer :: is, ig, la, mu
-#if defined(_OPENMP)
+#if defined(__OPENMP)
   REAL(DP) :: sgomp(3, 3)
 #endif
   !
@@ -274,7 +274,7 @@ SUBROUTINE solvation_stress_har( rismt, sigma, rhog_ele, ierr )
   sigma = 0.0_DP
   evhar = 0.0_DP
 !$omp parallel default(shared) private(ig,g2,svhar,la,mu,sgomp) reduction(+:evhar)
-#if defined(_OPENMP)
+#if defined(__OPENMP)
   sgomp = 0.0_DP
 #endif
 !$omp do

@@ -704,7 +704,7 @@ SUBROUTINE solvation_esm_stress_har( rismt, sigma, rhog_ele, ierr )
   complex(DP), allocatable :: Vr(:), dVr_deps(:,:,:)
   complex(DP), allocatable :: workr(:), workg(:)
   TYPE(lauefft_type) :: lauefft0
-#if defined(_OPENMP)
+#if defined(__OPENMP)
   REAL(DP) :: sgomp(2, 2)
 #endif
 
@@ -884,7 +884,7 @@ SUBROUTINE solvation_esm_stress_har( rismt, sigma, rhog_ele, ierr )
 
     ! calculate stress tensor
 !$omp parallel default(shared) private(iz,sgomp)
-#if defined(_OPENMP)
+#if defined(__OPENMP)
     sgomp = 0.0_DP
 #endif
 !$omp do
@@ -1008,7 +1008,7 @@ SUBROUTINE solvation_esm_stress_har( rismt, sigma, rhog_ele, ierr )
 
     ! calculate stress tensor
 !$omp parallel default(shared) private(iz,sgomp)
-#if defined(_OPENMP)
+#if defined(__OPENMP)
     sgomp = 0.0_DP
 #endif
 !$omp do
@@ -1088,7 +1088,7 @@ SUBROUTINE solvation_esm_stress_locshort( rismt, sigma, vloc, dvloc, ierr )
   real(DP) :: fact, evloc, evlocg, arg
   integer :: nt, is, ig, la, mu, ia
   COMPLEX(DP)  :: strf(rismt%cfft%ngmt)
-#if defined(_OPENMP)
+#if defined(__OPENMP)
   REAL(DP) :: sgomp(2, 2)
 #endif
 
@@ -1141,7 +1141,7 @@ SUBROUTINE solvation_esm_stress_locshort( rismt, sigma, vloc, dvloc, ierr )
 
     ! no G=0 contribution
 !$omp parallel default(shared) private(ig,la,mu,sgomp)
-#if defined(_OPENMP)
+#if defined(__OPENMP)
     sgomp = 0.0_DP
 #endif
 !$omp do
@@ -1226,7 +1226,7 @@ SUBROUTINE solvation_esm_stress_loclong( rismt, sigma, ierr )
   real(DP) :: dinvgp_deps(2,2)  !! dgp^-1/deps
 
   complex(DP), allocatable :: Vr(:), dVr_deps(:,:,:)
-#if defined(_OPENMP)
+#if defined(__OPENMP)
   REAL(DP) :: sgomp(2, 2)
 #endif
 
@@ -1357,7 +1357,7 @@ SUBROUTINE solvation_esm_stress_loclong( rismt, sigma, ierr )
 
     ! calculate stress tensor
 !$omp parallel default(shared) private(iz,sgomp)
-#if defined(_OPENMP)
+#if defined(__OPENMP)
     sgomp = 0.0_DP
 #endif
 !$omp do
@@ -1440,7 +1440,7 @@ SUBROUTINE solvation_esm_stress_loclong( rismt, sigma, ierr )
 
     ! calculate stress tensor
 !$omp parallel default(shared) private(iz,sgomp)
-#if defined(_OPENMP)
+#if defined(__OPENMP)
     sgomp = 0.0_DP
 #endif
 !$omp do
