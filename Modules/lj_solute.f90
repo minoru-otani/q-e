@@ -824,7 +824,7 @@ SUBROUTINE lj_get_force_x(iq, rismt, force, rsmax, laue)
   !
   weight = omega / DBLE(n1 * n2 * n3)
   !
-!$omp parallel default(shared) private(ir, idx, i1, i2, i3, r1, r2, r3, tau_r, rhog, &
+!$omp parallel default(shared) private(ir, idx, i1, i2, i3, r1, r2, r3, tau_r, iz, rhog, &
 !$omp          ia, iia, su, suv, rmax, rmin, xuv, yuv, zuv, ruv2, eu, euv, sr2, sr6, sr12, &
 !$omp          fac, fromp)
 #if defined(__OPENMP)
@@ -998,7 +998,7 @@ SUBROUTINE lj_get_stress_x(iq, rismt, sigma, rsmax, laue)
   !
   USE cell_base, ONLY : alat, at, omega
   USE kinds,     ONLY : DP
-  USE rism,      ONLY : rism_type
+  USE rism,      ONLY : rism_type, ITYPE_3DRISM, ITYPE_LAUERISM
   USE solute,    ONLY : solU_nat, solU_tau, solU_ljeps, solU_ljsig, isup_to_iuni
   USE solvmol,   ONLY : solVs, iuniq_to_isite, iuniq_to_nsite, &
                       & isite_to_isolV, isite_to_iatom
@@ -1028,6 +1028,7 @@ SUBROUTINE lj_get_stress_x(iq, rismt, sigma, rsmax, laue)
   INTEGER  :: nx1, nx2, nx3
   INTEGER  :: iz
   INTEGER  :: ia, iia
+  INTEGER  :: la, mu
   REAL(DP) :: fac
   REAL(DP) :: weight
   REAL(DP) :: rho_right
@@ -1039,8 +1040,7 @@ SUBROUTINE lj_get_stress_x(iq, rismt, sigma, rsmax, laue)
   REAL(DP) :: sv, su, suv
   REAL(DP) :: rmax
   REAL(DP) :: rmin
-  REAL(DP) :: ruv2
-  REAL(DP) :: xuv, yuv, zuv
+  REAL(DP) :: ruv(3), ruv2
   REAL(DP) :: sr2, sr6, sr12
 #if defined(__OPENMP)
   REAL(DP) :: sgomp(3, 3)
@@ -1070,15 +1070,15 @@ SUBROUTINE lj_get_stress_x(iq, rismt, sigma, rsmax, laue)
   i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
   !
-  weight = omega / DBLE(n1 * n2 * n3)
+  weight = 1.0d0 / DBLE(n1 * n2 * n3)
   !
-!$omp parallel default(shared) private(ir, idx, i1, i2, i3, r1, r2, r3, tau_r, rhog, &
-!$omp          ia, iia, su, suv, rmax, rmin, xuv, yuv, zuv, ruv2, eu, euv, sr2, sr6, sr12, &
+!$omp parallel default(shared) private(ir, idx, i1, i2, i3, r1, r2, r3, tau_r, iz, rhog, &
+!$omp          ia, iia, su, suv, rmax, rmin, ruv, ruv2, eu, euv, sr2, sr6, sr12, la, mu, &
 !$omp          fac, sgomp)
 #if defined(__OPENMP)
-  sgomp = 0.0_DP
+  sgomp(1:3,1:3) = 0.0_DP
 #endif
-!$omp do
+  !$omp do
   DO ir = 1, rismt%cfft%dfftt%nnr
     !
     ! ... create coordinate of a FFT grid
@@ -1134,10 +1134,8 @@ SUBROUTINE lj_get_stress_x(iq, rismt, sigma, rsmax, laue)
       suv  = 0.5_DP * (sv + su)
       rmax = rsmax * suv / alat
       rmin = RSMIN * suv / alat
-      xuv  = tau_r(1) - solU_tau(1, ia)
-      yuv  = tau_r(2) - solU_tau(2, ia)
-      zuv  = tau_r(3) - solU_tau(3, ia)
-      ruv2 = xuv * xuv + yuv * yuv + zuv * zuv
+      ruv(1:3)  = tau_r(1:3) - solU_tau(1:3, ia)
+      ruv2 = sum(ruv(1:3)**2)
       IF (ruv2 > (rmax * rmax)) THEN
         CYCLE
       END IF
@@ -1151,24 +1149,31 @@ SUBROUTINE lj_get_stress_x(iq, rismt, sigma, rsmax, laue)
       sr6  = sr2 * sr2 * sr2
       sr12 = sr6 * sr6
 
+      fac  = 4.0_DP * euv * (12.0_DP * sr12 - 6.0_DP * sr6) / ruv2
+      do la=1, 3
+         do mu=1, 3
 #if defined(__OPENMP)
-      ! TODO
-      ! TODO set sgomp
-      ! TODO
+            sgomp(la,mu) = sgomp(la,mu) + weight * rhog * fac * ruv(la)*ruv(mu)
 #else
-      ! TODO
-      ! TODO set sigma
-      ! TODO
+            sigma(la,mu) = sigma(la,mu) + weight * rhog * fac * ruv(la)*ruv(mu)
 #endif
-    END DO
-    !
+         end do ! mu
+      end do ! la
+   END DO ! ia
+   !
   END DO
 !$omp end do
+
 #if defined(__OPENMP)
 !$omp critical
-  sigma = sigma + sgomp
+  sigma(1:3,1:3) = sigma(1:3,1:3) + sgomp(1:3,1:3)
 !$omp end critical
 #endif
 !$omp end parallel
+
+  IF (rismt%itype == ITYPE_LAUERISM) THEN
+     sigma(1:3,3) = 0.0d0
+     sigma(3,1:3) = 0.0d0
+  END IF
   !
 END SUBROUTINE lj_get_stress_x

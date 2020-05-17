@@ -553,14 +553,17 @@ CONTAINS
   END SUBROUTINE rism3d_force
   !
   !----------------------------------------------------------------------------
-  SUBROUTINE rism3d_stress(sigma)
+  SUBROUTINE rism3d_stress( sigma, rhog_ele, vloc, dvloc )
     !----------------------------------------------------------------------------
     !
     ! ... calculate 3D-RISM's stress
     !
     IMPLICIT NONE
     !
-    REAL(DP), INTENT(OUT) :: sigma(3, 3)
+    REAL(DP),    INTENT(OUT) :: sigma(3, 3)
+    COMPLEX(DP), INTENT(IN)  :: rhog_ele(*)
+    REAL(DP),    INTENT(IN)  :: vloc(ngl, nsp)
+    REAL(DP),    INTENT(IN)  :: dvloc(ngl, nsp)
     !
     INTEGER :: ierr
     !
@@ -570,7 +573,7 @@ CONTAINS
     !
     CALL start_clock('3DRISM_str')
     !
-    CALL solvation_stress(rism3t, sigma, ierr)
+    CALL solvation_stress(rism3t, sigma, rhog_ele, vloc, dvloc, ierr)
     !
     IF (ierr /= IERR_RISM_NULL) THEN
       CALL stop_by_err_rism('rism3d_stress', ierr)

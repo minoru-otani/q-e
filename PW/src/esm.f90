@@ -28,6 +28,7 @@ MODULE esm
   !
   !! Phfact & esm_z_inv are introduced, and some cosmetic chages are done
   !! by S. Nishihara (2016-2019)
+  !! Stress calculation is implemented by N. Watanabe (2017-2019)
 
   USE kinds, ONLY : DP
   USE esm_common_mod

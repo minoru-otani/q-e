@@ -31,7 +31,6 @@ MODULE rism_module
   USE exx,              ONLY : x_gamma_extrapolation
   USE fft_base,         ONLY : dfftp
   USE fft_interfaces,   ONLY : invfft
-  USE force_mod,        ONLY : lstres
   USE funct,            ONLY : exx_is_active
   USE gvect,            ONLY : ngm, gstart, nl, nlm
   USE io_global,        ONLY : stdout, ionode, ionode_id
@@ -55,7 +54,7 @@ MODULE rism_module
                              & rism3d_print_clock, starting_3d => starting_corr
   USE solute,           ONLY : deallocate_solU
   USE solvmol,          ONLY : deallocate_solVs
-  USE vlocal,           ONLY : vloc
+  USE vlocal,           ONLY : vloc, dvloc
   !
   IMPLICIT NONE
   SAVE
@@ -140,45 +139,6 @@ CONTAINS
       ! ... correct Vexx(G=0) ?
       IF (exx_is_active() .AND. (.NOT. x_gamma_extrapolation)) THEN
         CALL errore('rism_check', 'Laue-RISM requires Vexx(G=0)', 1)
-      END IF
-      !
-    END IF
-    !
-    ! ...
-    ! ... check Variable Cell
-    ! ...
-    IF (llaue) THEN
-      !
-#if defined (__RISM_STRESS)
-      ! ... Laue-RISM only supports 2Dxy
-      IF (lmovecell) THEN
-        IF (iforceh(3, 1) /= 0 .OR. iforceh(3, 2) /= 0 .OR. iforceh(3, 3) /= 0 .OR. &
-          & iforceh(1, 3) /= 0 .OR. iforceh(2, 3) /= 0) THEN
-          CALL errore('rism_check', 'Laue-RISM only supports cell_dofree = "2Dxy"', 1)
-        END IF
-      END IF
-#else
-      ! ... Laue-RISM does not support storess tensor
-      IF (lstres) THEN
-        CALL errore('rism_check', 'Laue-RISM does not support stress tensor', 1)
-      END IF
-      !
-      ! ... Laue-RISM does not support Variable Cell
-      IF (lmovecell) THEN
-        CALL errore('rism_check', 'Laue-RISM does not support variable cell', 1)
-      END IF
-#endif
-      !
-    ELSE
-      !
-      ! ... 3D-RISM does not support storess tensor
-      IF (lstres) THEN
-        CALL errore('rism_check', '3D-RISM does not support stress tensor', 1)
-      END IF
-      !
-      ! ... 3D-RISM does not support Variable Cell
-      IF (lmovecell) THEN
-        CALL errore('rism_check', '3D-RISM does not support variable cell', 1)
       END IF
       !
     END IF
@@ -690,14 +650,18 @@ CONTAINS
   END SUBROUTINE force_rism
   !
   !----------------------------------------------------------------------------
-  SUBROUTINE stres_rism(sigmasol)
+  SUBROUTINE stres_rism( rho_ofg, sigmaliq )
     !----------------------------------------------------------------------------
     !
     ! ... calculate stress tensor from solvent.
     !
     IMPLICIT NONE
     !
-    REAL(DP), INTENT(OUT) :: sigmasol(3, 3)
+    COMPLEX(DP), INTENT(IN)  :: rho_ofg(ngm, nspin)
+    REAL(DP),    INTENT(OUT) :: sigmaliq(3,3)
+    !
+    COMPLEX(DP), ALLOCATABLE :: rhog_ele(:)
+    INTEGER  :: ig
     !
     IF (.NOT. lrism) THEN
       RETURN
@@ -711,14 +675,34 @@ CONTAINS
       CALL errore('stres_rism', 'result of 3D-RISM calculation is not avairable', 1)
     END IF
     !
-    IF (.NOT. llaue) THEN
-      CALL errore('stres_rism', 'you cannot calculate stress tensor of 3D-RISM', 1)
-    END IF
-    !
     CALL rism_check()
-    !
-    sigmasol = 0.0_DP
-    CALL rism3d_stress(sigmasol)
+
+    IF (llaue) THEN
+      ALLOCATE( rhog_ele(rism3t%cfft%dfftt%nnr) )
+      rhog_ele = 0.0_DP
+!$omp parallel do default(shared) private(ig)
+      do ig=1, rism3t%cfft%ngmt
+        rhog_ele( rism3t%cfft%nlt(ig) ) = sum(rho_ofg(ig,1:nspin))
+      end do
+    ELSE
+      ALLOCATE( rhog_ele(rism3t%cfft%ngmt) )
+
+      rhog_ele = 0.0_DP
+!$omp parallel do default(shared) private(ig)
+      do ig=1, rism3t%cfft%ngmt
+        rhog_ele(ig) = sum(rho_ofg(ig,1:nspin))
+      end do
+    END IF
+
+    sigmaliq = 0.0_DP
+    CALL rism3d_stress(sigmaliq,rhog_ele,vloc,dvloc)
+
+    DEALLOCATE( rhog_ele )
+
+!!$    write(stdout,*) "stressLiq", real(sigmaliq(:,1))
+!!$    write(stdout,*) "stressLiq", real(sigmaliq(:,2))
+!!$    write(stdout,*) "stressLiq", real(sigmaliq(:,3))
+!!$    write(stdout,*)
     !
   END SUBROUTINE stres_rism
   !

@@ -14,13 +14,14 @@ subroutine init_vloc()
   !    potential vloc(ig,it) for each type of atom
   !
   USE atom,       ONLY : msh, rgrid
-  USE m_gth,      ONLY : vloc_gth
+  USE m_gth,      ONLY : vloc_gth, dvloc_gth
   USE kinds,      ONLY : dp
   USE uspp_param, ONLY : upf
   USE ions_base,  ONLY : ntyp => nsp
   USE cell_base,  ONLY : omega, tpiba2
-  USE vlocal,     ONLY : vloc
+  USE vlocal,     ONLY : vloc, dvloc
   USE gvect,      ONLY : ngl, gl
+  USE force_mod,  ONLY : lstres
   !
   implicit none
   !
@@ -29,6 +30,7 @@ subroutine init_vloc()
   !
   call start_clock ('init_vloc')
   vloc(:,:) = 0._dp
+  IF ( lstres ) dvloc(:,:) = 0._dp
   do nt = 1, ntyp
      !
      ! compute V_loc(G) for a given type of atom
@@ -40,12 +42,17 @@ subroutine init_vloc()
            ! special case: GTH pseudopotential
            !
            call vloc_gth (nt, upf(nt)%zp, tpiba2, ngl, gl, omega, vloc (1, nt) )
+           IF ( lstres ) &
+             call dvloc_gth (nt, upf(nt)%zp, tpiba2, ngl, gl, omega, dvloc(1,nt) )
            !
         ELSE
            !
            ! special case: pseudopotential is coulomb 1/r potential
            !
            call vloc_coul (upf(nt)%zp, tpiba2, ngl, gl, omega, vloc (1, nt) )
+           IF ( lstres ) &
+             call dvloc_coul (upf(nt)%zp, tpiba2, ngl, gl, omega, dvloc(1,nt) )
+
            !
         END IF
         !
@@ -55,6 +62,9 @@ subroutine init_vloc()
         !
         call vloc_of_g (rgrid(nt)%mesh, msh (nt), rgrid(nt)%rab, rgrid(nt)%r, &
             upf(nt)%vloc(1), upf(nt)%zp, tpiba2, ngl, gl, omega, vloc (1, nt) )
+        IF ( lstres ) &
+          call dvloc_of_g (rgrid(nt)%mesh, msh (nt), rgrid(nt)%rab, rgrid(nt)%r,&
+          upf(nt)%vloc(1), upf(nt)%zp, tpiba2, ngl, gl, omega, dvloc(1,nt) )
         !
      END IF
   enddo

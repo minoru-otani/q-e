@@ -31,7 +31,7 @@ SUBROUTINE clean_pw( lflag )
   USE ktetra,               ONLY : deallocate_tetra
   USE klist,                ONLY : deallocate_igk
   USE gvect,                ONLY : ig_l2g
-  USE vlocal,               ONLY : strf, vloc
+  USE vlocal,               ONLY : strf, vloc, dvloc
   USE wvfct,                ONLY : g2kin, et, wg, btype
   USE force_mod,            ONLY : force
   USE scf,                  ONLY : rho, v, vltot, rho_core, rhog_core, &
@@ -144,6 +144,7 @@ SUBROUTINE clean_pw( lflag )
   ! ... arrays allocated in allocate_locpot.f90 ( and never deallocated )
   !
   IF ( ALLOCATED( vloc ) )       DEALLOCATE( vloc )
+  IF ( ALLOCATED( dvloc ) )      DEALLOCATE( dvloc )
   IF ( ALLOCATED( strf ) )       DEALLOCATE( strf )
   IF ( ALLOCATED( eigts1 ) )     DEALLOCATE( eigts1 )
   IF ( ALLOCATED( eigts2 ) )     DEALLOCATE( eigts2 )

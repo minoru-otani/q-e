@@ -45,7 +45,7 @@ subroutine stress ( sigma )
        sigmaxc (3, 3), sigmaxcc (3, 3), sigmaewa (3, 3), sigmanlc (3, 3), &
        sigmabare (3, 3), sigmah (3, 3), sigmael( 3, 3), sigmaion(3, 3), &
        sigmalon ( 3 , 3 ), sigmaxdm(3, 3), sigma_nonloc_dft (3 ,3), sigmaexx(3,3), sigma_ts(3,3), &
-       sigmasol (3, 3), sigmaloclong(3,3)  ! for ESM stress
+       sigmaliq (3, 3), sigmaloclong(3,3)  ! for ESM stress
   integer :: l, m
   !
   WRITE( stdout, '(//5x,"Computing stress (Cartesian axis) and pressure"/)')
@@ -150,8 +150,8 @@ subroutine stress ( sigma )
   !
   !   The solvation contribution (3D-RISM)
   !
-  sigmasol(:,:) = 0.d0
-  IF (lrism) CALL stres_rism(sigmasol)
+  sigmaliq(:,:) = 0.d0
+  IF (lrism) CALL stres_rism(rho%of_g,sigmaliq)
   !
   ! SUM
   !
@@ -159,11 +159,25 @@ subroutine stress ( sigma )
                sigmaxc(:,:) + sigmaxcc(:,:) + sigmaewa(:,:) + &
                sigmanlc(:,:) + sigmah(:,:) + sigmael(:,:) +  &
                sigmaion(:,:) + sigmalon(:,:) + sigmaxdm(:,:) + &
-               sigma_nonloc_dft(:,:) + sigma_ts(:,:) + sigmasol(:,:)
+               sigma_nonloc_dft(:,:) + sigma_ts(:,:)
 
-!!$  write(*,"(f6.3,f8.3,f12.6,f12.6,a)") &
-!!$       alat, omega, etot, sigma(1,1)+sigma(2,2), &
-!!$       " # alat, omega, etot, sigma11+sigma22" ! for ESM stress
+!!$  write(stdout,*) "stressSolid", real(sigma(:,1))
+!!$  write(stdout,*) "stressSolid", real(sigma(:,2))
+!!$  write(stdout,*) "stressSolid", real(sigma(:,3))
+!!$  write(stdout,*)
+
+  sigma(:,:) = sigma(:,:) + sigmaliq(:,:)
+
+!!$  write(stdout,*) "stressTot", real(sigma(:,1))
+!!$  write(stdout,*) "stressTot", real(sigma(:,2))
+!!$  write(stdout,*) "stressTot", real(sigma(:,3))
+!!$  write(stdout,*)
+!!$
+!!$  write(stdout,*) "summary of stress and energy"
+!!$  write(stdout,"(f8.4,f12.3,f16.10,f26.12,a)") &
+!!$      alat, omega, etot, sigma(1,1)+sigma(2,2), &
+!!$      " # alat, omega, E, s11+s22" ! for ESM stress
+!!$  write(stdout,*)
 
   !
   IF (dft_is_hybrid()) THEN
@@ -180,9 +194,17 @@ subroutine stress ( sigma )
   !
   ! write results in Ryd/(a.u.)^3 and in kbar
   !
-  WRITE( stdout, 9000) (sigma(1,1) + sigma(2,2) + sigma(3,3)) * ry_kbar/3d0, &
-                  (sigma(l,1), sigma(l,2), sigma(l,3),                    &
-            sigma(l,1)*ry_kbar, sigma(l,2)*ry_kbar, sigma(l,3)*ry_kbar, l=1,3)
+  IF ( do_comp_esm .AND. ( esm_bc /= 'pbc' ) ) THEN ! for ESM stress
+     WRITE( stdout, 9000) (sigma(1,1) + sigma(2,2)) * ry_kbar/3d0, &
+     sigma(1,1), sigma(1,2), 0.d0, sigma(1,1)*ry_kbar, sigma(1,2)*ry_kbar, 0.d0,&
+     sigma(2,1), sigma(2,2), 0.d0, sigma(2,1)*ry_kbar, sigma(2,2)*ry_kbar, 0.d0,&
+     0.d0      , 0.d0      , 0.d0, 0.d0              , 0.d0              , 0.d0
+  ELSE
+     WRITE( stdout, 9000) (sigma(1,1) + sigma(2,2) + sigma(3,3)) * ry_kbar/3d0, &
+                          (sigma(l,1), sigma(l,2), sigma(l,3),                  &
+                           sigma(l,1)*ry_kbar, sigma(l,2)*ry_kbar,              &
+                           sigma(l,3)*ry_kbar, l=1,3)
+  END IF
 
   if ( iverbosity > 0 ) WRITE( stdout, 9005) &
      (sigmakin(l,1)*ry_kbar,sigmakin(l,2)*ry_kbar,sigmakin(l,3)*ry_kbar, l=1,3),&
@@ -197,7 +219,7 @@ subroutine stress ( sigma )
      (sigmaxdm(l,1)*ry_kbar,sigmaxdm(l,2)*ry_kbar,sigmaxdm(l,3)*ry_kbar, l=1,3), &
      (sigma_nonloc_dft(l,1)*ry_kbar,sigma_nonloc_dft(l,2)*ry_kbar,sigma_nonloc_dft(l,3)*ry_kbar, l=1,3),&
      (sigma_ts(l,1)*ry_kbar,sigma_ts(l,2)*ry_kbar,sigma_ts(l,3)*ry_kbar, l=1,3),&
-     (sigmasol(l,1)*ry_kbar,sigmasol(l,2)*ry_kbar,sigmasol(l,3)*ry_kbar, l=1,3)
+     (sigmaliq(l,1)*ry_kbar,sigmaliq(l,2)*ry_kbar,sigmaliq(l,3)*ry_kbar, l=1,3)
 
   IF ( dft_is_hybrid() .AND. (iverbosity > 0) ) WRITE( stdout, 9006) &
      (sigmaexx(l,1)*ry_kbar,sigmaexx(l,2)*ry_kbar,sigmaexx(l,3)*ry_kbar, l=1,3)

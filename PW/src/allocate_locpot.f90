@@ -14,13 +14,15 @@ subroutine allocate_locpot
   ! local potential for each kind of atom, structure factor
   !
   USE ions_base, ONLY : nat, ntyp => nsp
-  USE vlocal,    ONLY : vloc, strf
+  USE vlocal,    ONLY : vloc, dvloc, strf
   USE gvect,     ONLY : eigts1, eigts2, eigts3, ngm, ngl
   USE fft_base , ONLY : dfftp
+  USE force_mod, ONLY : lstres
   !
   implicit none
   !
-  allocate (vloc( ngl, ntyp))    
+  allocate (vloc( ngl, ntyp))
+  IF ( lstres ) allocate (dvloc(ngl, ntyp))
   allocate (strf( ngm, ntyp))    
 
   allocate( eigts1(-dfftp%nr1:dfftp%nr1,nat) )
