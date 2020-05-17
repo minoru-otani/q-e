@@ -93,6 +93,7 @@ SUBROUTINE setup()
   USE funct,              ONLY : dft_is_meta, dft_is_hybrid, dft_is_gradient
   USE paw_variables,      ONLY : okpaw
   USE extfield,           ONLY : monopole
+  USE esm,                ONLY : esm_z_inv
   USE fcp_module,         ONLY : lfcp
   USE gcscf_module,       ONLY : lgcscf
   USE rism_module,        ONLY : lrism, rism_calc1d
@@ -559,7 +560,9 @@ SUBROUTINE setup()
      !
      ! ... eliminate rotations that are not symmetry operations
      !
-     CALL find_sym ( nat, tau, ityp, magnetic_sym, m_loc, monopole )
+     CALL find_sym ( nat, tau, ityp, magnetic_sym, m_loc, &
+                     monopole .OR. (.NOT. esm_z_inv(lrism)) )
+     ! NOTE: monopole is same as gate used in ver.6.5 2020/05/13
      !
      IF ( .NOT. allfrac ) CALL remove_sym ( dfftp%nr1, dfftp%nr2, dfftp%nr3 )
      !
