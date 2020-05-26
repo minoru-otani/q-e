@@ -588,7 +588,7 @@ CONTAINS
     REAL(DP), INTENT(OUT) :: vr(idiis)
     !
     INTEGER               :: info
-    INTEGER               :: ndim, kdim
+    INTEGER               :: ndim, kdim, ndim2
     INTEGER               :: i, imin
     REAL(DP)              :: emin
     REAL(DP)              :: vnrm
@@ -605,6 +605,7 @@ CONTAINS
     REAL(DP), EXTERNAL    :: DDOT
     !
     ndim  = idiis
+    ndim2 = 2 * ndim
     nwork = 3 * ndim
     !
     ALLOCATE( h1( ndim, ndim ) )
@@ -682,7 +683,7 @@ CONTAINS
     !
     CALL DGEMV( 'N', ndim, ndim, 1._DP, s1, ndim, vr, 1, 0._DP, u1, 1 )
     !
-    vnrm = SQRT( DDOT( ndim, vr, 1, u1, 1 ) )
+    vnrm = SQRT( DDOT( ndim2, vr, 1, u1, 1 ) )
     !
     vr = vr / vnrm
     !
