@@ -262,6 +262,7 @@ SUBROUTINE lj_setup_solU_vlj_x(iq, rismt, rsmax, laue)
   INTEGER  :: ia, iia
   REAL(DP) :: tau_r(3)
   REAL(DP) :: r1, r2, r3
+  REAL(DP) :: r3offset
   REAL(DP) :: ev, eu, euv
   REAL(DP) :: sv, su, suv
   REAL(DP) :: rmax
@@ -291,6 +292,19 @@ SUBROUTINE lj_setup_solU_vlj_x(iq, rismt, rsmax, laue)
   idx0  = nx1 * nx2 * rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
+  !
+  ! ... offset for Laue-RISM
+  IF (laue) THEN
+#if defined (__ESM_NOT_SYMMETRIC)
+    r3offset = 0.0_DP
+#else
+    IF (MOD(n3, 2) == 0) THEN
+      r3offset = 0.5_DP / DBLE(n3)
+    ELSE
+      r3offset = 0.0_DP
+    END IF
+#endif
+  END IF
   !
 !$omp parallel do default(shared) private(ir, idx, i1, i2, i3, r1, r2, r3, tau_r, vlj, &
 !$omp             ia, iia, su, suv, rmax, rmin, xuv, yuv, zuv, ruv2, eu, euv, sr2, sr6, sr12)
@@ -322,6 +336,7 @@ SUBROUTINE lj_setup_solU_vlj_x(iq, rismt, rsmax, laue)
     r2 = DBLE(i2) / DBLE(n2)
     r3 = DBLE(i3) / DBLE(n3)
     IF (laue) THEN
+      r3 = r3 + r3offset
       IF (i3 >= (n3 - (n3 / 2))) THEN
         r3 =  r3 - 1.0_DP
       END IF
@@ -460,6 +475,7 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
   INTEGER  :: nx1, nx2, nx3
   REAL(DP) :: tau_z
   REAL(DP) :: r3
+  REAL(DP) :: r3offset
   REAL(DP) :: rho
   REAL(DP) :: ev, eu, euv
   REAL(DP) :: sv, su, suv
@@ -517,6 +533,17 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
   i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
   !
+  ! ... offset for Laue-RISM
+#if defined (__ESM_NOT_SYMMETRIC)
+  r3offset = 0.0_DP
+#else
+  IF (MOD(n3, 2) == 0) THEN
+    r3offset = 0.5_DP / DBLE(n3)
+  ELSE
+    r3offset = 0.0_DP
+  END IF
+#endif
+  !
 !$omp parallel do default(shared) private(ir, idx, i1, i2, i3, r3, tau_z, &
 !$omp             vw, zuv, sr, sr2, sr3, sr6, sr9)
   DO ir = 1, rismt%cfft%dfftt%nnr
@@ -543,7 +570,7 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
       CYCLE
     END IF
     !
-    r3 = DBLE(i3) / DBLE(n3)
+    r3 = r3offset + DBLE(i3) / DBLE(n3)
     IF (i3 >= (n3 - (n3 / 2))) THEN
       r3 =  r3 - 1.0_DP
     END IF
@@ -787,6 +814,7 @@ SUBROUTINE lj_get_force_x(iq, rismt, force, rsmax, laue)
   REAL(DP) :: rhog
   REAL(DP) :: tau_r(3)
   REAL(DP) :: r1, r2, r3
+  REAL(DP) :: r3offset
   REAL(DP) :: ev, eu, euv
   REAL(DP) :: sv, su, suv
   REAL(DP) :: rmax
@@ -821,6 +849,19 @@ SUBROUTINE lj_get_force_x(iq, rismt, force, rsmax, laue)
   idx0  = nx1 * nx2 * rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
+  !
+  ! ... offset for Laue-RISM
+  IF (laue) THEN
+#if defined (__ESM_NOT_SYMMETRIC)
+    r3offset = 0.0_DP
+#else
+    IF (MOD(n3, 2) == 0) THEN
+      r3offset = 0.5_DP / DBLE(n3)
+    ELSE
+      r3offset = 0.0_DP
+    END IF
+#endif
+  END IF
   !
   weight = omega / DBLE(n1 * n2 * n3)
   !
@@ -857,6 +898,7 @@ SUBROUTINE lj_get_force_x(iq, rismt, force, rsmax, laue)
     r2 = DBLE(i2) / DBLE(n2)
     r3 = DBLE(i3) / DBLE(n3)
     IF (laue) THEN
+      r3 = r3 + r3offset
       IF (i3 >= (n3 - (n3 / 2))) THEN
         r3 =  r3 - 1.0_DP
       END IF
@@ -1036,6 +1078,7 @@ SUBROUTINE lj_get_stress_x(iq, rismt, sigma, rsmax, laue)
   REAL(DP) :: rhog
   REAL(DP) :: tau_r(3)
   REAL(DP) :: r1, r2, r3
+  REAL(DP) :: r3offset
   REAL(DP) :: ev, eu, euv
   REAL(DP) :: sv, su, suv
   REAL(DP) :: rmax
@@ -1069,6 +1112,19 @@ SUBROUTINE lj_get_stress_x(iq, rismt, sigma, rsmax, laue)
   idx0  = nx1 * nx2 * rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
+  !
+  ! ... offset for Laue-RISM
+  IF (laue) THEN
+#if defined (__ESM_NOT_SYMMETRIC)
+    r3offset = 0.0_DP
+#else
+    IF (MOD(n3, 2) == 0) THEN
+      r3offset = 0.5_DP / DBLE(n3)
+    ELSE
+      r3offset = 0.0_DP
+    END IF
+#endif
+  END IF
   !
   weight = 1.0d0 / DBLE(n1 * n2 * n3)
   !
@@ -1104,6 +1160,7 @@ SUBROUTINE lj_get_stress_x(iq, rismt, sigma, rsmax, laue)
     r2 = DBLE(i2) / DBLE(n2)
     r3 = DBLE(i3) / DBLE(n3)
     IF (laue) THEN
+      r3 = r3 + r3offset
       IF (i3 >= (n3 - (n3 / 2))) THEN
         r3 =  r3 - 1.0_DP
       END IF
