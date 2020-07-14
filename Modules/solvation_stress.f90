@@ -85,7 +85,7 @@ SUBROUTINE solvation_stress(rismt, sigma, rhog_ele, vloc, dvloc, ierr)
   END IF
   !
   ! ... total solvation stress
-  sigma(:,:) = sigmalj(:,:) + sigmahar(:,:) + sigmaion(:,:)
+  sigma(:,:) = sigmalj(:,:) - sigmahar(:,:) - sigmaion(:,:)
 
 !!$  write(stdout,*) "stressLJ ", real(sigmalj(:,1))
 !!$  write(stdout,*) "stressLJ ", real(sigmalj(:,2))
