@@ -142,6 +142,7 @@ SUBROUTINE eqn_lauerism_x(rismt, lboth, ierr)
   COMPLEX(DP), ALLOCATABLE :: cs2(:)
   COMPLEX(DP), ALLOCATABLE :: hs1(:,:)
   !
+  REAL(DP),PARAMETER       :: ZERO   = 0.0_DP
   COMPLEX(DP), PARAMETER   :: C_ZERO = CMPLX( 0.0_DP, 0.0_DP, kind=DP)
   COMPLEX(DP), PARAMETER   :: C_ONE  = CMPLX( 1.0_DP, 0.0_DP, kind=DP)
   COMPLEX(DP), PARAMETER   :: C_MONE = CMPLX(-1.0_DP, 0.0_DP, kind=DP)
@@ -199,16 +200,21 @@ SUBROUTINE eqn_lauerism_x(rismt, lboth, ierr)
   ! ... allocate working memory
   IF (rismt%nrzl > 0) THEN
     ALLOCATE(xgt(rismt%nrzl))
+    xgt = ZERO
   END IF
   IF (lboth .AND. rismt%nrzl > 0) THEN
     ALLOCATE(ygt(rismt%nrzl))
+    ygt = ZERO
   END IF
   IF (nzint > 0) THEN
     ALLOCATE(x21(nzint, nzint))
     ALLOCATE(cs2(nzint))
+    x21 = C_ZERO
+    cs2 = C_ZERO
   END IF
   IF (nzint * rismt%lfft%ngxy > 0) THEN
     ALLOCATE(hs1(nzint, rismt%lfft%ngxy))
+    hs1 = C_ZERO
   END IF
   !
   ! ... Laue-RISM equation of short-range (Gxy /= 0)
