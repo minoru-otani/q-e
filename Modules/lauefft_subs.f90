@@ -797,6 +797,7 @@ SUBROUTINE allocate_lauefft_gxy(lauefft0, ngmt, ig1t, ig2t, gt, comm)
   gxy2sort        = 0.0_DP
   gxy_unsorted    = 0.0_DP
   gnxy_unsorted   = 0.0_DP
+  ggxy_unsorted   = 0.0_DP
   millxy_unsorted = 0
   !
   igxy = 0

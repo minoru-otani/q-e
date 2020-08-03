@@ -83,6 +83,8 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
   REAL(DP),   PARAMETER :: HZ_SMEAR = 2.0_DP  ! in bohr
   REAL(DP),   PARAMETER :: HW_THR   = 1.0E-8_DP
   !
+  REAL(DP),   PARAMETER :: zero = 0.0_DP
+  !
   REAL(DP),   EXTERNAL  :: qe_erfc
 #if defined (__DEBUG_RISM)
   !
@@ -129,15 +131,23 @@ SUBROUTINE normalize_lauerism(rismt, charge, expand, ierr)
     ALLOCATE(izleft_tail( rismt%nsite))
     ALLOCATE(vol1(rismt%nsite))
     ALLOCATE(vol2(rismt%nsite))
+    izright_tail = 0
+    izleft_tail  = 0
+    vol1 = zero
+    vol2 = zero
   END IF
   IF (rismt%lfft%nrz * rismt%nsite > 0) THEN
     ALLOCATE(hwei(rismt%lfft%nrz, rismt%nsite))
+    hwei = zero
   END IF
   IF (rismt%nsite > 0) THEN
     ALLOCATE(nsol(rismt%nsite))
+    nsol = zero
   END IF
   ALLOCATE(msol(nsolV))
   ALLOCATE(qsol(nsolV))
+  msol = zero
+  qsol = zero
   !
   ! ... set variables
   dz      = rismt%lfft%zstep * alat

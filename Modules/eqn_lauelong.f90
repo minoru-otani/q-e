@@ -322,7 +322,6 @@ CONTAINS
     !       hl1(gxy,z1) = -beta * | dz2 vl(gxy,z2) * x1(gxy,z2-z1)
     !                             /-inf
     !
-    rismt%hlgz = C_ZERO
     DO iq1 = rismt%mp_site%isite_start, rismt%mp_site%isite_end
       iiq1 = iq1 - rismt%mp_site%isite_start + 1
       xgz(:) = xgzt(:, iiq1)
