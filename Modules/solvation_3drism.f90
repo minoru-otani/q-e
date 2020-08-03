@@ -78,12 +78,17 @@ SUBROUTINE solvation_3drism(rismt, ierr)
     ALLOCATE(aux(rismt%cfft%dfftt%nnr))
   END IF
   !
+  rhor = 0.0_DP
+  aux  = CMPLX(0.0_DP, 0.0_DP,KIND=DP)
+  !
   ! ... set variables
   domega = omega / DBLE(rismt%cfft%dfftt%nr1) &
                & / DBLE(rismt%cfft%dfftt%nr2) &
                & / DBLE(rismt%cfft%dfftt%nr3)
   !
   ! ... make nsol, qsol
+  rismt%nsol = 0.0_DP
+  rismt%qsol = 0.0_DP
   DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
     iiq   = iq - rismt%mp_site%isite_start + 1
     iv    = iuniq_to_isite(1, iq)
@@ -155,6 +160,7 @@ SUBROUTINE solvation_3drism(rismt, ierr)
     CALL fwfft('Custom', aux, rismt%cfft%dfftt)
   END IF
   !
+  rismt%rhog = CMPLX(0.0_DP, 0.0_DP,KIND=DP)
 !$omp parallel do default(shared) private(ig)
   DO ig = 1, rismt%cfft%ngmt
     rismt%rhog(ig) = aux(rismt%cfft%nlt(ig))

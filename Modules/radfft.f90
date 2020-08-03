@@ -198,6 +198,8 @@ CONTAINS
     ! allocate memory
     ALLOCATE(crr(radfft0%lgrid))
     ALLOCATE(cgg(radfft0%lgrid))
+    crr = CMPLX(0.0_DP, 0.0_DP, KIND=DP)
+    cgg = CMPLX(0.0_DP, 0.0_DP, KIND=DP)
     !
     ! cr -> crr (ungerade)
     dr  = radfft0%rgrid(2) - radfft0%rgrid(1)
@@ -250,6 +252,8 @@ CONTAINS
     ! allocate memory
     ALLOCATE(cgg(radfft0%lgrid))
     ALLOCATE(crr(radfft0%lgrid))
+    cgg = CMPLX(0.0_DP, 0.0_DP, KIND=DP)
+    crr = CMPLX(0.0_DP, 0.0_DP, KIND=DP)
     !
     ! cg -> cgg (only sin)
     dg  = radfft0%ggrid(2) - radfft0%ggrid(1)

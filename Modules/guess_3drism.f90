@@ -86,6 +86,7 @@ SUBROUTINE guess_3drism(rismt, ierr)
   beta = 1.0_DP / K_BOLTZMANN_RY / rismt%temp
   !
   ! ... create guess for each solvent's site
+  rismt%csr = 0.0_DP
   DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
     iiq   = iq - rismt%mp_site%isite_start + 1
     iv    = iuniq_to_isite(1, iq)

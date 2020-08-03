@@ -64,6 +64,8 @@ SUBROUTINE eqn_lauevoid(rismt, expand, ierr)
   REAL(DP), ALLOCATABLE :: d2(:)
   REAL(DP), ALLOCATABLE :: h1(:)
   !
+  REAL(DP), PARAMETER   :: zero = 0.0_DP
+  !
   ! ... number of sites in solvents
   nq = get_nuniq_in_solVs()
   !
@@ -151,9 +153,12 @@ SUBROUTINE eqn_lauevoid(rismt, expand, ierr)
   IF (rismt%nsite > 0) THEN
     ALLOCATE(c2(rismt%nsite))
     ALLOCATE(d2(rismt%nsite))
+    c2 = zero
+    d2 = zero
   END IF
   IF (nzint > 0) THEN
     ALLOCATE(h1(nzint))
+    h1 = zero
   END IF
   !
   ! ... calculate c2, d2

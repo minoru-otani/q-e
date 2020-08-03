@@ -54,6 +54,9 @@ SUBROUTINE potential_3drism(rismt, vrs, rhog, ierr)
   COMPLEX(DP), ALLOCATABLE :: rhogss(:)  ! density(Rho) in G-Space for Smooth-FFT
   COMPLEX(DP), ALLOCATABLE :: aux(:)     ! AUXiliary data for Dense-FFT
   COMPLEX(DP), ALLOCATABLE :: auxs(:)    ! AUXiliary data for Smooth-FFT
+  !
+  REAL(DP),    PARAMETER   :: zero = 0.0_DP
+  COMPLEX(DP), PARAMETER   :: czero= CMPLX(0.0_DP, 0.0_DP,KIND=DP)
 #if defined (__DEBUG_RISM)
   !
   CALL start_clock('3DRISM_dft')
@@ -246,9 +249,13 @@ CONTAINS
       ALLOCATE(vrss  (rismt%cfft%dfftt%nnr))
       ALLOCATE(vrss_s(rismt%cfft%dfftt%nnr))
       ALLOCATE(vrss_l(rismt%cfft%dfftt%nnr))
+      vrss   = zero
+      vrss_s = zero
+      vrss_l = zero
     END IF
     IF (rismt%cfft%ngmt > 0) THEN
       ALLOCATE(vgss_l(rismt%cfft%ngmt))
+      vgss_l = czero
     END IF
     IF (rismt%itype == ITYPE_LAUERISM) THEN
       IF ((rismt%nrzl * rismt%lfft%ngxy) > 0) THEN
@@ -270,9 +277,11 @@ CONTAINS
     ! ... auxiliary
     IF (dfftp%nnr > 0) THEN
       ALLOCATE(aux   (dfftp%nnr))
+      aux = czero
     END IF
     IF (rismt%cfft%dfftt%nnr > 0) THEN
       ALLOCATE(auxs  (rismt%cfft%dfftt%nnr))
+      auxs = czero
     END IF
     !
   END SUBROUTINE allocate_works
@@ -334,6 +343,8 @@ CONTAINS
     tt0 = rismt%tau * rismt%tau
     !
     ! ... vrs -> aux
+    aux  = czero
+    auxs = czero
 !$omp parallel do default(shared) private(ir)
     DO ir = 1, dfftp%nnr
       aux(ir) = CMPLX(vrs(ir), 0.0_DP, kind=DP)
@@ -364,6 +375,7 @@ CONTAINS
     IF (rismt%cfft%dfftt%nnr > 0) THEN
       CALL invfft('Custom', auxs, rismt%cfft%dfftt)
     END IF
+    vrss = zero
 !$omp parallel do default(shared) private(ir)
     DO ir = 1, rismt%cfft%dfftt%nnr
       vrss(ir) = DBLE(auxs(ir))
@@ -374,6 +386,7 @@ CONTAINS
     IF (rismt%cfft%dfftt%nnr > 0) THEN
       auxs = CMPLX(0.0_DP, 0.0_DP, kind=DP)
     END IF
+    vgss_l = czero
 !$omp parallel do default(shared) private(ig, gg0, exp0)
     DO ig = 1, rismt%cfft%ngmt
       gg0  = rismt%cfft%ggt(ig) * tpiba2
@@ -403,6 +416,8 @@ CONTAINS
     IF (rismt%cfft%dfftt%nnr > 0) THEN
       CALL invfft('Custom', auxs, rismt%cfft%dfftt)
     END IF
+    vrss_s = zero
+    vrss_l = zero
 !$omp parallel do default(shared) private(ir)
     DO ir = 1, rismt%cfft%dfftt%nnr
       vrss_s(ir) = vrss(ir) - DBLE(auxs(ir))

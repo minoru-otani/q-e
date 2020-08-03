@@ -78,6 +78,8 @@ SUBROUTINE eqn_lauedipole(rismt, expand, prepare, ierr)
   REAL(DP), ALLOCATABLE :: x21(:,:)
   REAL(DP), ALLOCATABLE :: h1(:)
   !
+  REAL(DP), PARAMETER   :: zero = 0.0_DP
+  !
   EXTERNAL :: dgemv
   !
   ! ... number of sites in solvents

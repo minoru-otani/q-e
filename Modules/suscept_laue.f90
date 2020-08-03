@@ -84,6 +84,7 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
   REAL(DP), ALLOCATABLE :: cosgz(:,:)
   !
   REAL(DP), PARAMETER   :: LAUE_BOX_SCALE = 1.2_DP
+  REAL(DP), PARAMETER   :: zero = 0.0_DP
   !
   EXTERNAL :: dgemm
   !
@@ -157,20 +158,30 @@ SUBROUTINE suscept_laue(rism1t, rismlt, alpha, lhand, ierr)
   ALLOCATE(xg_1d(rism1t%ng))
   ALLOCATE(xg_spl(rism1t%mp_task%nvec))
   ALLOCATE(xg_d2y(rism1t%mp_task%nvec))
+  rank_map = 0
+  root_spline = 0
+  xg_1d  = zero
+  xg_spl = zero
+  xg_d2y = zero
   IF ((rism1t%rfft%ngrid * rismlt%lfft%nglxy) > 0) THEN
     ALLOCATE(gs_t(rism1t%rfft%ngrid, rismlt%lfft%nglxy))
+    gs_t = zero
   END IF
   IF ((rism1t%rfft%ngrid * rismlt%lfft%nglxy) > 0) THEN
     ALLOCATE(xg_t(rism1t%rfft%ngrid, rismlt%lfft%nglxy))
+    xg_t = zero
   END IF
   IF (rismlt%nsite > 0) THEN
     ALLOCATE(xg_0(rismlt%nsite, nq))
+    xg_0 = zero
   END IF
   IF ((rismlt%nrzl * rismlt%ngs) > 0) THEN
     ALLOCATE(xgs21(rismlt%nrzl * rismlt%ngs))
+    xgs21 = zero
   END IF
   IF ((rism1t%rfft%ngrid * rismlt%lfft%nrz) > 0) THEN
     ALLOCATE(cosgz(rism1t%rfft%ngrid, rismlt%lfft%nrz))
+    cosgz = zero
   END IF
   !
   ! ... setup roots to prepare spline

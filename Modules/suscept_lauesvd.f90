@@ -74,9 +74,14 @@ SUBROUTINE suscept_lauesvd(rismt, lhand, ierr)
   ALLOCATE(x0    (nq * rismt%lfft%nrz))
   ALLOCATE(xu    (nq * rismt%lfft%nrz * 3))
   ALLOCATE(xvt   (nq * rismt%lfft%nrz, nq * rismt%lfft%nrz))
+  xmajor = 0.0_DP
+  x0     = 0.0_DP
+  xu     = 0.0_DP
+  xvt    = 0.0_DP
   !
   lwork = 8 * nq * rismt%lfft%nrz
   ALLOCATE(work(lwork))
+  work = 0.0_DP
   !
   ! ... construct major matrix of susceptibility
   xmajor = 0.0_DP

@@ -133,6 +133,7 @@ SUBROUTINE eqn_laueshort_x(rismt, lboth, ierr)
   COMPLEX(DP), ALLOCATABLE :: cs2(:)
   COMPLEX(DP), ALLOCATABLE :: hs1(:,:)
   !
+  REAL(DP),    PARAMETER   :: ZERO = 0.0_DP
   COMPLEX(DP), PARAMETER   :: C_ZERO = CMPLX( 0.0_DP, 0.0_DP, kind=DP)
   COMPLEX(DP), PARAMETER   :: C_ONE  = CMPLX( 1.0_DP, 0.0_DP, kind=DP)
   !
@@ -197,15 +198,20 @@ SUBROUTINE eqn_laueshort_x(rismt, lboth, ierr)
   IF (rismt%nrzl > 0) THEN
     ALLOCATE(xgt(rismt%nrzl))
     ALLOCATE(ygt(rismt%nrzl))
+    xgt = zero
+    ygt = zero
   END IF
   IF (nzint2 * nzint1 > 0) THEN
     ALLOCATE(x21(nzint2, nzint1))
+    x21 = c_zero
   END IF
   IF (nzint2 > 0) THEN
     ALLOCATE(cs2(nzint2))
+    cs2 = c_zero
   END IF
   IF (nzint1 * rismt%lfft%ngxy > 0) THEN
     ALLOCATE(hs1(nzint1, rismt%lfft%ngxy))
+    hs1 = c_zero
   END IF
   !
   DO iq1 = 1, nq

@@ -46,6 +46,7 @@ SUBROUTINE closure(rismt, ierr)
   END IF
   !
   ! ... solve closure equation
+  rismt%gg0 = 0.0_DP
   IF (iclosure == CLOSURE_HNC) THEN
     !
     IF (rismt%itype /= ITYPE_LAUERISM) THEN

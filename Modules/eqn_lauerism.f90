@@ -217,6 +217,8 @@ SUBROUTINE eqn_lauerism_x(rismt, lboth, ierr)
     hs1 = C_ZERO
   END IF
   !
+  rismt%hgz = C_ZERO
+  !
   ! ... Laue-RISM equation of short-range (Gxy /= 0)
   DO iq1 = 1, nq
     ! ... properties of site1

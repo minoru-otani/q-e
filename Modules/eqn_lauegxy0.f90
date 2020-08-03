@@ -65,6 +65,8 @@ SUBROUTINE eqn_lauegxy0(rismt, lboth, expand, long, ierr)
   REAL(DP), ALLOCATABLE :: cs2(:)
   REAL(DP), ALLOCATABLE :: hs1(:)
   !
+  REAL(DP), PARAMETER   :: zero = 0.0_DP
+  !
   EXTERNAL :: dgemv
   !
   ! ... number of sites in solvents
@@ -119,15 +121,20 @@ SUBROUTINE eqn_lauegxy0(rismt, lboth, expand, long, ierr)
   IF (rismt%nrzl > 0) THEN
     ALLOCATE(xgt(rismt%nrzl))
     ALLOCATE(ygt(rismt%nrzl))
+    xgt = zero
+    ygt = zero
   END IF
   IF (nzint2 * nzint1 > 0) THEN
     ALLOCATE(x21(nzint2, nzint1))
+    x21 = zero
   END IF
   IF (nzint2 > 0) THEN
     ALLOCATE(cs2(nzint2))
+    cs2 = zero
   END IF
   IF (nzint1 > 0) THEN
     ALLOCATE(hs1(nzint1))
+    hs1 = zero
   END IF
   !
   ! ... initialize hg0

@@ -231,6 +231,7 @@ CONTAINS
     !
     ! ... read zvv for each site
     ALLOCATE(zvv1(ngrid))
+    zvv1 = 0.0_DP
     !
     DO isite = 1, nsite
       IF (ionode) THEN
@@ -512,6 +513,9 @@ CONTAINS
     ALLOCATE(sowner(nsite))
     ALLOCATE(kowner(nr3))
     ALLOCATE(zuv_plane(nr1 * nr2))
+    sowner = 0
+    kowner = 0
+    zuv_plane = 0.0_DP
     !
     ! ... get process info.
     me_group    = mp_rank(intra_group_comm)

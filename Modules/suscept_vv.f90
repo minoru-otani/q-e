@@ -53,6 +53,8 @@ SUBROUTINE suscept_vv(rism1t, rism3t, ierr)
   REAL(DP), ALLOCATABLE :: xg_d2y(:)
   REAL(DP), ALLOCATABLE :: gs_t(:)
   !
+  REAL(DP), PARAMETER   :: ZERO = 0.0_DP
+  !
   ! ... number of sites in solvents
   nv = get_nsite_in_solVs()
   nq = get_nuniq_in_solVs()
@@ -105,8 +107,14 @@ SUBROUTINE suscept_vv(rism1t, rism3t, ierr)
   ALLOCATE(xg_1d(rism1t%ng))
   ALLOCATE(xg_spl(rism1t%mp_task%nvec))
   ALLOCATE(xg_d2y(rism1t%mp_task%nvec))
+  rank_map = 0
+  root_spline = 0
+  xg_1d = zero
+  xg_spl = zero
+  xg_d2y = zero
   IF (rism3t%cfft%nglt > 0) THEN
     ALLOCATE(gs_t(rism3t%cfft%nglt))
+    gs_t = zero
   END IF
   !
   ! ... setup roots to prepare spline

@@ -36,6 +36,9 @@ SUBROUTINE eqn_3drism(rismt, ierr)
   REAL(DP)                 :: xg21
   COMPLEX(DP)              :: cgz2
   COMPLEX(DP), ALLOCATABLE :: hgz1(:)
+  !
+  REAL(DP),PARAMETER       :: zero  = 0.0_DP
+  COMPLEX(DP),PARAMETER    :: czero = CMPLX(0.0_DP, 0.0_DP, KIND=DP)
 #if defined (__DEBUG_RISM)
   !
   CALL start_clock('3DRISM_eqn')
@@ -71,7 +74,9 @@ SUBROUTINE eqn_3drism(rismt, ierr)
   ! ... allocate working memory
   IF (rismt%cfft%ngmt > 0) THEN
     ALLOCATE(hgz1(rismt%cfft%ngmt))
+    hgz1 = czero
   END IF
+  rismt%hgz = czero
   !
   ! ... 3D-RISM equation
   DO iq1 = 1, nq

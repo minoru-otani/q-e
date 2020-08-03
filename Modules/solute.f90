@@ -131,6 +131,7 @@ CONTAINS
     wall_ljeps = 0.0_DP
     wall_ljsig = 0.0_DP
     wall_lj6   = .FALSE.
+    lwall3d      = .FALSE.
     iwall3d      = 0
     wall_rho3d   = 0.0_DP
     wall_ljeps3d = 0.0_DP
@@ -171,6 +172,13 @@ CONTAINS
       wall_ljeps = 0.0_DP
       wall_ljsig = 0.0_DP
       wall_lj6   = .FALSE.
+      lwall3d      = .FALSE.
+      iwall3d      = 0
+      wall_rho3d   = 0.0_DP
+      wall_ljeps3d = 0.0_DP
+      wall_ljsig3d = 0.0_DP
+      wall_z       = 0.0_DP
+      wall_z0      = 0.0_DP
       !
     ELSE
       !
@@ -203,6 +211,8 @@ CONTAINS
     !
     ALLOCATE(solU_tau(3,  solU_nat))
     ALLOCATE(isup_to_iuni(solU_nat))
+    solU_tau = 0.0_DP
+    isup_to_iuni = 0
     !
     CALL lj_setup_solU_tau(rismt, rmax_lj, .FALSE., ierr)
     IF (ierr /= IERR_RISM_NULL) THEN
@@ -251,6 +261,7 @@ CONTAINS
     INTEGER,         INTENT(OUT) :: ierr
     !
     ! ... calculate Lennard-Jones force
+    force = 0.0_DP
     CALL lj_get_force(rismt, force, rmax_lj, ierr)
     !
   END SUBROUTINE get_solU_LJ_force
@@ -268,6 +279,7 @@ CONTAINS
     INTEGER,         INTENT(OUT) :: ierr
     !
     ! ... calculate Lennard-Jones stress
+    sigma = 0.0_DP
     CALL lj_get_stress(rismt, sigma, rmax_lj, ierr)
     !
   END SUBROUTINE get_solU_LJ_stress

@@ -240,6 +240,10 @@ CONTAINS
     ALLOCATE(isite_to_iatom(nsite))
     ALLOCATE(iuniq_to_nsite(nuniq))
     ALLOCATE(iuniq_to_isite(msite, nuniq))
+    isite_to_isolV = 0
+    isite_to_iatom = 0
+    iuniq_to_nsite = 0
+    iuniq_to_isite = 0
     !
     ! ... create indexes
     isite = 0

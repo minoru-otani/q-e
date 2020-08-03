@@ -354,6 +354,8 @@ CONTAINS
     REAL(DP),    PARAMETER   :: TR2_EXPON  = 0.55_DP
     REAL(DP),    PARAMETER   :: EPSV_EXPON = 0.50_DP
     REAL(DP),    PARAMETER   :: EPSV_CEILING = 1.0E-2_DP
+    REAL(DP),    PARAMETER   :: zero = 0.0_DP
+    COMPLEX(DP), PARAMETER   :: czero = CMPLX(0.0_DP, 0.0_DP,KIND=DP)
     !
     IF (.NOT. lrism) THEN
       esol = 0.0_DP
@@ -367,12 +369,15 @@ CONTAINS
     !
     CALL rism_check()
     !
+    ! ... Electrostatic potential for RISM
     ALLOCATE(vpot(dfftp%nnr))
+    vpot = zero
     IF (llaue) THEN
       ALLOCATE(chgg(ngm))
     ELSE
       ALLOCATE(chgg(1))
     END IF
+    chgg = czero
     !
     ! ... make electronic potential and charge
     CALL solute_pot(rhog, vpot)
@@ -443,6 +448,9 @@ CONTAINS
     REAL(DP),    ALLOCATABLE :: vpot(:)
     COMPLEX(DP), ALLOCATABLE :: chgg(:)
     !
+    REAL(DP),    PARAMETER   :: zero = 0.0_DP
+    COMPLEX(DP), PARAMETER   :: czero = CMPLX(zero, zero, KIND=DP)
+    !
     ! ... if 3D-RISM's data are kept,
     ! ... one can calculate solvation potential.
     IF (.NOT. lrism3d) THEN
@@ -450,11 +458,13 @@ CONTAINS
     END IF
     !
     ALLOCATE(vpot(dfftp%nnr))
+    vpot = zero
     IF (llaue) THEN
       ALLOCATE(chgg(ngm))
     ELSE
       ALLOCATE(chgg(1))
     END IF
+    chgg = czero
     !
     CALL solute_pot(rhog, vpot)
     IF (llaue) THEN

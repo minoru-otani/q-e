@@ -80,6 +80,9 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
   REAL(DP), PARAMETER   :: RMS_SMALL   = 0.95_DP
   REAL(DP), PARAMETER   :: RMS_LARGE   = 2.00_DP
   !
+  REAL(DP), PARAMETER   :: zero = 0.0_DP
+  COMPLEX(DP), PARAMETER :: czero = CMPLX(zero, zero, kind=DP)
+  !
   ! ... check data type
   IF (rismt%itype /= ITYPE_LAUERISM) THEN
     ierr = IERR_RISM_INCORRECT_DATA_TYPE
@@ -125,7 +128,11 @@ SUBROUTINE do_lauerism(rismt, maxiter, rmsconv, nbox, eta, charge, lboth, iref, 
   IF (ntot * rismt%nsite > 0) THEN
     ALLOCATE(cst( ntot, rismt%nsite))
     ALLOCATE(dcst(ntot, rismt%nsite))
+    cst  = zero
+    dcst = zero
   END IF
+  cst_  = zero
+  dcst_ = zero
   !
   CALL allocate_mdiis(mdiist, nbox, ntot * rismt%nsite, eta, MDIIS_EXT)
   !
@@ -461,16 +468,15 @@ CONTAINS
     CALL start_clock('3DRISM_fft')
     !
 #endif
+    rismt%csgz = czero
     DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
       jsite = isite - rismt%mp_site%isite_start + 1
-      IF (rismt%nrzs * rismt%ngxy > 0) THEN
-        rismt%csgz(:, jsite) = CMPLX(0.0_DP, 0.0_DP, kind=DP)
-      END IF
       !
       IF (rismt%cfft%dfftt%nnr > 0 .AND. (rismt%nrzs * rismt%ngxy) > 0) THEN
         CALL fw_lauefft_2xy(rismt%lfft, &
            & rismt%csr(:, jsite), rismt%csgz(:, jsite), rismt%nrzs, 1, nofft)
       END IF
+      !
     END DO
 #if defined (__DEBUG_RISM)
     !
@@ -488,16 +494,15 @@ CONTAINS
     CALL start_clock('3DRISM_fft')
     !
 #endif
+    rismt%hr = zero
     DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
       jsite = isite - rismt%mp_site%isite_start + 1
-      IF (rismt%cfft%dfftt%nnr > 0) THEN
-        rismt%hr(:, jsite) = 0.0_DP
-      END IF
       !
       IF (rismt%cfft%dfftt%nnr > 0 .AND. (rismt%nrzs * rismt%ngxy) > 0) THEN
         CALL inv_lauefft_2xy(rismt%lfft, &
            & rismt%hgz(:, jsite), rismt%nrzs, 1, rismt%hr(:, jsite), nofft)
       END IF
+      !
     END DO
 #if defined (__DEBUG_RISM)
     !
@@ -860,6 +865,8 @@ CONTAINS
     !
     nr = rismt%cfft%dfftt%nnr
     !
+    cst  = zero
+    dcst = zero
     DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
       iiq    = iq - rismt%mp_site%isite_start + 1
       iv     = iuniq_to_isite(1, iq)
@@ -915,6 +922,8 @@ CONTAINS
     !
     nr = rismt%cfft%dfftt%nnr
     !
+    rismt%csr = zero
+    rismt%csg0 = zero
     DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
       iiq    = iq - rismt%mp_site%isite_start + 1
       nv     = iuniq_to_nsite(iq)

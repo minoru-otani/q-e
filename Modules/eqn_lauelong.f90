@@ -48,6 +48,8 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
   REAL(DP), ALLOCATABLE :: yz(:)
   REAL(DP), ALLOCATABLE :: ygz(:)
   REAL(DP), ALLOCATABLE :: ygzt(:,:)
+  !
+  REAL(DP), PARAMETER   :: zero = 0.0_DP
 #if defined (__DEBUG_RISM)
   !
   CALL start_clock('3DRISM_eqnL')
@@ -85,23 +87,29 @@ SUBROUTINE eqn_lauelong(rismt, lboth, ierr)
   ! ... allocate working memory
   IF (rismt%nrzl > 0) THEN
     ALLOCATE(xz(rismt%nrzl))
+    xz = zero
   END IF
   IF (rismt%nrzl * rismt%ngs > 0) THEN
     ALLOCATE(xgz(rismt%nrzl * rismt%ngs))
+    xgz = zero
   END IF
   IF (rismt%nrzl * rismt%ngs * rismt%nsite > 0) THEN
     ALLOCATE(xgzt(rismt%nrzl * rismt%ngs, rismt%nsite))
+    xgzt = zero
   END IF
   !
   IF (rismt%nrzl > 0) THEN
     ALLOCATE(yz(rismt%nrzl))
+    yz = zero
   END IF
   IF (lboth) THEN
     IF (rismt%nrzl * rismt%ngs > 0) THEN
       ALLOCATE(ygz(rismt%nrzl * rismt%ngs))
+      ygz = zero
     END IF
     IF (rismt%nrzl * rismt%ngs * rismt%nsite > 0) THEN
       ALLOCATE(ygzt(rismt%nrzl * rismt%ngs, rismt%nsite))
+      ygzt = zero
     END IF
   END IF
   !
@@ -217,8 +225,12 @@ CONTAINS
     INTEGER  :: iatom2
     REAL(DP) :: qv2
     !
+    INTEGER  :: ngrid
+    !
+    ngrid = 0
     IF (rismt%nrzl * rismt%ngs > 0) THEN
       xgz = 0.0_DP
+      ngrid = rismt%nrzl * rismt%ngs
     END IF
     !
     DO iq2 = rismt%mp_site%isite_start, rismt%mp_site%isite_end
@@ -230,7 +242,7 @@ CONTAINS
       qv2    = solVs(isolV2)%charge(iatom2)
       !
       ! ... calculate x21 -> x1
-      IF (rismt%nrzl * rismt%ngs > 0) THEN
+      IF (ngrid > 0) THEN
         xgz(:) = xgz(:) + qv2 * xgs(1:(rismt%nrzl * rismt%ngs), iiq2)
       END IF
       !
@@ -289,15 +301,19 @@ CONTAINS
     ! ... allocate working memory
     IF (nzint > 0) THEN
       ALLOCATE(x21(nzint, nzint))
+      x21 = C_ZERO
     END IF
     IF (rismt%lfft%nrz * nzint > 0) THEN
       ALLOCATE(x21out(rismt%lfft%nrz, nzint))
+      x21 = C_ZERO
     END IF
     IF (rismt%lfft%nrz > 0) THEN
       ALLOCATE(vl2(rismt%lfft%nrz))
+      vl2 = C_ZERO
     END IF
     IF (nzint * igxy_len > 0) THEN
       ALLOCATE(hl1(nzint, igxy_len))
+      hl1 = C_ZERO
     END IF
     !
     ! ... calculate integral equation:
@@ -306,6 +322,7 @@ CONTAINS
     !       hl1(gxy,z1) = -beta * | dz2 vl(gxy,z2) * x1(gxy,z2-z1)
     !                             /-inf
     !
+    rismt%hlgz = C_ZERO
     DO iq1 = rismt%mp_site%isite_start, rismt%mp_site%isite_end
       iiq1 = iq1 - rismt%mp_site%isite_start + 1
       xgz(:) = xgzt(:, iiq1)

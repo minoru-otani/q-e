@@ -509,13 +509,20 @@ CONTAINS
         ALLOCATE(rismt%csr( nr, nsite))
         ALLOCATE(rismt%usr( nr, nsite))
         ALLOCATE(rismt%ulr( nr, nsite))
-        ALLOCATE(rismt%hr(  nr, nsite))
-        ALLOCATE(rismt%gr(  nr, nsite))
+        ALLOCATE(rismt%hr ( nr, nsite))
+        ALLOCATE(rismt%gr ( nr, nsite))
         ALLOCATE(rismt%uljr(nr, nsite))
+        rismt%csr = zero
+        rismt%usr = zero
+        rismt%hr  = zero
+        rismt%gr  = zero
+        rismt%uljr= zero
       END IF
       IF (nr > 0) THEN
         ALLOCATE(rismt%vsr(nr))
         ALLOCATE(rismt%vlr(nr))
+        rismt%vsr = zero
+        rismt%vlr = zero
       END IF
       !
     ELSE IF (itype == ITYPE_LAUERISM) THEN
@@ -527,10 +534,19 @@ CONTAINS
         ALLOCATE(rismt%gr(  nr, nsite))
         ALLOCATE(rismt%uljr(nr, nsite))
         ALLOCATE(rismt%uwr( nr, nsite))
+        rismt%csr  = zero
+        rismt%csdr = zero
+        rismt%usr  = zero
+        rismt%hr   = zero
+        rismt%gr   = zero
+        rismt%uljr = zero
+        rismt%uwr  = zero
       END IF
       IF (nr > 0) THEN
         ALLOCATE(rismt%vsr(nr))
         ALLOCATE(rismt%vlr(nr))
+        rismt%vsr = zero
+        rismt%vlr = zero
       END IF
     END IF
     !
@@ -554,6 +570,9 @@ CONTAINS
         ALLOCATE(rismt%csgz(ng, nsite))
         ALLOCATE(rismt%ulgz(ng, nsite))
         ALLOCATE(rismt%hgz( ng, nsite))
+        rismt%csgz = czero
+        rismt%ulgz = czero
+        rismt%hgz  = czero
       END IF
       IF (lwall3d) THEN
         ALLOCATE(rismt%uwr(nr, nsite))
@@ -561,41 +580,59 @@ CONTAINS
       END IF
       IF ((ng) > 0) THEN
         ALLOCATE(rismt%vlgz(ng))
+        rismt%vlgz = czero
       END IF
       !
     ELSE IF (itype == ITYPE_LAUERISM) THEN
       IF ((nrzs * ngxy * nsite) > 0) THEN
         ALLOCATE(rismt%csgz(nrzs * ngxy, nsite))
         ALLOCATE(rismt%hgz( nrzs * ngxy, nsite))
+        rismt%csgz = czero
+        rismt%hgz  = czero
       END IF
       IF ((nrzl * ngxy) > 0) THEN
         ALLOCATE(rismt%vlgz(nrzl * ngxy))
+        rismt%vlgz = czero
       END IF
       IF (ngxy > 0) THEN
         ALLOCATE(rismt%vright(ngxy))
         ALLOCATE(rismt%vleft( ngxy))
         ALLOCATE(rismt%do_vright(ngxy))
         ALLOCATE(rismt%do_vleft( ngxy))
+        rismt%vright = czero
+        rismt%vleft  = czero
+        rismt%do_vright = czero
+        rismt%do_vleft  = czero
       END IF
       IF ((nrzl * ngxy * nsite) > 0) THEN
         ALLOCATE(rismt%hsgz(nrzl * ngxy, nsite))
         ALLOCATE(rismt%hlgz(nrzl * ngxy, nsite))
+        rismt%hsgz = czero
+        rismt%hlgz = czero
       END IF
       IF (nsite > 0) THEN
         ALLOCATE(rismt%cda(nsite))
+        rismt%cda = zero
       END IF
       IF (nrzl > 0) THEN
         ALLOCATE(rismt%cdz(nrzl))
+        rismt%cdz = zero
       END IF
       IF ((nrzl * nsite * nsite_t) > 0) THEN
         ALLOCATE(rismt%hdz(nrzl, nsite, nsite_t))
+        rismt%hdz = zero
       END IF
       IF ((nrzl * nsite) > 0) THEN
-        ALLOCATE(rismt%usg0( nrzl, nsite))
-        ALLOCATE(rismt%csg0( nrzl, nsite))
+        ALLOCATE(rismt%usg0 (nrzl, nsite))
+        ALLOCATE(rismt%csg0 (nrzl, nsite))
         ALLOCATE(rismt%csdg0(nrzl, nsite))
-        ALLOCATE(rismt%hg0(  nrzl, nsite))
-        ALLOCATE(rismt%gg0(  nrzl, nsite))
+        ALLOCATE(rismt%hg0  (nrzl, nsite))
+        ALLOCATE(rismt%gg0  (nrzl, nsite))
+        rismt%usg0 = zero
+        rismt%csg0 = zero
+        rismt%csdg0= zero
+        rismt%hg0  = zero
+        rismt%gg0  = zero
       END IF
     END IF
     !
@@ -607,6 +644,8 @@ CONTAINS
       IF (nsite > 0) THEN
         ALLOCATE(rismt%nsol(nsite))
         ALLOCATE(rismt%qsol(nsite))
+        rismt%nsol = zero
+        rismt%qsol = zero
       END IF
     END IF
     !
@@ -623,16 +662,22 @@ CONTAINS
       IF (ng > 0) THEN
         ALLOCATE(rismt%rhog(ng))
         ALLOCATE(rismt%vpot(ng))
+        rismt%rhog = czero
+        rismt%vpot = czero
       END IF
       !
     ELSE IF (itype == ITYPE_LAUERISM) THEN
       IF ((nrzl * ngxy) > 0) THEN
         ALLOCATE(rismt%rhog(nrzl * ngxy))
         ALLOCATE(rismt%vpot(nrzl * ngxy))
+        rismt%rhog = czero
+        rismt%vpot = czero
       END IF
       IF (ng > 0) THEN
         ALLOCATE(rismt%rhog_pbc(ng))
         ALLOCATE(rismt%vpot_pbc(ng))
+        rismt%rhog_pbc = czero
+        rismt%vpot_pbc = czero
       END IF
     END IF
     !
@@ -662,6 +707,8 @@ CONTAINS
     INTEGER,         INTENT(IN)    :: ngs
     LOGICAL,         INTENT(IN)    :: lboth
     !
+    COMPLEX(DP),PARAMETER :: czero = CMPLX( 0._DP, 0._DP, KIND = DP )
+    !
     ! ... deallocate memory, if needed
     IF (ASSOCIATED(rismt%xgs))  DEALLOCATE(rismt%xgs)
     IF (ASSOCIATED(rismt%xgs0)) DEALLOCATE(rismt%xgs0)
@@ -674,21 +721,28 @@ CONTAINS
     IF (itype == ITYPE_3DRISM) THEN
       IF ((ngs * nsite * nsite_t) > 0) THEN
         ALLOCATE(rismt%xgs(ngs, nsite, nsite_t))
+        rismt%xgs = czero
       END IF
       !
     ELSE IF (itype == ITYPE_LAUERISM) THEN
       IF ((nrzl * ngs * nsite * nsite_t) > 0) THEN
         ALLOCATE(rismt%xgs(nrzl * ngs, nsite, nsite_t))
+        rismt%xgs = czero
         IF (lboth) THEN
           ALLOCATE(rismt%ygs(nrzl * ngs, nsite, nsite_t))
+          rismt%ygs = czero
         END IF
       END IF
       IF ((nrzl * nsite * nsite_t) > 0) THEN
         ALLOCATE(rismt%xgs0(nrzl, nsite, nsite_t))
         ALLOCATE(rismt%xgs1(nrzl, nsite, nsite_t))
+        rismt%xgs0 = zero
+        rismt%xgs1 = zero
         IF (lboth) THEN
           ALLOCATE(rismt%ygs0(nrzl, nsite, nsite_t))
           ALLOCATE(rismt%ygs1(nrzl, nsite, nsite_t))
+          rismt%ygs0 = zero
+          rismt%ygs1 = zero
         END IF
       END IF
     END IF

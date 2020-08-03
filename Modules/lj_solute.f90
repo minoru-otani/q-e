@@ -53,6 +53,7 @@ SUBROUTINE lj_setup_solU_tau(rismt, rsmax, count_only, ierr)
   !
   ! ... alloc memory
   ALLOCATE(tau_uni(3, nat))
+  tau_uni = 0.0_DP
   !
   ! ... set variables
   laue = .FALSE.
@@ -216,6 +217,7 @@ SUBROUTINE lj_setup_solU_vlj(rismt, rsmax, ierr)
   END IF
   !
   ! ... calculate Lennard-Jones
+  rismt%uljr = 0.0_DP
   DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
     CALL lj_setup_solU_vlj_x(iq, rismt, rsmax, laue)
   END DO
@@ -470,6 +472,7 @@ SUBROUTINE lj_setup_wall3d(rismt, rsmax, ierr)
   nq = get_nuniq_in_solVs()
   !
   ! ... calculate Lennard-Jones wall
+  rismt%uwr = 0.0_DP
   DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
     !
     CALL lj_setup_wall3d_x(iq, rismt, rsmax)
@@ -768,6 +771,7 @@ SUBROUTINE lj_setup_wall3d_x(iq, rismt, rsmax)
   i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
   i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
   !
+  rismt%uwr = 0.0_DP
   DO ir = 1, rismt%cfft%dfftt%nnr
     !
     ! ... create coordinate of a FFT grid

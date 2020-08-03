@@ -66,6 +66,9 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
   REAL(DP),    PARAMETER   :: RMS_SMALL   = 0.95_DP
   REAL(DP),    PARAMETER   :: RMS_LARGE   = 2.00_DP
   !
+  REAL(DP),    PARAMETER   :: zero = 0.0_DP
+  COMPLEX(DP), PARAMETER   :: czero = 0.0_DP
+  !
   ! ... check data type
   IF (rismt%itype /= ITYPE_3DRISM) THEN
     ierr = IERR_RISM_INCORRECT_DATA_TYPE
@@ -92,9 +95,12 @@ SUBROUTINE do_3drism(rismt, maxiter, rmsconv, nbox, eta, title, ierr)
   IF (rismt%cfft%dfftt%nnr * rismt%nsite > 0) THEN
     ALLOCATE(csr( rismt%cfft%dfftt%nnr, rismt%nsite))
     ALLOCATE(dcsr(rismt%cfft%dfftt%nnr, rismt%nsite))
+    csr = zero
+    dcsr= zero
   END IF
   IF (rismt%cfft%dfftt%nnr > 0) THEN
     ALLOCATE(aux(rismt%cfft%dfftt%nnr))
+    aux = czero
   END IF
   !
   CALL allocate_mdiis(mdiist, nbox, rismt%cfft%dfftt%nnr * rismt%nsite, eta, MDIIS_EXT)
@@ -332,6 +338,7 @@ CONTAINS
     CALL start_clock('3DRISM_fft')
     !
 #endif
+    rismt%csgz = czero
     DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
       jsite = isite - rismt%mp_site%isite_start + 1
       IF (rismt%cfft%ngmt > 0) THEN
@@ -371,6 +378,7 @@ CONTAINS
     CALL start_clock('3DRISM_fft')
     !
 #endif
+    rismt%hr = zero
     DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
       jsite = isite - rismt%mp_site%isite_start + 1
       IF (rismt%cfft%dfftt%nnr > 0) THEN
@@ -495,6 +503,8 @@ CONTAINS
     !
     nr = rismt%cfft%dfftt%nnr
     !
+    csr = zero
+    dcsr= zero
     DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
       iiq    = iq - rismt%mp_site%isite_start + 1
       iv     = iuniq_to_isite(1, iq)
@@ -522,6 +532,7 @@ CONTAINS
     !
     nr = rismt%cfft%dfftt%nnr
     !
+    rismt%csr = zero
     DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
       iiq    = iq - rismt%mp_site%isite_start + 1
       nv     = iuniq_to_nsite(iq)
