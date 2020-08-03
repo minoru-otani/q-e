@@ -120,7 +120,7 @@ SUBROUTINE molebridge_vv(rismt, epsr, tau, ierr)
     END IF
   END DO
   !
-  y0 = fpi * beta / 9.0_DP * y0
+  y0 = fpi * beta / 9.0_DP * y0 * e2
   !
   a0 = ((epsr / fpi / e2) / y0 - 3.0_DP) / rho0
   !

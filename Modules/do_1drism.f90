@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !---------------------------------------------------------------------------
-SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, title, ierr)
+SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, lhand, cool, title, ierr)
   !---------------------------------------------------------------------------
   !
   ! ... perform 1D-RISM method
@@ -34,6 +34,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
   USE mp,            ONLY : mp_bcast
   USE radfft,        ONLY : fw_radfft, inv_radfft, fw_mpi_radfft, inv_mpi_radfft
   USE rism,          ONLY : rism_type, ITYPE_1DRISM
+  USE rism1d_facade, ONLY : dielectric
   !
   IMPLICIT NONE
   !
@@ -42,7 +43,6 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
   REAL(DP),         INTENT(IN)    :: rmsconv
   INTEGER,          INTENT(IN)    :: nbox
   REAL(DP),         INTENT(IN)    :: eta
-  REAL(DP),         INTENT(IN)    :: gbond
   CHARACTER(LEN=*), INTENT(IN)    :: title
   LOGICAL,          INTENT(IN)    :: lhand
   LOGICAL,          INTENT(IN)    :: cool
@@ -50,10 +50,10 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
   !
   INTEGER               :: iter
   INTEGER               :: msite
+  INTEGER               :: optdrism
   LOGICAL               :: lconv
   REAL(DP)              :: rmscurr
   REAL(DP)              :: rmssave
-  REAL(DP)              :: gmax
   REAL(DP)              :: temporg
   REAL(DP), ALLOCATABLE :: work(:,:)
   REAL(DP), ALLOCATABLE :: dcsrr(:,:)
@@ -74,6 +74,8 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
   REAL(DP), PARAMETER   :: TEMP_DENOM = 1.5_DP
   REAL(DP), PARAMETER   :: TEMP_EXPON = 0.75_DP
   !
+  REAL(DP), PARAMETER   :: ZERO       = 0.0_DP
+  !
   ! ... check data type
   IF (rismt%itype /= ITYPE_1DRISM) THEN
     ierr = IERR_RISM_INCORRECT_DATA_TYPE
@@ -87,13 +89,18 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
   !
   ! ... allocate memory
   msite = rismt%mp_site%isite_end - rismt%mp_site%isite_start + 1
-  IF (msite > 0) THEN
-    ALLOCATE(work(rismt%mp_task%nvec, msite))
-  ELSE
-    ALLOCATE(work(1, 1))
+  IF (.not.rismt%rfft%lmpi) THEN
+    IF (msite > 0) THEN
+      ALLOCATE(work(rismt%mp_task%nvec, msite))
+    ELSE
+      ALLOCATE(work(1, 1))
+    END IF
   END IF
+  !
   ALLOCATE(dcsrr(rismt%nr, rismt%nsite))
   ALLOCATE(csrr(rismt%nr, rismt%nsite))
+  dcsrr = zero
+  csrr  = zero
   !
   CALL allocate_mdiis(mdiist, nbox, rismt%nr * rismt%nsite, eta, MDIIS_EXT)
   !
@@ -102,16 +109,13 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
   rismt%avail = .FALSE.
   rmssave     = 1.0E+99_DP
   !
-  IF (gbond > 0.0_DP) THEN
-    gmax = GMAX_SCALE / gbond
-  ELSE
-    gmax = 0.0_DP
-  END IF
-  !
   temporg = rismt%temp
   IF (cool) THEN
     rismt%temp = MIN(TEMP_MAX, TEMP_SCALE * rismt%temp)
   END IF
+  !
+  optdrism = 0
+  IF( dielectric > zero ) optdrism = 1
   !
   ! ... start 1D-RISM iteration
   WRITE(stdout, '()')
@@ -143,7 +147,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     ! ... 1D-RISM eq.: Cs(g) -> H(g)
     IF (rismt%is_intra) THEN
       !CALL eqn_1drism(rismt, gmax, lhand, ierr)
-      CALL eqn_1drism(rismt, -1.0_DP, lhand, ierr)
+      CALL eqn_1drism(rismt, optdrism, lhand, ierr)
     ELSE
       ierr = IERR_RISM_NULL
     END IF
@@ -248,11 +252,9 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     !
     ! ... remove large `g' components from Cs
     IF (rismt%is_intra) THEN
-      IF (gmax > 0.0_DP) THEN
-        ALLOCATE(csr_(rismt%nr, rismt%nsite))
-        csr_ = rismt%csr
-        CALL remove_glarge_csr()
-      END IF
+      ALLOCATE(csr_(rismt%nr, rismt%nsite))
+      csr_ = rismt%csr
+      CALL fft_csg_to_csr()
     END IF
     !
     ! ... correct correlations at G = 0 or R = 0
@@ -290,16 +292,14 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
     !
     ! ... restore Cs
     IF (rismt%is_intra) THEN
-      IF (gmax > 0.0_DP) THEN
 #if !defined (__RISM_SMOOTH_CSVV)
-        IF (rismt%mp_task%ivec_start == 1) THEN
-          rismt%csr(2:rismt%nr, :) = csr_(2:rismt%nr, :)
-        ELSE
-          rismt%csr = csr_
-        END IF
-#endif
-        DEALLOCATE(csr_)
+      IF (rismt%mp_task%ivec_start == 1) THEN
+        rismt%csr(2:rismt%nr, :) = csr_(2:rismt%nr, :)
+      ELSE
+        rismt%csr = csr_
       END IF
+#endif
+      DEALLOCATE(csr_)
     END IF
     !
     ! ... set conditions
@@ -333,9 +333,9 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, gbond, lhand, cool, tit
   ! ... deallocate memory
 100 CONTINUE
   !
-  DEALLOCATE(work)
-  DEALLOCATE(dcsrr)
-  DEALLOCATE(csrr)
+  IF (ALLOCATED(work))  DEALLOCATE(work)
+  IF (ALLOCATED(dcsrr)) DEALLOCATE(dcsrr)
+  IF (ALLOCATED(csrr))  DEALLOCATE(csrr)
   !
   CALL deallocate_mdiis(mdiist)
   !
@@ -348,6 +348,7 @@ CONTAINS
     INTEGER  :: iir
     REAL(DP) :: r
     !
+    dcsrr = zero
     DO isite = 1, rismt%nsite
       DO ir = 1, rismt%nr
         iir = rismt%mp_task%ivec_start + ir - 1
@@ -355,6 +356,7 @@ CONTAINS
         dcsrr(ir, isite) = (rismt%gr(ir, isite) - rismt%hr(ir, isite) - 1.0_DP) * r
       END DO
     END DO
+    !
   END SUBROUTINE make_residual
   !
   SUBROUTINE perform_mdiis()
@@ -370,6 +372,7 @@ CONTAINS
     !
 #endif
     ! ... Cs(r) -> Cs(r) * r
+    csrr = zero
     DO isite = 1, rismt%nsite
       DO ir = 1, rismt%nr
         iir = rismt%mp_task%ivec_start + ir - 1
@@ -382,6 +385,7 @@ CONTAINS
     CALL update_by_mdiis(mdiist, csrr, dcsrr, rismt%intra_comm)
     !
     ! ... Cs(r) * r -> Cs(r)
+    rismt%csr = zero
     DO isite = 1, rismt%nsite
       IF (rismt%mp_task%ivec_start == 1) THEN
         jr = 2
@@ -438,6 +442,36 @@ CONTAINS
     !
   END SUBROUTINE fft_csr_to_csg
   !
+  SUBROUTINE fft_csg_to_csr()
+    IMPLICIT NONE
+    INTEGER :: isite
+    INTEGER :: jsite
+    INTEGER :: ig
+    INTEGER :: iig
+    !
+    IF (rismt%rfft%lmpi) THEN
+      ! ... Fourier Transform, with BLAS level-3
+      CALL inv_mpi_radfft(rismt%rfft, rismt%csg, rismt%csr, rismt%nsite)
+      !
+    ELSE
+      ! ... csg -> work
+      CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
+      & rismt%mp_task%nvec, work(1, 1), rismt%ng, rismt%csg(1, 1), +1)
+      !
+      ! ... FFT work
+      DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
+        jsite = isite - rismt%mp_site%isite_start + 1
+        CALL inv_radfft(rismt%rfft, work(:, jsite), work(:, jsite))
+      END DO
+      !
+      ! ... work -> csr
+      CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
+      & rismt%mp_task%nvec, work(1, 1), rismt%nr, rismt%csr(1, 1), -1)
+      !
+    END IF
+    !
+  END SUBROUTINE fft_csg_to_csr
+  !
   SUBROUTINE fft_hg_to_hr()
     IMPLICIT NONE
     INTEGER :: isite
@@ -473,45 +507,5 @@ CONTAINS
 #endif
     !
   END SUBROUTINE fft_hg_to_hr
-  !
-  SUBROUTINE remove_glarge_csr()
-    IMPLICIT NONE
-    INTEGER :: isite
-    INTEGER :: jsite
-    INTEGER :: ig
-    INTEGER :: iig
-    !
-    ! ... remove large `g' components
-    DO isite = 1, rismt%nsite
-      DO ig = 1, rismt%ng
-        iig = rismt%mp_task%ivec_start + ig - 1
-        IF (rismt%rfft%ggrid(iig) > gmax) THEN
-          rismt%csg(ig, isite) = 0.0_DP
-        END IF
-      END DO
-    END DO
-    !
-    IF (rismt%rfft%lmpi) THEN
-      ! ... Fourier Transform, with BLAS level-3
-      CALL inv_mpi_radfft(rismt%rfft, rismt%csg, rismt%csr, rismt%nsite)
-      !
-    ELSE
-      ! ... csg -> work
-      CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
-      & rismt%mp_task%nvec, work(1, 1), rismt%ng, rismt%csg(1, 1), +1)
-      !
-      ! ... FFT work
-      DO isite = rismt%mp_site%isite_start, rismt%mp_site%isite_end
-        jsite = isite - rismt%mp_site%isite_start + 1
-        CALL inv_radfft(rismt%rfft, work(:, jsite), work(:, jsite))
-      END DO
-      !
-      ! ... work -> csr
-      CALL mp_swap_ax_rism(rismt%mp_site, rismt%mp_task, &
-      & rismt%mp_task%nvec, work(1, 1), rismt%nr, rismt%csr(1, 1), -1)
-      !
-    END IF
-    !
-  END SUBROUTINE remove_glarge_csr
   !
 END SUBROUTINE do_1drism

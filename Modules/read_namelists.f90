@@ -765,6 +765,7 @@ MODULE read_namelists_module
        solute_sigma           = -1.0_DP
        rmax_lj                = 5.0_DP
        rmax1d                 = 1000.0_DP
+       rism1d_ngrid           = -1
        !
        ! ... ( 'zero' | 'file' | 'fix' )
        !
@@ -1455,6 +1456,7 @@ MODULE read_namelists_module
        CALL mp_bcast( solute_sigma,           ionode_id, intra_image_comm )
        CALL mp_bcast( rmax_lj,                ionode_id, intra_image_comm )
        CALL mp_bcast( rmax1d,                 ionode_id, intra_image_comm )
+       CALL mp_bcast( rism1d_ngrid,           ionode_id, intra_image_comm )
        CALL mp_bcast( starting1d,             ionode_id, intra_image_comm )
        CALL mp_bcast( starting3d,             ionode_id, intra_image_comm )
        CALL mp_bcast( smear1d,                ionode_id, intra_image_comm )

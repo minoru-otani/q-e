@@ -435,7 +435,7 @@ CONTAINS
         IF (init_rism1t_right .AND. init_rism1t_left) THEN
           title = 'the right-hand side'
         END IF
-        CALL do_1drism(rism1t_right, niter, epsv, mdiis_size, mdiis_step, bond_width, &
+        CALL do_1drism(rism1t_right, niter, epsv, mdiis_size, mdiis_step, &
                      & .TRUE., .NOT. has_any_corr, TRIM(ADJUSTL(title)), ierr)
         !
       ELSE
@@ -443,7 +443,7 @@ CONTAINS
         IF (init_rism1t_right .AND. init_rism1t_left) THEN
           title = 'the left-hand side'
         END IF
-        CALL do_1drism(rism1t_left,  niter, epsv, mdiis_size, mdiis_step, bond_width, &
+        CALL do_1drism(rism1t_left,  niter, epsv, mdiis_size, mdiis_step, &
                      & .FALSE., .NOT. has_any_corr, TRIM(ADJUSTL(title)), ierr)
       END IF
       !

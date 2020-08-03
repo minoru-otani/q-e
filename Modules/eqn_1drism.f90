@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !---------------------------------------------------------------------------
-SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
+SUBROUTINE eqn_1drism(rismt, optdrism, lhand, ierr)
   !---------------------------------------------------------------------------
   !
   ! ... solve 1D-RISM equation, which is defined in G-space as
@@ -31,7 +31,7 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   IMPLICIT NONE
   !
   TYPE(rism_type), INTENT(INOUT) :: rismt
-  REAL(DP),        INTENT(IN)    :: gmax   ! maximum of g-vectors
+  INTEGER,         INTENT(IN)    :: optdrism
   LOGICAL,         INTENT(IN)    :: lhand  ! if true, right-hand. if false, left-hand
   INTEGER,         INTENT(OUT)   :: ierr
   !
@@ -50,6 +50,8 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   REAL(DP), ALLOCATABLE :: wvv(:,:)
   REAL(DP), ALLOCATABLE :: avv(:,:)
   REAL(DP), ALLOCATABLE :: bvv(:,:)
+  !
+  REAL(DP), PARAMETER   :: zero = 0.0_DP
   !
   EXTERNAL :: dgemm
   EXTERNAL :: dgetrf
@@ -85,113 +87,214 @@ SUBROUTINE eqn_1drism(rismt, gmax, lhand, ierr)
   beta = 1.0_DP / K_BOLTZMANN_RY / rismt%temp
   !
   ! ... in case G = 0
+  rismt%hg(:, :) = zero
   IF (rismt%mp_task%ivec_start == 1) THEN
     jg = 2
-    rismt%hg(1, :) = 0.0_DP
   ELSE
     jg = 1
   END IF
   !
   ! ... in case G /= 0
   ! ... 1D-RISM equation for each ig
+  SELECT CASE( optdrism )
+  ! DRISM case
+  CASE ( 1 )
 !$omp parallel default(shared) private(ig, iig, iv1, iv2, ivv, isolV, &
 !$omp          ilapack, rho, ipiv, hvv, cvv, wvv, avv, bvv)
-  !
-  ! ... allocate working memory for OpenMP
-  ALLOCATE(rho(nv))
-  ALLOCATE(ipiv(nv))
-  ALLOCATE(hvv(nv, nv))
-  ALLOCATE(cvv(nv, nv))
-  ALLOCATE(wvv(nv, nv))
-  ALLOCATE(avv(nv, nv))
-  ALLOCATE(bvv(nv, nv))
-  !
-  ! ... make rho
-  DO iv1 = 1, nv
-    isolV = isite_to_isolV(iv1)
-    IF (lhand) THEN
-      rho(iv1) = solVs(isolV)%density
-    ELSE
-      rho(iv1) = solVs(isolV)%subdensity
-    END IF
-  END DO
-  !
+    !
+    ! ... allocate working memory for OpenMP
+    ALLOCATE(rho(nv))
+    ALLOCATE(ipiv(nv))
+    ALLOCATE(hvv(nv, nv))
+    ALLOCATE(cvv(nv, nv))
+    ALLOCATE(wvv(nv, nv))
+    ALLOCATE(avv(nv, nv))
+    ALLOCATE(bvv(nv, nv))
+    ipiv = 0
+    rho  = zero
+    hvv  = zero
+    cvv  = zero
+    wvv  = zero
+    avv  = zero
+    bvv  = zero
+    !
+    ! ... make rho
+    DO iv1 = 1, nv
+      isolV = isite_to_isolV(iv1)
+      IF (lhand) THEN
+        rho(iv1) = solVs(isolV)%density
+      ELSE
+        rho(iv1) = solVs(isolV)%subdensity
+      END IF
+    END DO
+    !
 !$omp do reduction(max:ierr)
-  DO ig = jg, rismt%ng
-    !
-    ierr = MAX(ierr, IERR_RISM_NULL)
-    !
-    IF (ierr /= IERR_RISM_NULL) THEN
-      CYCLE
-    END IF
-    !
-    ! ... check gmax
-    IF (gmax > 0.0_DP) THEN
-      iig = rismt%mp_task%ivec_start + ig - 1
-      IF (rismt%rfft%ggrid(iig) > gmax) THEN
-        rismt%hg(ig, :) = 0.0_DP
+    DO ig = jg, rismt%ng
+      !
+      ierr = MAX(ierr, IERR_RISM_NULL)
+      !
+      IF (ierr /= IERR_RISM_NULL) THEN
         CYCLE
       END IF
-    END IF
-    !
-    ! ... extract data at ig
-    DO iv1 = 1, nv
-      DO iv2 = 1, iv1
-        ivv = iv1 * (iv1 - 1) / 2 + iv2
-        cvv(iv2, iv1) = rismt%csg(ig, ivv) - beta * rismt%ulg(ig, ivv)
-        cvv(iv1, iv2) = cvv(iv2, iv1)
-        wvv(iv2, iv1) = rismt%wg(ig, ivv) + rho(iv2) * rismt%zg(ig, ivv)
-        wvv(iv1, iv2) = rismt%wg(ig, ivv) + rho(iv1) * rismt%zg(ig, ivv)
+      !
+      ! ... extract data at ig
+      DO iv1 = 1, nv
+        DO iv2 = 1, iv1
+          ivv = iv1 * (iv1 - 1) / 2 + iv2
+          cvv(iv2, iv1) = rismt%csg(ig, ivv) - beta * rismt%ulg(ig, ivv)
+          cvv(iv1, iv2) = cvv(iv2, iv1)
+          wvv(iv2, iv1) = rismt%wg(ig, ivv) + rho(iv2) * rismt%zg(ig, ivv)
+          wvv(iv1, iv2) = rismt%wg(ig, ivv) + rho(iv1) * rismt%zg(ig, ivv)
+        END DO
       END DO
-    END DO
-    !
-    ! ... make tvv, avv and bvv
-    ! ... b -> w * c
-    CALL dgemm('N', 'N', nv, nv, nv, 1.0_DP, wvv, nv, cvv, nv, 0.0_DP, bvv, nv)
-    ! ... a -> 1 - b * rho
-    DO iv1 = 1, nv
-      avv(:, iv1) = -bvv(:, iv1) * rho(iv1)
-    END DO
-    DO iv1 = 1, nv
-      avv(iv1, iv1) = avv(iv1, iv1) + 1.0_DP
-    END DO
-    ! ... h -> b * w
-    CALL dgemm('N', 'N', nv, nv, nv, 1.0_DP, bvv, nv, wvv, nv, 0.0_DP, hvv, nv)
-    !
-    ! ... solve linear equation
-    CALL dgetrf(nv, nv, avv, nv, ipiv, ilapack)
-    IF (ilapack /= 0) THEN
-      ierr = IERR_RISM_CANNOT_DGETRF
-      CYCLE
-    END IF
-    !
-    CALL dgetrs('N', nv, nv, avv, nv, ipiv, hvv, nv, ilapack)
-    IF (ilapack /= 0) THEN
-      ierr = IERR_RISM_CANNOT_DGETRS
-      CYCLE
-    END IF
-    !
-    ! ... set hvv to rismt
-    DO iv1 = 1, nv
-      DO iv2 = 1, iv1
-        ivv = iv1 * (iv1 - 1) / 2 + iv2
-        rismt%hg(ig, ivv) = hvv(iv2, iv1) + rismt%zg(ig, ivv)
+      !
+      ! ... make tvv, avv and bvv
+      ! ... b -> w * c
+      CALL dgemm('N', 'N', nv, nv, nv, 1.0_DP, wvv, nv, cvv, nv, 0.0_DP, bvv, nv)
+      ! ... a -> 1 - b * rho
+      DO iv1 = 1, nv
+        avv(:, iv1) = -bvv(:, iv1) * rho(iv1)
       END DO
+      DO iv1 = 1, nv
+        avv(iv1, iv1) = avv(iv1, iv1) + 1.0_DP
+      END DO
+      ! ... h -> b * w
+      CALL dgemm('N', 'N', nv, nv, nv, 1.0_DP, bvv, nv, wvv, nv, 0.0_DP, hvv, nv)
+      !
+      ! ... solve linear equation
+      CALL dgetrf(nv, nv, avv, nv, ipiv, ilapack)
+      IF (ilapack /= 0) THEN
+        ierr = IERR_RISM_CANNOT_DGETRF
+        CYCLE
+      END IF
+      !
+      CALL dgetrs('N', nv, nv, avv, nv, ipiv, hvv, nv, ilapack)
+      IF (ilapack /= 0) THEN
+        ierr = IERR_RISM_CANNOT_DGETRS
+        CYCLE
+      END IF
+      !
+      ! ... set hvv to rismt
+      DO iv1 = 1, nv
+        DO iv2 = 1, iv1
+          ivv = iv1 * (iv1 - 1) / 2 + iv2
+          rismt%hg(ig, ivv) = hvv(iv2, iv1) + rismt%zg(ig, ivv)
+        END DO
+      END DO
+      !
     END DO
-    !
-  END DO
 !$omp end do
-  !
-  ! ... deallocate working memory for OpenMP
-  DEALLOCATE(rho)
-  DEALLOCATE(ipiv)
-  DEALLOCATE(hvv)
-  DEALLOCATE(cvv)
-  DEALLOCATE(wvv)
-  DEALLOCATE(avv)
-  DEALLOCATE(bvv)
-  !
+    !
+    ! ... deallocate working memory for OpenMP
+    DEALLOCATE(rho)
+    DEALLOCATE(ipiv)
+    DEALLOCATE(hvv)
+    DEALLOCATE(cvv)
+    DEALLOCATE(wvv)
+    DEALLOCATE(avv)
+    DEALLOCATE(bvv)
+    !
 !$omp end parallel
+  !
+  ! ordinal 1D-RISM calculation
+  CASE DEFAULT
+!$omp parallel default(shared) private(ig, iig, iv1, iv2, ivv, isolV, &
+!$omp          ilapack, rho, ipiv, hvv, cvv, wvv, avv, bvv)
+    !
+    ! ... allocate working memory for OpenMP
+    ALLOCATE(rho(nv))
+    ALLOCATE(ipiv(nv))
+    ALLOCATE(hvv(nv, nv))
+    ALLOCATE(cvv(nv, nv))
+    ALLOCATE(wvv(nv, nv))
+    ALLOCATE(avv(nv, nv))
+    ALLOCATE(bvv(nv, nv))
+    ipiv = 0
+    rho  = zero
+    hvv  = zero
+    cvv  = zero
+    wvv  = zero
+    avv  = zero
+    bvv  = zero
+    !
+    ! ... make rho
+    DO iv1 = 1, nv
+      isolV = isite_to_isolV(iv1)
+      IF (lhand) THEN
+        rho(iv1) = solVs(isolV)%density
+      ELSE
+        rho(iv1) = solVs(isolV)%subdensity
+      END IF
+    END DO
+    !
+!$omp do reduction(max:ierr)
+    DO ig = jg, rismt%ng
+      !
+      ierr = MAX(ierr, IERR_RISM_NULL)
+      !
+      IF (ierr /= IERR_RISM_NULL) THEN
+        CYCLE
+      END IF
+      !
+      ! ... extract data at ig
+      DO iv1 = 1, nv
+        DO iv2 = 1, iv1
+          ivv = iv1 * (iv1 - 1) / 2 + iv2
+          cvv(iv2, iv1) = rismt%csg(ig, ivv) - beta * rismt%ulg(ig, ivv)
+          cvv(iv1, iv2) = cvv(iv2, iv1)
+          wvv(iv2, iv1) = rismt%wg(ig, ivv)
+          wvv(iv1, iv2) = rismt%wg(ig, ivv)
+        END DO
+      END DO
+      !
+      ! ... make tvv, avv and bvv
+      ! ... b -> w * c
+      CALL dgemm('N', 'N', nv, nv, nv, 1.0_DP, wvv, nv, cvv, nv, 0.0_DP, bvv, nv)
+      ! ... a -> 1 - b * rho
+      DO iv1 = 1, nv
+        avv(:, iv1) = -bvv(:, iv1) * rho(iv1)
+      END DO
+      DO iv1 = 1, nv
+        avv(iv1, iv1) = avv(iv1, iv1) + 1.0_DP
+      END DO
+      ! ... h -> b * w
+      CALL dgemm('N', 'N', nv, nv, nv, 1.0_DP, bvv, nv, wvv, nv, 0.0_DP, hvv, nv)
+      !
+      ! ... solve linear equation
+      CALL dgetrf(nv, nv, avv, nv, ipiv, ilapack)
+      IF (ilapack /= 0) THEN
+        ierr = IERR_RISM_CANNOT_DGETRF
+        CYCLE
+      END IF
+      !
+      CALL dgetrs('N', nv, nv, avv, nv, ipiv, hvv, nv, ilapack)
+      IF (ilapack /= 0) THEN
+        ierr = IERR_RISM_CANNOT_DGETRS
+        CYCLE
+      END IF
+      !
+      ! ... set hvv to rismt
+      DO iv1 = 1, nv
+        DO iv2 = 1, iv1
+          ivv = iv1 * (iv1 - 1) / 2 + iv2
+          rismt%hg(ig, ivv) = hvv(iv2, iv1)
+        END DO
+      END DO
+      !
+    END DO
+!$omp end do
+    !
+    ! ... deallocate working memory for OpenMP
+    DEALLOCATE(rho)
+    DEALLOCATE(ipiv)
+    DEALLOCATE(hvv)
+    DEALLOCATE(cvv)
+    DEALLOCATE(wvv)
+    DEALLOCATE(avv)
+    DEALLOCATE(bvv)
+    !
+!$omp end parallel
+  END SELECT
   !
   ! ... merge error code through all processies
   CALL merge_ierr_rism(ierr, rismt%mp_site%inter_sitg_comm)

@@ -469,6 +469,9 @@ CONTAINS
     INTEGER,         INTENT(IN)    :: ngs
     INTEGER,         INTENT(IN)    :: ngxy
     LOGICAL,         INTENT(IN)    :: lboth
+    ! Parameters
+    REAL(DP),PARAMETER :: zero = 0._DP
+    COMPLEX(DP),PARAMETER :: czero = CMPLX( 0._DP, 0._DP, KIND = DP )
     !
     ! ... set variables
     rismt%avail = .FALSE.
@@ -480,8 +483,8 @@ CONTAINS
     rismt%ng    = ng
     rismt%ngs   = ngs
     rismt%ngxy  = ngxy
-    rismt%esol  = 0.0_DP
-    rismt%vsol  = 0.0_DP
+    rismt%esol  = zero
+    rismt%vsol  = zero
     !
     ! ... allocate arrays
     ! ..... R-space
@@ -492,6 +495,11 @@ CONTAINS
         ALLOCATE(rismt%ulr(nr, nsite))
         ALLOCATE(rismt%hr( nr, nsite))
         ALLOCATE(rismt%gr( nr, nsite))
+        rismt%csr = zero
+        rismt%usr = zero
+        rismt%ulr = zero
+        rismt%hr  = zero
+        rismt%gr  = zero
       END IF
       !
     ELSE IF (itype == ITYPE_3DRISM) THEN
@@ -532,6 +540,11 @@ CONTAINS
         ALLOCATE(rismt%hg( ng, nsite))
         ALLOCATE(rismt%wg( ng, nsite))
         ALLOCATE(rismt%zg( ng, nsite))
+        rismt%csg = zero
+        rismt%ulg = zero
+        rismt%hg  = zero
+        rismt%wg  = zero
+        rismt%zg  = zero
       END IF
       !
     ELSE IF (itype == ITYPE_3DRISM) THEN
@@ -595,6 +608,8 @@ CONTAINS
     IF (nsite > 0) THEN
       ALLOCATE(rismt%usol(nsite))
       ALLOCATE(rismt%usol_GF(nsite))
+      rismt%usol    = zero
+      rismt%usol_GF = zero
     END IF
     !
     ! ..... fields of solvent

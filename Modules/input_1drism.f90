@@ -36,7 +36,7 @@ SUBROUTINE iosys_1drism(laue)
   !
   ! ... RISM namelist
   !
-  USE input_parameters, ONLY : nsolv, closure, starting1d, tempv, rmax1d, &
+  USE input_parameters, ONLY : nsolv, closure, starting1d, tempv, rmax1d, rism1d_ngrid, &
                                smear1d, rism1d_maxstep, rism1d_conv_thr, &
                                rism1d_bond_width, rism1d_dielectric, rism1d_molesize, &
                                rism1d_nproc, rism1d_nproc_switch, mdiis1d_size, mdiis1d_step, &
@@ -79,6 +79,8 @@ SUBROUTINE iosys_1drism(laue)
   ALLOCATE(slabel(nsolv))
   ALLOCATE(sdens1(nsolv))
   ALLOCATE(sdens2(nsolv))
+  sdens1 = 0._DP
+  sdens2 = 0._DP
   !
   ! ... check starting condition.
   IF (TRIM(restart_mode) == 'restart') THEN
@@ -102,7 +104,11 @@ SUBROUTINE iosys_1drism(laue)
   ENDIF
   !
   ! ... evaluate #grid
-  ngrid = number_of_grids(rmax1d)
+  IF (rism1d_ngrid <= 0) THEN
+    ngrid = number_of_grids(rmax1d)
+  ELSE
+    ngrid = rism1d_ngrid
+  END IF
   !
   ! ... set from namelist. these data are already checked.
   nsolV_        = nsolv
@@ -143,14 +149,14 @@ SUBROUTINE iosys_1drism(laue)
     END IF
     !
     ! ... density
-    IF (sdens1(isolV) > 0.0_DP) THEN
+    IF (sdens1(isolV) >= 0.0_DP) THEN
       CALL convert_dens(TRIM(ADJUSTL(solvents_unit)), isolV, sdens1(isolV))
       solVs(isolV)%density = sdens1(isolv)
     ELSE
       CALL infomsg('iosys_1drism', &
       & 'default density from MOL file('//TRIM(molfile(isolV))//') is used')
     END IF
-    IF (solVs(isolV)%density <= 0.0_DP) THEN
+    IF (solVs(isolV)%density < 0.0_DP) THEN
       CALL errore('iosys_1drism', 'invalid density', isolV)
     END IF
     !
@@ -159,14 +165,14 @@ SUBROUTINE iosys_1drism(laue)
       solVs(isolV)%subdensity = solVs(isolV)%density
       !
     ELSE
-      IF (sdens2(isolV) > 0.0_DP) THEN
+      IF (sdens2(isolV) >= 0.0_DP) THEN
         CALL convert_dens(TRIM(ADJUSTL(solvents_unit)), isolV, sdens2(isolV))
         solVs(isolV)%subdensity = sdens2(isolv)
       ELSE
         CALL infomsg('iosys_1drism', &
         & 'default density from MOL file('//TRIM(molfile(isolV))//') is used')
       END IF
-      IF (solVs(isolV)%subdensity <= 0.0_DP) THEN
+      IF (solVs(isolV)%subdensity < 0.0_DP) THEN
         CALL errore('iosys_1drism', 'invalid density', isolV)
       END IF
     END IF

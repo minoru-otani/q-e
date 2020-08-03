@@ -1498,6 +1498,9 @@ MODULE input_parameters
         REAL(DP) :: rmax1d = 1000.0_DP
           ! maximum inter-site radius for 1D-RISM (in bohr)
 
+        INTEGER  :: rism1d_ngrid = -1
+          ! Number of Grids for 1D-RISM calculation
+
         CHARACTER(len=80) :: starting1d = 'zero'
           ! starting1d = 'zero'* | 'file' | 'fix'
           ! define how the code should initialize the 1D-RISM's correlation function
@@ -1647,7 +1650,7 @@ MODULE input_parameters
           ! use attractive term of Lennard-Jones: -(1/r)^6, or not
 
         NAMELIST / rism / nsolv, closure, tempv, ecutsolv, solute_lj, &
-                          solute_epsilon, solute_sigma, rmax_lj, rmax1d, &
+                          solute_epsilon, solute_sigma, rmax_lj, rmax1d, rism1d_ngrid, &
                           starting1d, starting3d, smear1d, smear3d, &
                           rism1d_maxstep, rism3d_maxstep, rism1d_conv_thr, rism3d_conv_thr, &
                           mdiis1d_size, mdiis3d_size, mdiis1d_step, mdiis3d_step, &

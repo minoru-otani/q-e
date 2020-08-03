@@ -135,6 +135,7 @@ CONTAINS
     !
     ! calculate sin(g*r)
     ALLOCATE(radfft0%singr(radfft0%ngrid, radfft0%igrid_len))
+    radfft0%singr = 0.0_DP
     !
 !$omp parallel do default(shared) private(ir, iir, r, ig, g)
     DO ir = radfft0%igrid_start, radfft0%igrid_end
@@ -306,6 +307,7 @@ CONTAINS
     ALLOCATE(crr(radfft0%igrid_len, mult))
     ALLOCATE(cgg(radfft0%ngrid,     mult))
     !
+    crr = 0.0_DP
     cgg = 0.0_DP
     !
     IF (radfft0%igrid_len > 0) THEN
@@ -384,6 +386,7 @@ CONTAINS
     ALLOCATE(cgg(radfft0%ngrid,     mult))
     ALLOCATE(crr(radfft0%igrid_len, mult))
     !
+    crr = 0.0_DP
     cgg = 0.0_DP
     !
     IF (radfft0%igrid_len > 0) THEN

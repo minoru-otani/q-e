@@ -53,6 +53,8 @@ SUBROUTINE chempot(rismt, ierr)
   ! ... set variables
   ichempot = get_chempot_type(rismt)
   beta = 1.0_DP / K_BOLTZMANN_RY / rismt%temp
+  rismt%usol    = 0.0_DP
+  rismt%usol_GF = 0.0_DP
   !
   ! ... calculate chemical potentials
   IF (rismt%nr > 0) THEN
@@ -135,6 +137,7 @@ SUBROUTINE chempot_for_a_site(nr, ichempot, beta, hr, csr, ulr, wr, lweight, uso
   REAL(DP), EXTERNAL :: ddot
   !
   ALLOCATE(tr(nr))
+  tr = 0.0_DP
   !
   IF (ichempot == CHEMPOT_HNC) THEN
     CALL chempot_HNC_x(nr, beta, hr, csr, ulr, tr)
