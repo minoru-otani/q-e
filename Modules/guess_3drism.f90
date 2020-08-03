@@ -18,6 +18,7 @@ SUBROUTINE guess_3drism(rismt, ierr)
   USE kinds,     ONLY : DP
   USE mp,        ONLY : mp_max
   USE rism,      ONLY : rism_type, ITYPE_3DRISM, ITYPE_LAUERISM
+  USE solute,    ONLY : lwall3d
   USE solvmol,   ONLY : get_nuniq_in_solVs, solVs, &
                       & iuniq_to_isite, isite_to_isolV, isite_to_iatom
   !
@@ -124,7 +125,7 @@ SUBROUTINE guess_3drism(rismt, ierr)
       END IF
       !
       vlj = rismt%uljr(ir, iiq)
-      IF (laue) THEN  ! add LJ-wall
+      IF (laue .OR. lwall3d) THEN  ! add LJ-wall
         vlj =  vlj + rismt%uwr(ir, iiq)
       END IF
       !

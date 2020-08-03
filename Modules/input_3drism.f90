@@ -28,7 +28,7 @@ SUBROUTINE iosys_3drism(laue, linit)
                              & both_hands, ireference, IREFERENCE_NULL, IREFERENCE_AVERAGE, &
                              & IREFERENCE_RIGHT, IREFERENCE_LEFT
   USE solute,           ONLY : rmax_lj_ => rmax_lj, allocate_solU, set_solU_LJ_param, &
-                             & set_wall_param, auto_wall_edge
+                             & set_wall_param, auto_wall_edge, set_wall_param_3drism
   USE solvmol,          ONLY : get_nuniq_in_solVs
   !
   ! ... CONTROL namelist
@@ -51,7 +51,9 @@ SUBROUTINE iosys_3drism(laue, linit)
                                laue_buffer_left, laue_buffer_left_solu, laue_buffer_left_solv, &
                                laue_both_hands, laue_reference, &
                                laue_wall, laue_wall_z, laue_wall_rho, &
-                               laue_wall_epsilon, laue_wall_sigma, laue_wall_lj6
+                               laue_wall_epsilon, laue_wall_sigma, laue_wall_lj6, &
+                               rism3d_wall_z, rism3d_wall_z0, rism3d_wall_epsilon, &
+                               rism3d_wall_sigma, rism3d_wall_rho, rism3d_wall
   !
   IMPLICIT NONE
   !
@@ -292,6 +294,23 @@ SUBROUTINE iosys_3drism(laue, linit)
       END IF
       !
     END IF
+  END IF
+  !
+  ! ... Initialize repulsive wall for 3D-RISM
+  IF (rism3d_wall .AND. (.not.laue)) THEN
+    !
+    IF (rism3d_wall_z < 0.0_DP) THEN
+      CALL errore('iosys', "Negative value of wall width", 1)
+    END IF
+    !
+    IF (rism3d_wall_z0 < 0.0_DP) THEN
+      CALL errore('iosys', "Negative value of wall center", 1)
+    END IF
+    !
+    CALL set_wall_param_3drism(rism3d_wall_z, rism3d_wall_z0, &
+                               rism3d_wall_rho, rism3d_wall_epsilon, &
+                               rism3d_wall_sigma)
+    !
   END IF
   !
   ! ... initialize rism3d_facade

@@ -31,7 +31,7 @@ MODULE rism3d_facade
   USE rism,          ONLY : rism_type, clean_rism_data, allocate_3drism, allocate_lauerism, &
                           & refresh_suscept_3drism, refresh_suscept_lauerism, &
                           & deallocate_rism, ITYPE_3DRISM, ITYPE_LAUERISM
-  USE solute,        ONLY : update_solU
+  USE solute,        ONLY : update_solU, lwall3d
   USE solvmol,       ONLY : get_nuniq_in_solVs, iuniq_to_isite, iuniq_to_nsite, &
                           & isite_to_isolV, isite_to_iatom, solVs, nsolV
   !
@@ -219,7 +219,7 @@ CONTAINS
     nq = get_nuniq_in_solVs()
     !
     IF (.NOT. laue_) THEN
-      CALL allocate_3drism(rism3t, nq, ecutsolv, intra_bgrp_comm, intra_image_comm)
+      CALL allocate_3drism(rism3t, nq, ecutsolv, lwall3d, intra_bgrp_comm, intra_image_comm)
       !
     ELSE
       offset_r  = starting_r - MAX(0.0_DP, buffer_r)

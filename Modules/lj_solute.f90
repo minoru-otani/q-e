@@ -439,6 +439,68 @@ SUBROUTINE lj_setup_wall(rismt, rsmax, ierr)
 END SUBROUTINE lj_setup_wall
 !
 !--------------------------------------------------------------------------
+SUBROUTINE lj_setup_wall3d(rismt, rsmax, ierr)
+  !--------------------------------------------------------------------------
+  !
+  ! ... calculate wall-solvent's Lennard-Jones repulsive potential
+  ! ...
+  ! ...                                  sig^12
+  ! ...   (+-) 2pi * rho * 4 * esp * --------------
+  ! ...                              90 * |z - Z|^9
+  !
+  USE err_rism, ONLY : IERR_RISM_NULL, IERR_RISM_INCORRECT_DATA_TYPE
+  USE kinds,    ONLY : DP
+  USE rism,     ONLY : rism_type, ITYPE_LAUERISM
+  USE solvmol,  ONLY : get_nuniq_in_solVs
+  !
+  IMPLICIT NONE
+  !
+  TYPE(rism_type), INTENT(INOUT) :: rismt
+  REAL(DP),        INTENT(IN)    :: rsmax
+  INTEGER,         INTENT(OUT)   :: ierr
+  !
+  INTEGER :: nq
+  INTEGER :: iq
+#if defined(__WALL_DEBUG)
+  INTEGER :: ii, i1, i2, i3, n1, n2, n3
+  REAL(DP) :: sum0
+#endif
+  !
+  ! ... number of sites in solvents
+  nq = get_nuniq_in_solVs()
+  !
+  ! ... calculate Lennard-Jones wall
+  DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
+    !
+    CALL lj_setup_wall3d_x(iq, rismt, rsmax)
+    !
+#if defined(__WALL_DEBUG)
+    ! ... Make Laterally averaged wall potential.
+    ! ... This code works a single MPI process running.
+    n1  = rismt%cfft%dfftt%nr1
+    n2  = rismt%cfft%dfftt%nr2
+    n3  = rismt%cfft%dfftt%nr3
+    ii=0
+    DO i3=1,n3
+       sum0=0.d0
+       DO i2=1,n2; DO i1=1,n1
+          ii=ii+1
+          sum0=sum0+rismt%uwr(ii,iq)
+       END DO; END DO
+       WRITE(iq,*) i3-1, sum0/dble(n1*n2)
+    END DO
+#endif
+    !
+  END DO
+#if defined(__WALL_DEBUG)
+  STOP
+#endif
+  ! ... normally done
+  ierr = IERR_RISM_NULL
+  !
+END SUBROUTINE lj_setup_wall3d
+!
+!--------------------------------------------------------------------------
 SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
   !--------------------------------------------------------------------------
   !
@@ -606,6 +668,177 @@ SUBROUTINE lj_setup_wall_x(iq, rismt, rsmax)
 !$omp end parallel do
   !
 END SUBROUTINE lj_setup_wall_x
+!
+!--------------------------------------------------------------------------
+SUBROUTINE lj_setup_wall3d_x(iq, rismt, rsmax)
+  !--------------------------------------------------------------------------
+  !
+  ! ... calculate wall-solvent's Lennard-Jones repulsive potential
+  ! ... for a solvent's site
+  !
+  USE cell_base, ONLY : alat, at
+  USE constants, ONLY : tpi
+  USE kinds,     ONLY : DP
+  USE rism,      ONLY : rism_type
+  USE solute,    ONLY : iwall3d, wall_z, wall_z0, wall_rho3d, &
+                        wall_ljeps3d, wall_ljsig3d
+  USE solvmol,   ONLY : iuniq_to_isite, isite_to_isolV, isite_to_iatom, solVs
+  !
+  IMPLICIT NONE
+  !
+  INTEGER,         INTENT(IN)    :: iq
+  TYPE(rism_type), INTENT(INOUT) :: rismt
+  REAL(DP),        INTENT(IN)    :: rsmax
+  !
+  REAL(DP), PARAMETER :: RSMIN = RSMIN__
+  !
+  INTEGER  :: iiq
+  INTEGER  :: iv
+  INTEGER  :: isolV
+  INTEGER  :: iatom
+  INTEGER  :: ir
+  INTEGER  :: idx
+  INTEGER  :: idx0
+  INTEGER  :: i3min
+  INTEGER  :: i3max
+  INTEGER  :: i1, i2, i3
+  INTEGER  :: n1, n2, n3
+  INTEGER  :: nx1, nx2, nx3
+  REAL(DP) :: tau_z
+  REAL(DP) :: r3
+  REAL(DP) :: rho
+  REAL(DP) :: ev, eu, euv
+  REAL(DP) :: sv, su, suv
+  REAL(DP) :: rmax
+  REAL(DP) :: rmin
+  REAL(DP) :: zuv
+  REAL(DP) :: sr, sr2, sr3, sr6, sr9
+  !
+  INTEGER  :: n3_half
+  REAL(DP) :: pz0, mz0
+  REAL(DP) :: zuv1, zuv2, zc
+  REAL(DP) :: vw1, vw2, vw, vwmax
+  REAL(DP) :: inv_alat
+  !
+  ! ... FFT box
+  n1  = rismt%cfft%dfftt%nr1
+  n2  = rismt%cfft%dfftt%nr2
+  n3  = rismt%cfft%dfftt%nr3
+  nx1 = rismt%cfft%dfftt%nr1x
+  nx2 = rismt%cfft%dfftt%nr2x
+  nx3 = rismt%cfft%dfftt%nr3x
+  !
+  ! ... solvent properties
+  iiq   = iq - rismt%mp_site%isite_start + 1
+  iv    = iuniq_to_isite(1, iq)
+  isolV = isite_to_isolV(iv)
+  iatom = isite_to_iatom(iv)
+  sv    = solVs(isolV)%ljsig(iatom)
+  ev    = solVs(isolV)%ljeps(iatom)
+  !
+  ! ... wall properties
+  rho = wall_rho3d
+  su  = wall_ljsig3d
+  eu  = wall_ljeps3d
+  !
+  ! ... wall edges
+  pz0 = (wall_z + wall_z0)
+  mz0 = (wall_z - wall_z0)
+  !
+  ! ... constants
+  inv_alat = 1.d0/alat
+  n3_half  = n3/2
+  !
+  ! ... wall-solvent properties
+  suv  = 0.5_DP * (sv + su)
+  euv  = SQRT(ev * eu)
+  rmax = rsmax * suv / alat
+  rmin = RSMIN * suv / alat
+  !
+  ! ... set max value of potential wall in Hartree atomic unit
+  sr   = suv * inv_alat / rmin
+  sr2  = sr  * sr
+  sr3  = sr2 * sr
+  sr6  = sr3 * sr3
+  sr9  = sr6 * sr3
+  vwmax = tpi * rho * 4.0_DP * euv * suv * suv * suv * sr9 / 90.0_DP
+  !
+  ! ... calculate potential on each FFT grid
+  idx0  = nx1 * nx2 * rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
+  i3min = rismt%cfft%dfftt%ipp(rismt%cfft%dfftt%mype + 1)
+  i3max = rismt%cfft%dfftt%npp(rismt%cfft%dfftt%mype + 1) + i3min
+  !
+  DO ir = 1, rismt%cfft%dfftt%nnr
+    !
+    ! ... create coordinate of a FFT grid
+    idx = idx0 + ir - 1
+    i3  = idx / (nx1 * nx2)
+    IF (i3 < i3min .OR. i3 >= i3max .OR. i3 >= n3) THEN
+      rismt%uwr(ir, iiq) = 0.0_DP
+      CYCLE
+    END IF
+    !
+    idx = idx - (nx1 * nx2) * i3
+    i2  = idx / nx1
+    IF (i2 >= n2) THEN
+      rismt%uwr(ir, iiq) = 0.0_DP
+      CYCLE
+    END IF
+    !
+    idx = idx - nx1 * i2
+    i1  = idx
+    IF (i1 >= n1) THEN
+      rismt%uwr(ir, iiq) = 0.0_DP
+      CYCLE
+    END IF
+    !
+    r3 = DBLE(i3) / DBLE(n3)
+    tau_z = r3 * at(3, 3)
+    !
+    ! ... potential from the wall
+    zuv1 =  tau_z - pz0
+    zuv2 =-(tau_z - mz0)
+    IF (zuv1 < rmin .and. zuv2 < rmin) THEN
+      rismt%uwr(ir, iiq) = vwmax
+      CYCLE
+    END IF
+    IF (zuv1 < rmin ) zuv1 = zuv1 + at(3, 3)
+    IF (zuv2 < rmin ) zuv2 = zuv2 + at(3, 3)
+    !
+    IF (zuv1 > rmax) THEN
+      vw1 = 0.0_DP
+      !
+    ELSE
+      sr   = suv * inv_alat / zuv1
+      sr2  = sr  * sr
+      sr3  = sr2 * sr
+      sr6  = sr3 * sr3
+      sr9  = sr6 * sr3
+      !
+      ! Wall potential
+      vw1 = tpi * rho * 4.0_DP * euv * suv * suv * suv * sr9 / 90.0_DP
+      !
+    END IF
+    !
+    IF (zuv2 > rmax) THEN
+      vw2 = 0.0_DP
+    ELSE
+      sr   = suv * inv_alat / zuv2
+      sr2  = sr  * sr
+      sr3  = sr2 * sr
+      sr6  = sr3 * sr3
+      sr9  = sr6 * sr3
+      !
+      ! Wall potential
+      vw2 = tpi * rho * 4.0_DP * euv * suv * suv * suv * sr9 / 90.0_DP
+      !
+    END IF
+    !
+    rismt%uwr(ir, iiq) = vw1 + vw2
+    !
+  END DO
+  !
+END SUBROUTINE lj_setup_wall3d_x
 !
 !--------------------------------------------------------------------------
 SUBROUTINE lj_get_wall_edge(tau0, v0)

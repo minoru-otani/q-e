@@ -28,6 +28,7 @@ SUBROUTINE potential_3drism(rismt, vrs, rhog, ierr)
   USE rism,           ONLY : rism_type, ITYPE_3DRISM, ITYPE_LAUERISM
   USE solvmol,        ONLY : get_nuniq_in_solVs, solVs, &
                            & iuniq_to_isite, isite_to_isolV, isite_to_iatom
+  USE solute,         ONLY : lwall3d
   !
   IMPLICIT NONE
   !
@@ -192,6 +193,14 @@ SUBROUTINE potential_3drism(rismt, vrs, rhog, ierr)
       IF (rismt%cfft%ngmt > 0) THEN
         rismt%ulgz(:, iiq) = CMPLX(0.0_DP, 0.0_DP, kind=DP)
         rismt%ulgz(1:rismt%cfft%ngmt, iiq) = qv * rismt%vlgz(1:rismt%cfft%ngmt)
+      END IF
+      !
+      ! ... add repulsive-wall potential (R-space) for 3D-RISM
+      !     to short-range part.
+      IF (lwall3d) THEN
+        rismt%usr(1:rismt%cfft%dfftt%nnr, iiq) = &
+          rismt%usr(1:rismt%cfft%dfftt%nnr, iiq) &
+        + rismt%uwr(1:rismt%cfft%dfftt%nnr, iiq)
       END IF
       !
     END IF

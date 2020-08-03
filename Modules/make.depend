@@ -254,6 +254,7 @@ guess_3drism.o : err_rism.o
 guess_3drism.o : kind.o
 guess_3drism.o : mp.o
 guess_3drism.o : rism.o
+guess_3drism.o : solute.o
 guess_3drism.o : solvmol.o
 gvecw.o : kind.o
 gvecw.o : mp.o
@@ -455,6 +456,7 @@ potential_3drism.o : kind.o
 potential_3drism.o : lauefft.o
 potential_3drism.o : recvec.o
 potential_3drism.o : rism.o
+potential_3drism.o : solute.o
 potential_3drism.o : solvmol.o
 potential_esm.o : cell_base.o
 potential_esm.o : constants.o

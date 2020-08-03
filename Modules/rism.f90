@@ -239,7 +239,7 @@ CONTAINS
   END SUBROUTINE allocate_1drism
   !
   !--------------------------------------------------------------------------
-  SUBROUTINE allocate_3drism(rismt, nv, ecutv, itask_comm, intra_comm)
+  SUBROUTINE allocate_3drism(rismt, nv, ecutv, lwall3d, itask_comm, intra_comm)
     !--------------------------------------------------------------------------
     !
     ! ... initialize rism_type for 3D-RISM
@@ -255,6 +255,7 @@ CONTAINS
     TYPE(rism_type), INTENT(INOUT) :: rismt
     INTEGER,         INTENT(IN)    :: nv
     REAL(DP),        INTENT(IN)    :: ecutv
+    LOGICAL,         INTENT(IN)    :: lwall3d
     INTEGER,         INTENT(IN)    :: itask_comm
     INTEGER,         INTENT(IN)    :: intra_comm
     !
@@ -301,7 +302,7 @@ CONTAINS
     !
     ! ... initialize rismt
     msite = rismt%mp_site%isite_end - rismt%mp_site%isite_start + 1
-    CALL allocate_rism(rismt, ITYPE_3DRISM, msite, nsite, nr, 0, 0, ng, ngs, 0, .FALSE.)
+    CALL allocate_rism(rismt, ITYPE_3DRISM, msite, nsite, nr, 0, 0, ng, ngs, 0, .FALSE.,lwall3d)
     !
   END SUBROUTINE allocate_3drism
   !
@@ -439,7 +440,7 @@ CONTAINS
   END SUBROUTINE allocate_lauerism
   !
   !--------------------------------------------------------------------------
-  SUBROUTINE allocate_rism(rismt, itype, nsite, nsite_t, nr, nrzs, nrzl, ng, ngs, ngxy, lboth)
+  SUBROUTINE allocate_rism(rismt, itype, nsite, nsite_t, nr, nrzs, nrzl, ng, ngs, ngxy, lboth, lwall3d)
     !--------------------------------------------------------------------------
     !
     ! ... initialize rism_type
@@ -469,6 +470,7 @@ CONTAINS
     INTEGER,         INTENT(IN)    :: ngs
     INTEGER,         INTENT(IN)    :: ngxy
     LOGICAL,         INTENT(IN)    :: lboth
+    LOGICAL,INTENT(IN),OPTIONAL    :: lwall3d
     ! Parameters
     REAL(DP),PARAMETER :: zero = 0._DP
     COMPLEX(DP),PARAMETER :: czero = CMPLX( 0._DP, 0._DP, KIND = DP )
@@ -552,6 +554,10 @@ CONTAINS
         ALLOCATE(rismt%csgz(ng, nsite))
         ALLOCATE(rismt%ulgz(ng, nsite))
         ALLOCATE(rismt%hgz( ng, nsite))
+      END IF
+      IF (lwall3d) THEN
+        ALLOCATE(rismt%uwr(nr, nsite))
+        rismt%uwr = zero
       END IF
       IF ((ng) > 0) THEN
         ALLOCATE(rismt%vlgz(ng))

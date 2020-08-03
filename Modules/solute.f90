@@ -57,6 +57,15 @@ MODULE solute
   REAL(DP)                             :: wall_ljsig  ! LJ's sigma (in bohr)
   LOGICAL                              :: wall_lj6    ! use 6-term of LJ, or not
   !
+  ! ... parameters of repulsive-wall used for 3D-RISM
+  LOGICAL                              :: lwall3d      ! When .true. repulsive wall is activated
+  INTEGER                              :: iwall3d      ! option for wall used in 3D-RISM
+  REAL(DP)                             :: wall_rho3d   ! density (in 1/bohr^3)
+  REAL(DP)                             :: wall_ljeps3d ! LJ's epsilon (in Ry)
+  REAL(DP)                             :: wall_ljsig3d ! LJ's sigma (in bohr)
+  REAL(DP)                             :: wall_z       ! wall width (in alat)
+  REAL(DP)                             :: wall_z0      ! wall center (in alat)
+  !
   ! ..... types of repulsive-wall
   INTEGER, PARAMETER :: IWALL_NULL  = 0
   INTEGER, PARAMETER :: IWALL_RIGHT = 1
@@ -77,6 +86,14 @@ MODULE solute
   PUBLIC :: wall_ljsig
   PUBLIC :: wall_lj6
   !
+  PUBLIC :: lwall3d
+  PUBLIC :: iwall3d
+  PUBLIC :: wall_rho3d
+  PUBLIC :: wall_ljeps3d
+  PUBLIC :: wall_ljsig3d
+  PUBLIC :: wall_z
+  PUBLIC :: wall_z0
+  !
   PUBLIC :: IWALL_NULL
   PUBLIC :: IWALL_RIGHT
   PUBLIC :: IWALL_LEFT
@@ -88,6 +105,7 @@ MODULE solute
   PUBLIC :: get_solU_LJ_stress
   PUBLIC :: set_solU_LJ_param
   PUBLIC :: set_wall_param
+  PUBLIC :: set_wall_param_3drism
   PUBLIC :: auto_wall_edge
   !
 CONTAINS
@@ -113,6 +131,12 @@ CONTAINS
     wall_ljeps = 0.0_DP
     wall_ljsig = 0.0_DP
     wall_lj6   = .FALSE.
+    iwall3d      = 0
+    wall_rho3d   = 0.0_DP
+    wall_ljeps3d = 0.0_DP
+    wall_ljsig3d = 0.0_DP
+    wall_z       = 0.0_DP
+    wall_z0      = 0.0_DP
     !
   END SUBROUTINE allocate_solU
   !
@@ -191,6 +215,19 @@ CONTAINS
     ! ... initialize repulsive-wall
     IF (rismt%itype == ITYPE_LAUERISM .AND. (.NOT. init_wall)) THEN
       CALL lj_setup_wall(rismt, rmax_lj, ierr)
+      IF (ierr /= IERR_RISM_NULL) THEN
+        RETURN
+      END IF
+      !
+      init_wall = .TRUE.
+      !
+    END IF
+    !
+    ! ... initialize repulsive wall for 3D-RISM
+    IF (lwall3d .AND. (.NOT. init_wall)) THEN
+      !
+      CALL lj_setup_wall3d(rismt, rmax_lj, ierr)
+      !
       IF (ierr /= IERR_RISM_NULL) THEN
         RETURN
       END IF
@@ -519,6 +556,41 @@ CONTAINS
     wall_lj6 = lj6
     !
   END SUBROUTINE set_wall_param
+  !
+  !--------------------------------------------------------------------------
+  SUBROUTINE set_wall_param_3drism(z, z0, rho, eps, sig)
+    !--------------------------------------------------------------------------
+    !
+    ! ... set repulsive-wall parameters
+    !
+    IMPLICIT NONE
+    !
+    REAL(DP), INTENT(IN) :: z, z0
+    REAL(DP), INTENT(IN) :: rho
+    REAL(DP), INTENT(IN) :: eps
+    REAL(DP), INTENT(IN) :: sig
+    !
+    IF (rho <= 0.0_DP .OR. eps <= 0.0_DP .OR. sig <= 0.0_DP) THEN
+      CALL stop_by_err_rism('set_wall_param_3d', IERR_RISM_LJ_OUT_OF_RANGE)
+    END IF
+    !
+    ! ... z (bohr) -> wall_tau (alat)
+    wall_z = z / BOHR_RADIUS_ANGS / alat
+    !
+    wall_z0 = z0 / BOHR_RADIUS_ANGS / alat
+    !
+    ! ... rho (1/bohr^3) -> wall_rho (1/bohr^3)
+    wall_rho3d = rho
+    !
+    ! ... eps (kcal/mol) -> wall_ljeps (Ry)
+    wall_ljeps3d = eps / RY_TO_KCALMOLm1
+    !
+    ! ... sig (angstrom) -> wall_ljsig (bohr)
+    wall_ljsig3d = sig / BOHR_RADIUS_ANGS
+    !
+    lwall3d = .TRUE.
+    !
+  END SUBROUTINE set_wall_param_3drism
   !
   !--------------------------------------------------------------------------
   SUBROUTINE auto_wall_edge(z0, g0, temp)

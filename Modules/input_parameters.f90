@@ -1649,6 +1649,26 @@ MODULE input_parameters
         LOGICAL :: laue_wall_lj6 = .FALSE.
           ! use attractive term of Lennard-Jones: -(1/r)^6, or not
 
+        REAL(DP) :: rism3d_wall_z = -1.0_DP
+          ! Half width of Lennard-Jones wall in 3D-RISM calculation
+
+        REAL(DP) :: rism3d_wall_z0 = -1.0_DP
+          ! Origone of Lennard-Jones wall in 3D-RISM calculation
+
+        REAL(DP) :: rism3d_wall_epsilon = 0.1_DP
+          ! Lennard-Jones parameters `epsilon' for repulsive wall
+          ! in 3D-RISM calculation (in kcal/mol)
+
+        REAL(DP) :: rism3d_wall_sigma = 4.0_DP
+          ! Lennard-Jones parameters `sigma' for repulsive wall
+          ! in 3D-RISM calculation (in angstrom)
+
+        REAL(DP) :: rism3d_wall_rho = 0.01_DP
+          ! Density of repulsive wall in Laue-RISM calculation (in 1/bohr^3)
+
+        LOGICAL  :: rism3d_wall = .FALSE.
+          ! Flag LJ wall calculation for 3D-RISM
+
         NAMELIST / rism / nsolv, closure, tempv, ecutsolv, solute_lj, &
                           solute_epsilon, solute_sigma, rmax_lj, rmax1d, rism1d_ngrid, &
                           starting1d, starting3d, smear1d, smear3d, &
@@ -1662,7 +1682,9 @@ MODULE input_parameters
                           laue_buffer_right, laue_buffer_right_solu, laue_buffer_right_solv, &
                           laue_buffer_left, laue_buffer_left_solu, laue_buffer_left_solv, &
                           laue_both_hands, laue_reference, laue_wall, laue_wall_z, laue_wall_rho, &
-                          laue_wall_epsilon, laue_wall_sigma, laue_wall_lj6
+                          laue_wall_epsilon, laue_wall_sigma, laue_wall_lj6, &
+                          rism3d_wall_z, rism3d_wall_z0, rism3d_wall_epsilon, &
+                          rism3d_wall_sigma, rism3d_wall_rho, rism3d_wall
 !  END manual
 ! ----------------------------------------------------------------------
 

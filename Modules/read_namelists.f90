@@ -817,6 +817,14 @@ MODULE read_namelists_module
        laue_wall_sigma        = 4.0_DP
        laue_wall_lj6          = .FALSE.
        !
+       ! ... LJ wall for 3D-RISM calculation
+       rism3d_wall_z          = -1.0_DP
+       rism3d_wall_z0         = -1.0_DP
+       rism3d_wall_epsilon    = 0.1_DP
+       rism3d_wall_sigma      = 4.0_DP
+       rism3d_wall_rho        = 0.01_DP
+       rism3d_wall            = .FALSE.
+       !
        RETURN
        !
      END SUBROUTINE
@@ -1495,6 +1503,12 @@ MODULE read_namelists_module
        CALL mp_bcast( laue_wall_epsilon,      ionode_id, intra_image_comm )
        CALL mp_bcast( laue_wall_sigma,        ionode_id, intra_image_comm )
        CALL mp_bcast( laue_wall_lj6,          ionode_id, intra_image_comm )
+       CALL mp_bcast( rism3d_wall_z,          ionode_id, intra_image_comm )
+       CALL mp_bcast( rism3d_wall_z0,         ionode_id, intra_image_comm )
+       CALL mp_bcast( rism3d_wall_epsilon,    ionode_id, intra_image_comm )
+       CALL mp_bcast( rism3d_wall_sigma,      ionode_id, intra_image_comm )
+       CALL mp_bcast( rism3d_wall_rho,        ionode_id, intra_image_comm )
+       CALL mp_bcast( rism3d_wall,            ionode_id, intra_image_comm )
        !
        RETURN
        !
@@ -2140,6 +2154,9 @@ MODULE read_namelists_module
              END IF
              !
           END IF
+          !
+          IF (rism3d_wall) &
+          CALL errore( sub_name,' Wall for 3D-RISM is activated ', 1 )
           !
        END IF
        !
