@@ -137,7 +137,6 @@ CONTAINS
     ALLOCATE(radfft0%singr(radfft0%ngrid, radfft0%igrid_len))
     radfft0%singr = 0.0_DP
     !
-!$omp parallel do default(shared) private(ir, iir, r, ig, g)
     DO ir = radfft0%igrid_start, radfft0%igrid_end
       iir = ir - radfft0%igrid_start + 1
       r = radfft0%rgrid(ir)
@@ -146,7 +145,6 @@ CONTAINS
         radfft0%singr(ig, iir) = SIN(g * r)
       END DO
     END DO
-!$omp end parallel do
     !
   END SUBROUTINE init_mpi_radfft
   !
@@ -314,12 +312,10 @@ CONTAINS
       ! cr -> crr
       DO i = 1, mult
         mgrid = (i - 1) * radfft0%igrid_len
-!$omp parallel do default(shared) private(igrid, jgrid)
         DO igrid = radfft0%igrid_start, radfft0%igrid_end
           jgrid = igrid - radfft0%igrid_start + 1
           crr(jgrid, i) = cr(jgrid + mgrid) * radfft0%rgrid(igrid)
         END DO
-!$omp end parallel do
       END DO
       !
       ! perform integration
@@ -342,12 +338,10 @@ CONTAINS
           cg(1 + mgrid) = 0.0_DP
         END IF
         !
-!$omp parallel do default(shared) private(igrid, jgrid)
         DO igrid = iigrid_start, radfft0%igrid_end
           jgrid = igrid - radfft0%igrid_start + 1
           cg(jgrid + mgrid) = cgg(igrid, i) / radfft0%ggrid(igrid)
         END DO
-!$omp end parallel do
       END DO
     END IF
     !
@@ -393,12 +387,10 @@ CONTAINS
       ! cg -> cgg
       DO i = 1, mult
         mgrid = (i - 1) * radfft0%igrid_len
-!$omp parallel do default(shared) private(igrid, jgrid)
         DO igrid = radfft0%igrid_start, radfft0%igrid_end
           jgrid = igrid - radfft0%igrid_start + 1
           cgg(igrid, i) = cg(jgrid + mgrid) * radfft0%ggrid(igrid)
         END DO
-!$omp end parallel do
       END DO
     END IF
     !
@@ -421,12 +413,10 @@ CONTAINS
           cr(1 + mgrid) = 0.0_DP
         END IF
         !
-!$omp parallel do default(shared) private(igrid, jgrid)
         DO igrid = iigrid_start, radfft0%igrid_end
           jgrid = igrid - radfft0%igrid_start + 1
           cr(jgrid + mgrid) = crr(jgrid, i) / radfft0%rgrid(igrid)
         END DO
-!$omp end parallel do
       END DO
     END IF
     !

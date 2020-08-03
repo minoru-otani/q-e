@@ -129,12 +129,10 @@ SUBROUTINE closure_HNC_x(nr, beta, ur, hr, cr, gr)
   !
   REAL(DP), PARAMETER :: MAX_EXP = 100.0_DP
   !
-!$omp parallel do default(shared) private(ir, tr)
   DO ir = 1, nr
     tr = -beta * ur(ir) + hr(ir) - cr(ir)
     gr(ir) = EXP(MIN(tr, MAX_EXP))
   END DO
-!$omp end parallel do
   !
 END SUBROUTINE closure_HNC_x
 !
@@ -163,7 +161,6 @@ SUBROUTINE closure_KH_x(nr, beta, ur, hr, cr, gr)
   INTEGER  :: ir
   REAL(DP) :: tr
   !
-!$omp parallel do default(shared) private(ir, tr)
   DO ir = 1, nr
     tr = -beta * ur(ir) + hr(ir) - cr(ir)
     IF (tr < 0.0_DP) THEN
@@ -172,7 +169,6 @@ SUBROUTINE closure_KH_x(nr, beta, ur, hr, cr, gr)
       gr(ir) = 1.0_DP + tr
     END IF
   END DO
-!$omp end parallel do
   !
 END SUBROUTINE closure_KH_x
 

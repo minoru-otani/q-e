@@ -96,27 +96,24 @@ SUBROUTINE eqn_1drism(rismt, optdrism, lhand, ierr)
   !
   ! ... in case G /= 0
   ! ... 1D-RISM equation for each ig
+  ALLOCATE(rho(nv))
+  ALLOCATE(ipiv(nv))
+  ALLOCATE(hvv(nv, nv))
+  ALLOCATE(cvv(nv, nv))
+  ALLOCATE(wvv(nv, nv))
+  ALLOCATE(avv(nv, nv))
+  ALLOCATE(bvv(nv, nv))
+  ipiv = 0
+  rho  = zero
+  hvv  = zero
+  cvv  = zero
+  wvv  = zero
+  avv  = zero
+  bvv  = zero
+  !
   SELECT CASE( optdrism )
   ! DRISM case
   CASE ( 1 )
-!$omp parallel default(shared) private(ig, iig, iv1, iv2, ivv, isolV, &
-!$omp          ilapack, rho, ipiv, hvv, cvv, wvv, avv, bvv)
-    !
-    ! ... allocate working memory for OpenMP
-    ALLOCATE(rho(nv))
-    ALLOCATE(ipiv(nv))
-    ALLOCATE(hvv(nv, nv))
-    ALLOCATE(cvv(nv, nv))
-    ALLOCATE(wvv(nv, nv))
-    ALLOCATE(avv(nv, nv))
-    ALLOCATE(bvv(nv, nv))
-    ipiv = 0
-    rho  = zero
-    hvv  = zero
-    cvv  = zero
-    wvv  = zero
-    avv  = zero
-    bvv  = zero
     !
     ! ... make rho
     DO iv1 = 1, nv
@@ -128,7 +125,6 @@ SUBROUTINE eqn_1drism(rismt, optdrism, lhand, ierr)
       END IF
     END DO
     !
-!$omp do reduction(max:ierr)
     DO ig = jg, rismt%ng
       !
       ierr = MAX(ierr, IERR_RISM_NULL)
@@ -183,39 +179,9 @@ SUBROUTINE eqn_1drism(rismt, optdrism, lhand, ierr)
       END DO
       !
     END DO
-!$omp end do
-    !
-    ! ... deallocate working memory for OpenMP
-    DEALLOCATE(rho)
-    DEALLOCATE(ipiv)
-    DEALLOCATE(hvv)
-    DEALLOCATE(cvv)
-    DEALLOCATE(wvv)
-    DEALLOCATE(avv)
-    DEALLOCATE(bvv)
-    !
-!$omp end parallel
   !
   ! ordinal 1D-RISM calculation
   CASE DEFAULT
-!$omp parallel default(shared) private(ig, iig, iv1, iv2, ivv, isolV, &
-!$omp          ilapack, rho, ipiv, hvv, cvv, wvv, avv, bvv)
-    !
-    ! ... allocate working memory for OpenMP
-    ALLOCATE(rho(nv))
-    ALLOCATE(ipiv(nv))
-    ALLOCATE(hvv(nv, nv))
-    ALLOCATE(cvv(nv, nv))
-    ALLOCATE(wvv(nv, nv))
-    ALLOCATE(avv(nv, nv))
-    ALLOCATE(bvv(nv, nv))
-    ipiv = 0
-    rho  = zero
-    hvv  = zero
-    cvv  = zero
-    wvv  = zero
-    avv  = zero
-    bvv  = zero
     !
     ! ... make rho
     DO iv1 = 1, nv
@@ -227,7 +193,6 @@ SUBROUTINE eqn_1drism(rismt, optdrism, lhand, ierr)
       END IF
     END DO
     !
-!$omp do reduction(max:ierr)
     DO ig = jg, rismt%ng
       !
       ierr = MAX(ierr, IERR_RISM_NULL)
@@ -282,19 +247,16 @@ SUBROUTINE eqn_1drism(rismt, optdrism, lhand, ierr)
       END DO
       !
     END DO
-!$omp end do
-    !
-    ! ... deallocate working memory for OpenMP
-    DEALLOCATE(rho)
-    DEALLOCATE(ipiv)
-    DEALLOCATE(hvv)
-    DEALLOCATE(cvv)
-    DEALLOCATE(wvv)
-    DEALLOCATE(avv)
-    DEALLOCATE(bvv)
-    !
-!$omp end parallel
   END SELECT
+  !
+  ! ... deallocate working memory for OpenMP
+  DEALLOCATE(rho)
+  DEALLOCATE(ipiv)
+  DEALLOCATE(hvv)
+  DEALLOCATE(cvv)
+  DEALLOCATE(wvv)
+  DEALLOCATE(avv)
+  DEALLOCATE(bvv)
   !
   ! ... merge error code through all processies
   CALL merge_ierr_rism(ierr, rismt%mp_site%inter_sitg_comm)
