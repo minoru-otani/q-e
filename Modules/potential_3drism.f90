@@ -260,10 +260,13 @@ CONTAINS
     IF (rismt%itype == ITYPE_LAUERISM) THEN
       IF ((rismt%nrzl * rismt%lfft%ngxy) > 0) THEN
         ALLOCATE(vlss_l(rismt%nrzl * rismt%lfft%ngxy))
+        vlss_l = czero
       END IF
       IF (rismt%lfft%ngxy > 0) THEN
         ALLOCATE(vright(rismt%lfft%ngxy))
         ALLOCATE(vleft( rismt%lfft%ngxy))
+        vright = czero
+        vleft  = czero
       END IF
     END IF
     !
@@ -271,6 +274,7 @@ CONTAINS
     IF (rismt%itype == ITYPE_LAUERISM) THEN
       IF (rismt%cfft%ngmt > 0) THEN
         ALLOCATE(rhogss(rismt%cfft%ngmt))
+        rhogss = czero
       END IF
     END IF
     !

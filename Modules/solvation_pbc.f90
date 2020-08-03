@@ -33,6 +33,8 @@ SUBROUTINE solvation_pbc(rismt, ierr)
   COMPLEX(DP), ALLOCATABLE :: rhog_pbcl(:,:)
   COMPLEX(DP), ALLOCATABLE :: vpot_pbcl(:,:)
   !
+  COMPLEX(DP), PARAMETER   :: czero = CMPLX(0.0_DP, 0.0_DP, KIND=DP)
+  !
   ! ... check data type
   IF (rismt%itype /= ITYPE_LAUERISM) THEN
     ierr = IERR_RISM_INCORRECT_DATA_TYPE
@@ -67,10 +69,13 @@ SUBROUTINE solvation_pbc(rismt, ierr)
   ! ... allocate memory
   IF (rismt%cfft%dfftt%nnr > 0) THEN
     ALLOCATE(aux(rismt%cfft%dfftt%nnr))
+    aux = czero
   END IF
   IF (rismt%cfft%dfftt%nr3 * rismt%lfft%ngxy > 0) THEN
     ALLOCATE(rhog_pbcl(rismt%cfft%dfftt%nr3, rismt%lfft%ngxy))
     ALLOCATE(vpot_pbcl(rismt%cfft%dfftt%nr3, rismt%lfft%ngxy))
+    rhog_pbcl = czero
+    vpot_pbcl = czero
   END IF
   !
   ! ...
@@ -185,6 +190,7 @@ CONTAINS
     !
     ndim = 2 * nfit
     ALLOCATE(vtmp(0:(ndim + 1)))
+    vtmp = czero
     !
     ! ... vpot -> vtmp
     vtmp(       0) = vpot(npot - nfit)

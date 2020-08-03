@@ -152,14 +152,14 @@ SUBROUTINE solvation_stress_ion( rismt, sigma, vloc, dvloc, ierr )
   evloc = 0.0_DP
 
   if (gamma_only) then
-    fact = 2.d0
+    fact = 2.0_DP
   else
-    fact = 1.d0
+    fact = 1.0_DP
   end if
 
   do nt = 1, nsp ! element
     ! calculate structure factor of this element
-    strf(:) = (0.d0,0.d0)
+    strf(:) = CMPLX(0.0_DP, 0.0_DP, KIND=DP)
     do ia = 1, nat ! atom of this element
       if( ityp(ia) == nsp ) then
 !$omp parallel do default(shared) private(ig,arg)

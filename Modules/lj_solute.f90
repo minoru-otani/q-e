@@ -431,6 +431,7 @@ SUBROUTINE lj_setup_wall(rismt, rsmax, ierr)
   END IF
   !
   ! ... calculate Lennard-Jones wall
+  rismt%uwr = 0.0_DP
   DO iq = rismt%mp_site%isite_start, rismt%mp_site%isite_end
     CALL lj_setup_wall_x(iq, rismt, rsmax)
   END DO

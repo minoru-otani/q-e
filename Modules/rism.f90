@@ -601,8 +601,6 @@ CONTAINS
         ALLOCATE(rismt%do_vleft( ngxy))
         rismt%vright = czero
         rismt%vleft  = czero
-        rismt%do_vright = czero
-        rismt%do_vleft  = czero
       END IF
       IF ((nrzl * ngxy * nsite) > 0) THEN
         ALLOCATE(rismt%hsgz(nrzl * ngxy, nsite))
@@ -707,6 +705,7 @@ CONTAINS
     INTEGER,         INTENT(IN)    :: ngs
     LOGICAL,         INTENT(IN)    :: lboth
     !
+    REAL(DP),   PARAMETER :: zero = 0.0_DP
     COMPLEX(DP),PARAMETER :: czero = CMPLX( 0._DP, 0._DP, KIND = DP )
     !
     ! ... deallocate memory, if needed

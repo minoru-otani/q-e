@@ -85,10 +85,13 @@ SUBROUTINE potential_esm_hartree(rismt, rhog, vlaue, vright, vleft, ierr)
   ! ... allocate memory
   IF (rismt%lfft%ngz * rismt%lfft%ngxy > 0) THEN
     ALLOCATE(rhogt( rismt%lfft%ngz, rismt%lfft%ngxy))
+    rhogt = c_zero
   END IF
   IF (rismt%lfft%ngz > 0) THEN
     ALLOCATE(rhogz( rismt%lfft%ngz))
     ALLOCATE(expigz(rismt%lfft%ngz))
+    rhogz = c_zero
+    expigz = c_zero
   END IF
   !
   ! ... set variables

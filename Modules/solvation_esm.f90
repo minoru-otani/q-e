@@ -88,11 +88,16 @@ SUBROUTINE solvation_esm_potential(rismt, iref, vref, ierr)
   IF (rismt%lfft%ngz_x * rismt%lfft%ngxy > 0) THEN
     ALLOCATE(rhogt(  rismt%lfft%ngz_x, rismt%lfft%ngxy))
     ALLOCATE(vpott(  rismt%lfft%ngz_x, rismt%lfft%ngxy))
+    rhogt = C_ZERO
+    vpott = C_ZERO
   END IF
   IF (rismt%lfft%ngz_x > 0) THEN
     ALLOCATE(rhogz(  rismt%lfft%ngz_x))
     ALLOCATE(expigzr(rismt%lfft%ngz_x))
     ALLOCATE(expigzl(rismt%lfft%ngz_x))
+    rhogz = C_ZERO
+    expigzr = C_ZERO
+    expigzl = C_ZERO
   END IF
   !
   ! ... set variables

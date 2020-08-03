@@ -78,6 +78,7 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   REAL(DP),    PARAMETER   :: RHO_THR   = 1.0E-16_DP
   REAL(DP),    PARAMETER   :: RHO_SMEAR = 1.0_DP  ! in bohr
   REAL(DP),    PARAMETER   :: WEI_THR   = 1.0E-32_DP
+  REAL(DP),    PARAMETER   :: ZERO = 0.0_DP
   COMPLEX(DP), PARAMETER   :: C_ZERO = CMPLX(0.0_DP, 0.0_DP, kind=DP)
   !
   REAL(DP),    EXTERNAL    :: qe_erfc
@@ -114,9 +115,11 @@ SUBROUTINE solvation_lauerism(rismt, charge, ireference, ierr)
   ! ... allocate memory
   IF(rismt%lfft%nrz > 0) THEN
     ALLOCATE(wei(rismt%lfft%nrz))
+    wei = zero
   END IF
   IF (rismt%nrzs * rismt%ngxy * rismt%nsite > 0) THEN
     ALLOCATE(ggz(rismt%nrzs * rismt%ngxy, rismt%nsite))
+    ggz = c_zero
   END IF
   !
   ! ... set variables

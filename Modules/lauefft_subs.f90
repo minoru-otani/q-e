@@ -494,6 +494,10 @@ SUBROUTINE allocate_lauefft_gz(lauefft0, ngmt, ig1t, ig2t, ig3t, gt)
   ALLOCATE(gz2sort(       lauefft0%ngz))
   ALLOCATE(gz_unsorted(   lauefft0%ngz))
   ALLOCATE(millz_unsorted(lauefft0%ngz))
+  igzsrt         = 0
+  gz2sort        = 0.0_DP
+  gz_unsorted    = 0.0_DP
+  millz_unsorted = 0
   !
   iigz = 0
   DO igz = 1, lauefft0%dfft%nr3
@@ -521,6 +525,7 @@ SUBROUTINE allocate_lauefft_gz(lauefft0, ngmt, ig1t, ig2t, ig3t, gt)
   ALLOCATE(lauefft0%gz(   lauefft0%ngz))
   ALLOCATE(lauefft0%millz(lauefft0%ngz))
   !
+  lauefft0%nlz = 0
   lauefft0%gz(   :) = gz_unsorted(   igzsrt(:))
   lauefft0%millz(:) = millz_unsorted(igzsrt(:))
   !
@@ -551,6 +556,7 @@ SUBROUTINE allocate_lauefft_gz(lauefft0, ngmt, ig1t, ig2t, ig3t, gt)
   !
   ! ... define index G -> Gz
   ALLOCATE(lauefft0%igtoigz(2, ngmt))
+  lauefft0%igtoigz = 0
   !
   DO ig = 1, ngmt
     mx = ig1t(ig)
@@ -630,6 +636,8 @@ SUBROUTINE allocate_lauefft_gz_exp(lauefft0, gcutm)
   ! ... alloc memory
   ALLOCATE(gz(   2 * ni + 1))
   ALLOCATE(millz(2 * ni + 1))
+  gz = 0.0_DP
+  millz = 0
   !
   ! ... count Gz-vectors
   lauefft0%ngz_x = 0
@@ -649,6 +657,10 @@ SUBROUTINE allocate_lauefft_gz_exp(lauefft0, gcutm)
   ALLOCATE(lauefft0%nlz_x(  lauefft0%ngz_x))
   ALLOCATE(lauefft0%gz_x(   lauefft0%ngz_x))
   ALLOCATE(lauefft0%millz_x(lauefft0%ngz_x))
+  !
+  lauefft0%nlz_x = 0
+  lauefft0%gz_x = 0.0_DP
+  lauefft0%millz_x = 0
   !
   DO iigz = 1, lauefft0%ngz_x
     mz  = millz(iigz)
@@ -781,6 +793,11 @@ SUBROUTINE allocate_lauefft_gxy(lauefft0, ngmt, ig1t, ig2t, gt, comm)
   ALLOCATE(gnxy_unsorted(     lauefft0%ngxy))
   ALLOCATE(ggxy_unsorted(     lauefft0%ngxy))
   ALLOCATE(millxy_unsorted(2, lauefft0%ngxy))
+  igxysrt         = 0
+  gxy2sort        = 0.0_DP
+  gxy_unsorted    = 0.0_DP
+  gnxy_unsorted   = 0.0_DP
+  millxy_unsorted = 0
   !
   igxy = 0
   DO igx = 1, lauefft0%dfft%nr1
@@ -820,6 +837,8 @@ SUBROUTINE allocate_lauefft_gxy(lauefft0, ngmt, ig1t, ig2t, gt, comm)
   ALLOCATE(lauefft0%ggxy(     lauefft0%ngxy))
   ALLOCATE(lauefft0%millxy(2, lauefft0%ngxy))
   !
+  lauefft0%nlxy         = 0
+  lauefft0%nlmxy        = 0
   lauefft0%gxy(   1, :) = gxy_unsorted(   1, igxysrt(:))
   lauefft0%gxy(   2, :) = gxy_unsorted(   2, igxysrt(:))
   lauefft0%gnxy(     :) = gnxy_unsorted(     igxysrt(:))
@@ -886,6 +905,7 @@ SUBROUTINE allocate_lauefft_gxy(lauefft0, ngmt, ig1t, ig2t, gt, comm)
   !
   ! ... define index G -> Gxy
   ALLOCATE(lauefft0%igtoigxy(ngmt))
+  lauefft0%igtoigxy = 0
   !
   DO ig = 1, ngmt
     mx  = ig1t(ig)

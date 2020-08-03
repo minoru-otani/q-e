@@ -330,6 +330,8 @@ CONTAINS
     COMPLEX(DP), ALLOCATABLE :: cinp(:)
     COMPLEX(DP), ALLOCATABLE :: cout(:)
     !
+    COMPLEX(DP), PARAMETER   :: czero = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    !
     n3  = lauefft0%dfft%nr3
     nx1 = lauefft0%dfft%nr1x
     nx2 = lauefft0%dfft%nr2x
@@ -338,7 +340,8 @@ CONTAINS
     ALLOCATE(cinp(nx3 * lauefft0%ngxy))
     ALLOCATE(cout(nx3 * lauefft0%ngxy))
     !
-    cinp = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    cinp = czero
+    cout = czero
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = (igxy - 1) * nx3
@@ -357,7 +360,7 @@ CONTAINS
     !
     CALL cft_1z(cinp, lauefft0%ngxy, n3, nx3, -1, cout)
     !
-    cg(1:lauefft0%dfft%nnr) = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    cg(1:lauefft0%dfft%nnr) = czero
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = lauefft0%nlxy(igxy)
       jgxy2 = (igxy - 1) * nx3
@@ -423,6 +426,8 @@ CONTAINS
     COMPLEX(DP), ALLOCATABLE :: cinp(:)
     COMPLEX(DP), ALLOCATABLE :: cout(:)
     !
+    COMPLEX(DP), PARAMETER   :: czero = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    !
     n3  = lauefft0%dfft%nr3
     nx1 = lauefft0%dfft%nr1x
     nx2 = lauefft0%dfft%nr2x
@@ -431,7 +436,8 @@ CONTAINS
     ALLOCATE(cinp(nx3 * lauefft0%ngxy))
     ALLOCATE(cout(nx3 * lauefft0%ngxy))
     !
-    cinp = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    cinp = czero
+    cout = czero
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = lauefft0%nlxy(igxy)
       jgxy2 = (igxy - 1) * nx3
@@ -448,6 +454,7 @@ CONTAINS
     !
     CALL cft_1z(cinp, lauefft0%ngxy, n3, nx3, +1, cout)
     !
+    cl(1:(lauefft0%ngxy*nrz)) = czero
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = (igxy - 1) * nx3
@@ -495,6 +502,8 @@ CONTAINS
     COMPLEX(DP), ALLOCATABLE :: cinp(:)
     COMPLEX(DP), ALLOCATABLE :: cout(:)
     !
+    COMPLEX(DP), PARAMETER   :: czero = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    !
     n3   = lauefft0%nrz
     nx3  = lauefft0%nrzx
     irz0 = (lauefft0%dfft%nr3 / 2) + lauefft0%izcell_start - 1
@@ -502,7 +511,8 @@ CONTAINS
     ALLOCATE(cinp(nx3 * lauefft0%ngxy))
     ALLOCATE(cout(nx3 * lauefft0%ngxy))
     !
-    cinp = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    cinp = czero
+    cout = czero
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = (igxy - 1) * nx3
@@ -521,7 +531,7 @@ CONTAINS
     !
     CALL cft_1z(cinp, lauefft0%ngxy, n3, nx3, -1, cout)
     !
-    cg(1:(ngz * lauefft0%ngxy)) = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    cg(1:(ngz * lauefft0%ngxy)) = czero
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * ngz
       jgxy2 = (igxy - 1) * nx3
@@ -563,6 +573,8 @@ CONTAINS
     COMPLEX(DP), ALLOCATABLE :: cinp(:)
     COMPLEX(DP), ALLOCATABLE :: cout(:)
     !
+    COMPLEX(DP), PARAMETER   :: czero = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    !
     n3   = lauefft0%nrz
     nx3  = lauefft0%nrzx
     irz0 = (lauefft0%dfft%nr3 / 2) + lauefft0%izcell_start - 1
@@ -570,7 +582,8 @@ CONTAINS
     ALLOCATE(cinp(nx3 * lauefft0%ngxy))
     ALLOCATE(cout(nx3 * lauefft0%ngxy))
     !
-    cinp = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    cinp = czero
+    cout = czero
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * ngz
       jgxy2 = (igxy - 1) * nx3
@@ -583,7 +596,7 @@ CONTAINS
     !
     CALL cft_1z(cinp, lauefft0%ngxy, n3, nx3, +1, cout)
     !
-    cl(1:(nrz * lauefft0%ngxy)) = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    cl(1:(nrz * lauefft0%ngxy)) = czero
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = (igxy - 1) * nx3
@@ -640,6 +653,8 @@ CONTAINS
     COMPLEX(DP), ALLOCATABLE :: cinp(:)
     COMPLEX(DP), ALLOCATABLE :: cout(:)
     !
+    COMPLEX(DP), PARAMETER   :: czero = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    !
     n1  = lauefft0%dfft%nr1
     n2  = lauefft0%dfft%nr2
     n3  = lauefft0%dfft%nr3
@@ -649,6 +664,9 @@ CONTAINS
     !
     ALLOCATE(cinp(lauefft0%dfft%nnr))
     ALLOCATE(cout(lauefft0%dfft%nnr))
+    !
+    cinp = czero
+    cout = czero
     !
 !$omp parallel do default(shared) private(ir)
     DO ir = 1, lauefft0%dfft%nnr
@@ -697,6 +715,7 @@ CONTAINS
     cout = cinp
 #endif
     !
+    cl(1:nrz*lauefft0%ngxy) = czero
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = lauefft0%nlxy(igxy)
@@ -757,6 +776,8 @@ CONTAINS
     COMPLEX(DP), ALLOCATABLE :: cinp(:)
     COMPLEX(DP), ALLOCATABLE :: cout(:)
     !
+    COMPLEX(DP), PARAMETER   :: czero = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    !
     n1  = lauefft0%dfft%nr1
     n2  = lauefft0%dfft%nr2
     n3  = lauefft0%dfft%nr3
@@ -767,7 +788,8 @@ CONTAINS
     ALLOCATE(cinp(lauefft0%dfft%nnr))
     ALLOCATE(cout(lauefft0%dfft%nnr))
     !
-    cinp = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    cinp = czero
+    cout = czero
     DO igxy = 1, lauefft0%ngxy
       jgxy1 = (igxy - 1) * nrz
       jgxy2 = lauefft0%nlxy(igxy)
@@ -845,6 +867,7 @@ CONTAINS
       CALL cft_2xy(cout, lauefft0%dfft%npp(me_p), n1, n2, nx1, nx2, +1, planes)
     END IF
     !
+    cr(1:lauefft0%dfft%nnr) = czero
 !$omp parallel do default(shared) private(ir)
     DO ir = 1, lauefft0%dfft%nnr
       cr(ir) = DBLE(cout(ir))
@@ -887,6 +910,8 @@ CONTAINS
     REAL(DP)                 :: creal
     REAL(DP)                 :: cimag
     COMPLEX(DP), ALLOCATABLE :: cltmp(:)
+    !
+    COMPLEX(DP), PARAMETER   :: czero = CMPLX(0.0_DP, 0.0_DP, kind=DP)
     !
     lall_ = .FALSE.
     IF (PRESENT(lall)) THEN
@@ -935,6 +960,7 @@ CONTAINS
       END IF
     END DO
     !
+    cltot(1:ntot) = czero
 #if defined (__MPI)
     IF (lall_) THEN
       CALL mp_sum(cltmp, lauefft0%dfft%comm)
@@ -984,6 +1010,9 @@ CONTAINS
     REAL(DP),    ALLOCATABLE :: crtmp(:)
     COMPLEX(DP), ALLOCATABLE :: cltot(:)
     !
+    REAL(DP),    PARAMETER   :: zero  = 0.0_DP
+    COMPLEX(DP), PARAMETER   :: czero = CMPLX(0.0_DP, 0.0_DP, kind=DP)
+    !
     n1   = lauefft0%dfft%nr1
     n2   = lauefft0%dfft%nr2
     n3   = lauefft0%nrz
@@ -994,7 +1023,8 @@ CONTAINS
     ALLOCATE(crtmp(ntot))
     ALLOCATE(cltot(ntot))
     !
-    crtmp = 0.0_DP
+    crtmp = zero
+    cltot = czero
     CALL gather_lauefft(lauefft0, cl, nrz, cltot, lall=.TRUE.)
     !
     irank = mp_rank(lauefft0%dfft%comm)

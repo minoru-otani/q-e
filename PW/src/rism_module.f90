@@ -507,6 +507,7 @@ CONTAINS
     vh = 0.0_DP
     CALL v_h_without_esm(rhog, ehart, charge, vh)
     !
+    vpot = 0.0_DP
     vpot(1:dfftp%nnr) = vltot(1:dfftp%nnr)
     !
     DO is = 1, nspin_lsda
