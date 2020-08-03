@@ -117,6 +117,7 @@ do_1drism.o : mdiis.o
 do_1drism.o : mp.o
 do_1drism.o : radfft.o
 do_1drism.o : rism.o
+do_1drism.o : rism1d_facade.o
 do_3drism.o : ../FFTXlib/fft_interfaces.o
 do_3drism.o : check_stop.o
 do_3drism.o : control_flags.o
