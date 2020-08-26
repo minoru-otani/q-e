@@ -96,7 +96,7 @@ SUBROUTINE setup()
   USE esm,                ONLY : esm_z_inv
   USE fcp_module,         ONLY : lfcp
   USE gcscf_module,       ONLY : lgcscf
-  USE rism_module,        ONLY : lrism, rism_calc1d
+  USE rism_module,        ONLY : lrism, rism_calc1d, rism_boundary
   !
   IMPLICIT NONE
   !
@@ -117,7 +117,8 @@ SUBROUTINE setup()
 #else
   LOGICAL :: lpara = .false.
 #endif
-
+  !
+  LOGICAL  :: rism_bound = .FALSE.
   !
   ! ... okvan/okpaw = .TRUE. : at least one pseudopotential is US/PAW
   !
@@ -560,8 +561,9 @@ SUBROUTINE setup()
      !
      ! ... eliminate rotations that are not symmetry operations
      !
+     IF (lrism) CALL rism_boundary( rism_bound )
      CALL find_sym ( nat, tau, ityp, magnetic_sym, m_loc, &
-                     monopole .OR. (.NOT. esm_z_inv(lrism)) )
+                     monopole .OR. (.NOT. esm_z_inv(lrism.AND.rism_bound)) )
      ! NOTE: monopole is same as gate used in ver.6.5 2020/05/13
      !
      IF ( .NOT. allfrac ) CALL remove_sym ( dfftp%nr1, dfftp%nr2, dfftp%nr3 )

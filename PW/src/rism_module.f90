@@ -42,18 +42,19 @@ MODULE rism_module
   USE mp_images,        ONLY : intra_image_comm
   USE noncollin_module, ONLY : nspin_lsda
   USE relax,            ONLY : starting_scf_threshold
-  USE rism1d_facade,    ONLY : lrism1d, rism1d_finalize, rism1d_is_avail, &
-                             & rism1d_iosys, rism1d_summary, rism1d_prepare, rism1d_run, &
+  USE rism1d_facade,    ONLY : lrism1d, rism1d_finalize, rism1d_is_avail,                         &
+                             & rism1d_iosys, rism1d_summary, rism1d_prepare, rism1d_run,          &
                              & rism1d_write_to_restart, rism1d_write_to_show, rism1d_print_clock, &
                              & starting_1d => starting_corr
-  USE rism3d_facade,    ONLY : lrism3d, epsv, starting_epsv, &
-                             & rism3t, rism3d_initialize, rism3d_finalize, rism3d_is_laue, &
-                             & rism3d_iosys, rism3d_summary, rism3d_prepare, rism3d_reprepare, &
-                             & rism3d_run, rism3d_update_solute, rism3d_potential, &
-                             & rism3d_force, rism3d_stress, rism3d_printpot, &
-                             & rism3d_print_clock, starting_3d => starting_corr
+  USE rism3d_facade,    ONLY : lrism3d, epsv, starting_epsv,                                      &
+                             & rism3t, rism3d_initialize, rism3d_finalize, rism3d_is_laue,        &
+                             & rism3d_iosys, rism3d_summary, rism3d_prepare, rism3d_reprepare,    &
+                             & rism3d_run, rism3d_update_solute, rism3d_potential,                &
+                             & rism3d_force, rism3d_stress, rism3d_printpot,                      &
+                             & rism3d_print_clock, starting_3d => starting_corr,                  &
+                             & expand_r, expand_l, both_hands
   USE solute,           ONLY : deallocate_solU
-  USE solvmol,          ONLY : deallocate_solVs
+  USE solvmol,          ONLY : deallocate_solVs, nsolV, solVs
   USE vlocal,           ONLY : vloc, dvloc
   !
   IMPLICIT NONE
@@ -85,6 +86,7 @@ MODULE rism_module
   PUBLIC :: rism_new_conv_thr
   PUBLIC :: rism_printpot
   PUBLIC :: rism_print_clock
+  PUBLIC :: rism_boundary
   !
 CONTAINS
   !
@@ -848,6 +850,61 @@ CONTAINS
     END IF
     !
   END SUBROUTINE rism_print_clock
+  !
+  !----------------------------------------------------------------------------
+  SUBROUTINE rism_boundary( rism_bound )
+    !----------------------------------------------------------------------------
+    !
+    ! ... This routine judge boundary condition of present calculation.
+    IMPLICIT NONE
+    !
+    LOGICAL, INTENT(OUT) :: rism_bound
+    !
+    ! rism_bound = .TRUE.
+    ! ... inversion symmetry is not used.
+    ! rism_bound = .FALSE.
+    ! ... inversion symmetry is used.
+    !
+    INTEGER :: isolv
+    LOGICAL :: ldens, lboth_expand
+    !
+    rism_bound = .FALSE.
+    !
+    ldens = .FALSE.
+    lboth_expand = .FALSE.
+    !
+    IF( .NOT.do_comp_esm )THEN
+      ! ... 3D-RISM
+      ! ... inversion symmetry is used.
+      return
+      !
+    ELSE
+      ! ... Laue-RISM
+      ! 1) /Vacuum/slab/solvent/
+      !
+      rism_bound = .TRUE.
+      !
+      ! 2) /solvent/slab/solvent/
+      ! ... When RISM densities in both side is same and expand left and right > 0.0,
+      ! inversion symmetry is activated.
+      !
+      ldens = .TRUE.
+      DO isolv = 1, nsolv
+         ldens = ldens.AND.(solVs(isolv)%density == solVs(isolv)%subdensity)
+      END DO
+      !
+      ! Is expand left and right larger than zero?
+      IF ( expand_r > 0.0_dp .AND. expand_l > 0.0_dp )        &
+        lboth_expand = .TRUE.
+      !
+      ! Does the present system have an inversion symmetry?
+      ! ... False denotes 'YES'.
+      IF ( ldens .AND. lboth_expand .AND. (.NOT.both_hands) ) &
+        rism_bound = .FALSE.
+      !
+    END IF
+    !
+  END SUBROUTINE rism_boundary
   !
 END MODULE rism_module
 
