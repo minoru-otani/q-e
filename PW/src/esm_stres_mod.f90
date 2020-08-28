@@ -147,6 +147,8 @@ CONTAINS
     COMPLEX(DP), ALLOCATABLE :: dVg_deps(:, :, :)
     COMPLEX(DP), ALLOCATABLE :: Vr(:)
     COMPLEX(DP), ALLOCATABLE :: Vg(:)
+    !
+    COMPLEX(DP), PARAMETER :: C_ZERO = CMPLX( 0.0_DP, 0.0_DP, KIND=DP )
 
     ! cell settings
     L = at(3, 3)*alat
@@ -162,8 +164,12 @@ CONTAINS
     ALLOCATE (Vr(dfftp%nr3))
     ALLOCATE (Vg(dfftp%nr3))
 
-    ! reconstruct rho(gz,gp)
-    rhog3(:, :) = (0.d0, 0.d0)
+    ! Initialization
+    rhog3    = C_ZERO
+    dVr_deps = C_ZERO
+    dVg_deps = C_ZERO
+    Vr       = C_ZERO
+    Vg       = C_ZERO
 
     DO ig = 1, ngm
       iga = mill(1, ig)
@@ -774,14 +780,23 @@ CONTAINS
     COMPLEX(DP), ALLOCATABLE :: dVg_deps(:, :, :)
     COMPLEX(DP), ALLOCATABLE :: Vr(:)
     COMPLEX(DP), ALLOCATABLE :: Vg(:)
-
+    !
     REAL(DP) :: sigmahar_bc1(3, 3)
-
+    !
+    INTEGER  :: kz
+    REAL(DP) :: tpL, dL
+    REAL(DP) :: gpzmz0, gpzm3z0, egpz1, egpz2, gzz0
+    COMPLEX(DP) :: phase1, phase2, csinh, ccosh
+    COMPLEX(DP) :: inv_gppgz, inv_gpmgz
+    COMPLEX(DP), PARAMETER :: C_ZERO = CMPLX( 0.0_DP, 0.0_DP, KIND=DP )
+    !
     ! cell settings
     L = at(3, 3)*alat
     S = omega/L
     z0 = L/2.d0
     z1 = z0 + esm_w
+    tpL = tpi / L
+    dL  = L / dble(dfftp%nr3)
 
     ! initialize
     sigmahar(:, :) = 0.0d0
@@ -792,8 +807,12 @@ CONTAINS
     ALLOCATE (Vr(dfftp%nr3))
     ALLOCATE (Vg(dfftp%nr3))
 
-    ! reconstruct rho(gz,gp)
-    rhog3(:, :) = (0.d0, 0.d0)
+    ! Initialization
+    rhog3    = C_ZERO
+    dVr_deps = C_ZERO
+    dVg_deps = C_ZERO
+    Vr       = C_ZERO
+    Vg       = C_ZERO
 
     DO ig = 1, ngm
       iga = mill(1, ig)
@@ -834,59 +853,140 @@ CONTAINS
           dinvgp_deps(la, mu) = +g(la)*g(mu)/gp**3
         END DO
       END DO
-
-      ! summations over gz
-      sum1p = (0.d0, 0.d0)
-      sum1m = (0.d0, 0.d0)
-      sum2p = (0.d0, 0.d0)
-      sum2m = (0.d0, 0.d0)
-      sum1sh = (0.d0, 0.d0)
-      sum1ch = (0.d0, 0.d0)
-      sum2sh = (0.d0, 0.d0)
-      DO igz = -(dfftp%nr3 - 1)/2, (dfftp%nr3 - 1)/2
-        iz = igz + 1
-        IF (iz < 1) iz = iz + dfftp%nr3
-        gz = dble(igz)*tpi/L
-
-        rg3 = rhog3(iz, igp)
-        sum1p = sum1p + rg3*qe_exp(+ci*gz*z0)/(gp - ci*gz)
-        sum1m = sum1m + rg3*qe_exp(-ci*gz*z0)/(gp + ci*gz)
-        sum2p = sum2p + rg3*qe_exp(+ci*gz*z0)/(gp - ci*gz)**2
-        sum2m = sum2m + rg3*qe_exp(-ci*gz*z0)/(gp + ci*gz)**2
-        sum1sh = sum1sh + rg3*qe_sinh(gp*z0 + ci*gz*z0)/(gp + ci*gz)
-        sum1ch = sum1ch + rg3*qe_cosh(gp*z0 + ci*gz*z0)/(gp + ci*gz)*z0
-        sum2sh = sum2sh + rg3*qe_sinh(gp*z0 + ci*gz*z0)/(gp + ci*gz)**2
-      END DO ! igz
-
-      ! calculate dV(z)/deps
+      !
+      ! Double loop is used to avoid divergence of hyperbolic functions.
+      ! NOTE: qe_sinh and qe_cosh should be never used (ideally).
+      !
       DO iz = 1, dfftp%nr3
         jz = iz - 1
         IF (jz >= (dfftp%nr3 - dfftp%nr3/2)) THEN
           jz = jz - dfftp%nr3
         END IF
-        z = (DBLE(jz) + esm_offset) / DBLE(dfftp%nr3) * L
-
-        !! BC1 terms
-        dVr_deps(iz, :, :) = &
-          -(dgp_deps(:, :)*tpi/gp**2*(gp*(z - z0) - 1.0d0) &
-            - delta(:, :)*tpi/gp) &
-          *EXP(+gp*(z - z0))*sum1p &
-          + dgp_deps(:, :)*tpi/gp*EXP(+gp*(z - z0))*sum2p &
-          + (dgp_deps(:, :)*tpi/gp**2*(gp*(z + z0) + 1.0d0) &
-             + delta(:, :)*tpi/gp) &
-          *EXP(-gp*(z + z0))*sum1m &
-          + dgp_deps(:, :)*tpi/gp*EXP(-gp*(z + z0))*sum2m
-
-        !! BC3 termn
-        dVr_deps(iz, :, :) = dVr_deps(iz, :, :) &
-                             - dgp_deps(:, :)*( &
-                             -fpi/gp**2*EXP(-gp*(-z + 2*z1)) &
-                             - fpi/gp*(-z + 2*z1)*EXP(-gp*(-z + 2*z1)) &
-                             )*sum1sh &
-                             - fpi/gp*EXP(-gp*(-z + 2*z1))*( &
-                             -delta(:, :)*sum1sh &
-                             + dgp_deps(:, :)*(sum1ch - sum2sh))
+        !
+        z = (DBLE(jz) + esm_offset) * dL
+        !
+        gpzmz0  = gp * ( z - z0 )
+        gpzm3z0 = gp * ( z - 3._dp * z0 )
+        !
+        egpz1 = exp( gpzmz0 )
+        egpz2 = exp( gpzm3z0 )
+        !
+        sum1p = C_ZERO
+        sum1m = C_ZERO
+        sum2p = C_ZERO
+        sum2m = C_ZERO
+        sum1sh = C_ZERO
+        sum1ch = C_ZERO
+        sum2sh = C_ZERO
+        DO igz = -(dfftp%nr3 - 1)/2, (dfftp%nr3 - 1)/2
+          !
+          kz = igz + 1
+          !
+          IF (kz < 1) kz = kz + dfftp%nr3
+          !
+          gz = dble(igz) * tpL
+          gzz0 = gz * z0
+          !
+          inv_gppgz = 1._dp / (gp + ci*gz)
+          inv_gpmgz = 1._dp / (gp - ci*gz)
+          !
+          !phase1 = cmplx( cos(gzz0), sin(gzz0), kind = dp )
+          !phase2 = cmplx( cos(gzz0),-sin(gzz0), kind = dp )
+          phase1 = qe_exp(+ci*gzz0)
+          phase2 = qe_exp(-ci*gzz0)
+          !
+          csinh = 0.5_dp * (egpz1 * phase1 - egpz2 * phase2)
+          ccosh = 0.5_dp * (egpz1 * phase1 + egpz2 * phase2)
+          !
+          rg3 = rhog3(kz, igp)
+          !
+          ! Summation for bc1 term, where exp terms are complex.
+          ! Thus, divergence will never be caused, thanks to the Euler's formula.
+          sum1p = sum1p + rg3 * phase1 * inv_gpmgz
+          sum1m = sum1m + rg3 * phase2 * inv_gppgz
+          sum2p = sum2p + rg3 * phase1 * inv_gpmgz * inv_gpmgz
+          sum2m = sum2m + rg3 * phase2 * inv_gppgz * inv_gppgz
+          !
+          ! Summation for bc3 term.
+          sum1sh = sum1sh + rg3 * csinh * inv_gppgz
+          sum1ch = sum1ch + rg3 * z0 * ccosh * inv_gppgz
+          sum2sh = sum2sh + rg3 * csinh * inv_gppgz * inv_gppgz
+          !
+        END DO ! igz
+        !
+        ! ... BC1
+        dVr_deps(iz, :, :) =                                         &
+            - (dgp_deps(:, :)   * tpi/gp**2 * (gp*(z - z0) - 1.0d0)  &
+            -  delta(:, :)      * tpi/gp )                           &
+            * EXP(+gp*(z - z0)) * sum1p                              &
+            + dgp_deps(:, :)    * tpi/gp * EXP(+gp*(z - z0)) * sum2p &
+            + (dgp_deps(:, :)   * tpi/gp**2 * (gp*(z + z0) + 1.0d0)  &
+            +  delta(:, :)      * tpi/gp )                           &
+            * EXP(-gp*(z + z0)) * sum1m                              &
+            + dgp_deps(:, :)    * tpi/gp * EXP(-gp*(z + z0)) * sum2m
+        !
+        ! ... BC3
+        dVr_deps(iz, :, :) = dVr_deps(iz, :, :)                      &
+            + dgp_deps(:, :)                                         &
+            * fpi/gp**2 * (1.0d0 + gp*(-z+2*z1)) * sum1sh            &
+            + fpi/ gp * ( delta(:,:) * sum1sh                        &
+                        - dgp_deps(:, :) * ( sum1ch - sum2sh ) )
+        !
       END DO ! iz
+
+      ! Following code makes diverged results, because of hyperbolic functions.
+      ! summations over gz
+!      sum1p = (0.d0, 0.d0)
+!      sum1m = (0.d0, 0.d0)
+!      sum2p = (0.d0, 0.d0)
+!      sum2m = (0.d0, 0.d0)
+!      sum1sh = (0.d0, 0.d0)
+!      sum1ch = (0.d0, 0.d0)
+!      sum2sh = (0.d0, 0.d0)
+!      DO igz = -(dfftp%nr3 - 1)/2, (dfftp%nr3 - 1)/2
+!        iz = igz + 1
+!        IF (iz < 1) iz = iz + dfftp%nr3
+!        gz = dble(igz)*tpi/L
+!
+!        rg3 = rhog3(iz, igp)
+!        sum1p = sum1p + rg3*qe_exp(+ci*gz*z0)/(gp - ci*gz)
+!        sum1m = sum1m + rg3*qe_exp(-ci*gz*z0)/(gp + ci*gz)
+!        sum2p = sum2p + rg3*qe_exp(+ci*gz*z0)/(gp - ci*gz)**2
+!        sum2m = sum2m + rg3*qe_exp(-ci*gz*z0)/(gp + ci*gz)**2
+!        sum1sh = sum1sh + rg3*qe_sinh(gp*z0 + ci*gz*z0)/(gp + ci*gz)
+!        sum1ch = sum1ch + rg3*qe_cosh(gp*z0 + ci*gz*z0)/(gp + ci*gz)*z0
+!        sum2sh = sum2sh + rg3*qe_sinh(gp*z0 + ci*gz*z0)/(gp + ci*gz)**2
+!      END DO ! igz
+!
+!      ! calculate dV(z)/deps
+!      DO iz = 1, dfftp%nr3
+!        jz = iz - 1
+!        IF (jz >= (dfftp%nr3 - dfftp%nr3/2)) THEN
+!          jz = jz - dfftp%nr3
+!        END IF
+!        z = (DBLE(jz) + esm_offset) / DBLE(dfftp%nr3) * L
+!
+!        !! BC1 terms
+!        dVr_deps(iz, :, :) = &
+!          -(dgp_deps(:, :)*tpi/gp**2*(gp*(z - z0) - 1.0d0) &
+!            - delta(:, :)*tpi/gp) &
+!          *EXP(+gp*(z - z0))*sum1p &
+!          + dgp_deps(:, :)*tpi/gp*EXP(+gp*(z - z0))*sum2p &
+!          + (dgp_deps(:, :)*tpi/gp**2*(gp*(z + z0) + 1.0d0) &
+!             + delta(:, :)*tpi/gp) &
+!          *EXP(-gp*(z + z0))*sum1m &
+!          + dgp_deps(:, :)*tpi/gp*EXP(-gp*(z + z0))*sum2m
+!
+!        !! BC3 termn
+!        dVr_deps(iz, :, :) = dVr_deps(iz, :, :) &
+!                             - dgp_deps(:, :)*( &
+!                             -fpi/gp**2*EXP(-gp*(-z + 2*z1)) &
+!                             - fpi/gp*(-z + 2*z1)*EXP(-gp*(-z + 2*z1)) &
+!                             )*sum1sh &
+!                             - fpi/gp*EXP(-gp*(-z + 2*z1))*( &
+!                             -delta(:, :)*sum1sh &
+!                             + dgp_deps(:, :)*(sum1ch - sum2sh))
+!      END DO ! iz
 
       ! convert dV(z)/deps to dV(gz)/deps
       DO la = 1, 2
@@ -2581,6 +2681,7 @@ CONTAINS
   END SUBROUTINE esm_stres_loclong_bc3
 
   COMPLEX(DP) FUNCTION qe_exp(x)
+    IMPLICIT NONE
     COMPLEX(DP), INTENT(in) :: x
     REAL(DP) :: r, i, c, s
 
@@ -2594,6 +2695,7 @@ CONTAINS
   END FUNCTION qe_exp
 
   COMPLEX(DP) FUNCTION qe_sinh(x)
+    IMPLICIT NONE
     COMPLEX(DP), INTENT(in) :: x
     REAL(DP) :: r, i, c, s
 
@@ -2607,6 +2709,7 @@ CONTAINS
   END FUNCTION qe_sinh
 
   COMPLEX(DP) FUNCTION qe_cosh(x)
+    IMPLICIT NONE
     COMPLEX(DP), INTENT(in) :: x
     REAL(DP) :: r, i, c, s
 
@@ -2634,7 +2737,7 @@ CONTAINS
   FUNCTION exp_gauss( x, y )
     USE kinds,     ONLY : DP
     USE constants, ONLY : sqrtpm1 !1/sqrt(pi)
-
+    IMPLICIT NONE
     REAL(DP), INTENT(IN) :: x, y
     REAL(DP) :: exp_gauss
 
