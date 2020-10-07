@@ -13,25 +13,44 @@ CONTAINS
   !--------------ESM STRESS SUBROUTINE------------------------------------
   !-----------------------------------------------------------------------
   SUBROUTINE esm_stres_har(sigmahar, rhog)
+    !
     USE kinds,    ONLY : DP
     USE gvect,    ONLY : ngm
+    USE lsda_mod, ONLY : nspin
+    !
     IMPLICIT NONE
+    !
     REAL(DP), INTENT(out)   :: sigmahar(3, 3)
-    COMPLEX(DP), INTENT(in) :: rhog(ngm)   !  n(G)
-
+    COMPLEX(DP), INTENT(in) :: rhog(ngm,nspin)   !  n(G)
+    !
+    INTEGER :: is
+    COMPLEX(DP),ALLOCATABLE :: rhotot(:)
+    !
+    ALLOCATE( rhotot(ngm) )
+    !
+    rhotot = CMPLX(0.0_DP,0.0_DP,KIND=DP)
+    !
+    DO is = 1, nspin
+       ! rhotot is total electron density in G-space.
+       rhotot(:) = rhotot(:) + rhog(:,is)
+       !
+    END DO
+    !
     SELECT CASE (esm_bc)
     CASE ('pbc')
       STOP 'esm_stres_har must not be called for esm_bc = pbc'
     CASE ('bc1')
-      CALL esm_stres_har_bc1(sigmahar, rhog)
+      CALL esm_stres_har_bc1(sigmahar, rhotot)
     CASE ('bc2')
-      CALL esm_stres_har_bc2(sigmahar, rhog)
+      CALL esm_stres_har_bc2(sigmahar, rhotot)
     CASE ('bc3')
-      CALL esm_stres_har_bc3(sigmahar, rhog)
+      CALL esm_stres_har_bc3(sigmahar, rhotot)
     CASE ('bc4')
       STOP 'esm_stres_har has not yet implemented for esm_bc = bc4'
     END SELECT
-
+    !
+    DEALLOCATE( rhotot )
+    !
     RETURN
   END SUBROUTINE esm_stres_har
 
@@ -90,25 +109,42 @@ CONTAINS
   END SUBROUTINE esm_stres_ewa
 
   SUBROUTINE esm_stres_loclong(sigmaloclong, rhog)
+    !
     USE kinds,    ONLY : DP
     USE gvect,    ONLY : ngm
+    USE lsda_mod, ONLY : nspin
+    !
     IMPLICIT NONE
+    !
     REAL(DP), INTENT(out)   :: sigmaloclong(3, 3)
-    COMPLEX(DP), INTENT(in) :: rhog(ngm)   !  n(G)
-
+    COMPLEX(DP), INTENT(in) :: rhog(ngm,nspin)   !  n(G)
+    !
+    INTEGER :: is
+    COMPLEX(DP),ALLOCATABLE :: rhotot(:)
+    !
+    ALLOCATE( rhotot(ngm) )
+    !
+    rhotot(:) = CMPLX(0.0_DP,0.0_DP,KIND=DP)
+    !
+    DO is = 1, nspin
+       rhotot(:) = rhotot(:) + rhog(:,is)
+    END DO
+    !
     SELECT CASE (esm_bc)
     CASE ('pbc')
       STOP 'esm_stres_loclong must not be called for esm_bc = pbc'
     CASE ('bc1')
-      CALL esm_stres_loclong_bc1(sigmaloclong, rhog)
+      CALL esm_stres_loclong_bc1(sigmaloclong, rhotot)
     CASE ('bc2')
-      CALL esm_stres_loclong_bc2(sigmaloclong, rhog)
+      CALL esm_stres_loclong_bc2(sigmaloclong, rhotot)
     CASE ('bc3')
-      CALL esm_stres_loclong_bc3(sigmaloclong, rhog)
+      CALL esm_stres_loclong_bc3(sigmaloclong, rhotot)
     CASE ('bc4')
       STOP 'esm_stres_loclong has not yet implemented for esm_bc = bc4'
     END SELECT
-
+    !
+    DEALLOCATE( rhotot )
+    !
     RETURN
   END SUBROUTINE esm_stres_loclong
 

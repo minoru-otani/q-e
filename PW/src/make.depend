@@ -506,6 +506,7 @@ esm_hartree_mod.o : ../../Modules/mp_bands.o
 esm_hartree_mod.o : ../../Modules/recvec.o
 esm_hartree_mod.o : ../../Modules/mp.o
 esm_hartree_mod.o : esm_common_mod.o
+esm_hartree_mod.o : pwcom.o
 esm_local_mod.o : ../../FFTXlib/fft_scalar.o
 esm_local_mod.o : ../../Modules/cell_base.o
 esm_local_mod.o : ../../Modules/constants.o
@@ -526,6 +527,7 @@ esm_stres_mod.o : ../../Modules/mp_bands.o
 esm_stres_mod.o : ../../Modules/recvec.o
 esm_stres_mod.o : ../../Modules/mp.o
 esm_stres_mod.o : esm_common_mod.o
+esm_stres_mod.o : pwcom.o
 ewald.o : ../../Modules/constants.o
 ewald.o : ../../Modules/kind.o
 ewald.o : ../../Modules/mp.o

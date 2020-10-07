@@ -10,26 +10,45 @@ CONTAINS
   !--------------ESM ENERGY AND POTENTIAL SUBROUTINE----------------------
   !-----------------------------------------------------------------------
   SUBROUTINE esm_hartree(rhog, ehart, aux)
+    !
     USE kinds,    ONLY : DP
     USE gvect,    ONLY : ngm
     USE fft_base, ONLY : dfftp
+    USE lsda_mod, ONLY : nspin
+    !
     IMPLICIT NONE
+    !
     REAL(DP)    :: ehart             !  Hartree energy
-    COMPLEX(DP) :: rhog(ngm)         !  n(G)
+    COMPLEX(DP) :: rhog(ngm,nspin)   !  n(G)
     COMPLEX(DP) :: aux(dfftp%nnr)    !  v_h(G)
-
+    !
+    INTEGER :: is
+    COMPLEX(DP),ALLOCATABLE :: rhotot(:)
+    !
+    ALLOCATE( rhotot(ngm) )
+    !
+    rhotot = CMPLX(0.0_DP, 0.0_DP, KIND=DP)
+    !
+    DO is = 1, nspin
+       ! rhotot is in G-space
+       rhotot(:) = rhotot(:) + rhog(:,is)
+       !
+    END DO
+    !
     IF (esm_bc == 'pbc') THEN
-      CALL esm_hartree_pbc(rhog, ehart, aux)
+      CALL esm_hartree_pbc(rhotot, ehart, aux)
     ELSE IF (esm_bc == 'bc1') THEN
-      CALL esm_hartree_bc1(rhog, ehart, aux)
+      CALL esm_hartree_bc1(rhotot, ehart, aux)
     ELSE IF (esm_bc == 'bc2') THEN
-      CALL esm_hartree_bc2(rhog, ehart, aux)
+      CALL esm_hartree_bc2(rhotot, ehart, aux)
     ELSE IF (esm_bc == 'bc3') THEN
-      CALL esm_hartree_bc3(rhog, ehart, aux)
+      CALL esm_hartree_bc3(rhotot, ehart, aux)
     ELSE IF (esm_bc == 'bc4') THEN
-      CALL esm_hartree_bc4(rhog, ehart, aux)
+      CALL esm_hartree_bc4(rhotot, ehart, aux)
     END IF
-
+    !
+    DEALLOCATE( rhotot )
+    !
   END SUBROUTINE esm_hartree
 
 !

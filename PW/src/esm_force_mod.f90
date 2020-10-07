@@ -109,13 +109,16 @@ CONTAINS
   END SUBROUTINE esm_force_ewg
 
   SUBROUTINE esm_force_lc(aux, forcelc)
+    !
     USE kinds, ONLY: DP
     USE ions_base, ONLY: nat
     USE fft_base, ONLY: dfftp
+    !
     IMPLICIT NONE
+    !
     COMPLEX(DP), INTENT(in)    :: aux(dfftp%nnr) ! aux contains n(G) (input)
     REAL(DP), INTENT(inout) :: forcelc(3, nat)
-
+    !
     IF (esm_bc == 'pbc') THEN
       CALL esm_force_lc_pbc(aux, forcelc)
     ELSE IF (esm_bc == 'bc1') THEN
@@ -127,7 +130,7 @@ CONTAINS
     ELSE IF (esm_bc == 'bc4') THEN
       CALL esm_force_lc_bc4(aux, forcelc)
     END IF
-
+    !
   END SUBROUTINE esm_force_lc
 
 !-----------------------------------------------------------------------
