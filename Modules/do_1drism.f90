@@ -108,6 +108,7 @@ SUBROUTINE do_1drism(rismt, maxiter, rmsconv, nbox, eta, lhand, cool, title, ier
   lconv       = .FALSE.
   rismt%avail = .FALSE.
   rmssave     = 1.0E+99_DP
+  rmscurr     = 1.0E+99_DP
   !
   temporg = rismt%temp
   IF (cool) THEN
