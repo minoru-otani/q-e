@@ -102,9 +102,6 @@ cat > Al001_bc2_GCSCF_v00.in << EOF
   gcscf_conv_thr = 1.d-2
 /
 &electrons
-  diagonalization = 'rmm',
-  diago_rmm_conv = .false.
-  diago_rmm_ndim = 4,
   mixing_beta = 0.1
 /
 ATOMIC_SPECIES
@@ -150,10 +147,7 @@ cat > Al001_bc2_GCSCF_vp05.in << EOF
   gcscf_conv_thr = 1.d-2
 /
 &electrons
-  diagonalization = 'rmm',
-  diago_rmm_conv = .false.
-  diago_rmm_ndim = 4,
-  mixing_beta = 0.1
+  mixing_beta = 0.3
 /
 ATOMIC_SPECIES
   Al  26.981538   Al.pbe-n-van.UPF
@@ -198,10 +192,7 @@ cat > Al001_bc2_GCSCF_vm05.in << EOF
   gcscf_conv_thr = 1.d-2
 /
 &electrons
-  diagonalization = 'rmm',
-  diago_rmm_conv = .false.
-  diago_rmm_ndim = 4,
-  mixing_beta = 0.1
+  mixing_beta = 0.3
 /
 ATOMIC_SPECIES
   Al  26.981538   Al.pbe-n-van.UPF
@@ -246,10 +237,7 @@ cat > Al001_bc3_GCSCF_v00.in << EOF
   gcscf_conv_thr = 1.d-2
 /
 &electrons
-  diagonalization = 'rmm',
-  diago_rmm_conv = .false.
-  diago_rmm_ndim = 4,
-  mixing_beta = 0.1
+  mixing_beta = 0.3
 /
 ATOMIC_SPECIES
   Al  26.981538   Al.pbe-n-van.UPF
@@ -294,10 +282,7 @@ cat > Al001_bc3_GCSCF_vp05.in << EOF
   gcscf_conv_thr = 1.d-2
 /
 &electrons
-  diagonalization = 'rmm',
-  diago_rmm_conv = .false.
-  diago_rmm_ndim = 4,
-  mixing_beta = 0.1
+  mixing_beta = 0.3
 /
 ATOMIC_SPECIES
   Al  26.981538   Al.pbe-n-van.UPF
@@ -342,10 +327,7 @@ cat > Al001_bc3_GCSCF_vm05.in << EOF
   gcscf_conv_thr = 1.d-2
 /
 &electrons
-  diagonalization = 'rmm',
-  diago_rmm_conv = .false.
-  diago_rmm_ndim = 4,
-  mixing_beta = 0.1
+  mixing_beta = 0.3
 /
 ATOMIC_SPECIES
   Al  26.981538   Al.pbe-n-van.UPF
