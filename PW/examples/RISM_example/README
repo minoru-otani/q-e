@@ -59,3 +59,11 @@ ESM-RISM becomes Vacuum/Slab/Solvent. ESM-RISM works even if slab is
    calculation is converged, the Na+ ions will decrease and the Cl- ions
    will increase to cause -0.1 charge for the solvent system.
 
+5) A Cl- ion in NaCl(aq)
+   Performing ESM-RISM calculation for an Cl- ion with aqueous solution
+   of sodium chloride (1.0M), to obtain the solvation free energy of
+   Cl- ion in bulk solution. By defining 'laue_expand_right' and
+   'laue_expand_left' in input file, one can calculate the situation
+   that an isolated atom/molecule/ion is in bulk solution. Using this
+   model one can calculate the salvation free energy with 'explicitly'
+   controlled the chemical potential of atoms.
