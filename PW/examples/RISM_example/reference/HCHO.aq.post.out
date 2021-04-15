@@ -1,0 +1,77 @@
+
+     Program POST-RISM v.6.1 starts on 15Apr2021 at 18:50:42 
+
+     This program is part of the open-source Quantum ESPRESSO suite
+     for quantum simulation of materials; please cite
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
+          URL http://www.quantum-espresso.org", 
+     in publications or presentations arising from this work. More details at
+     http://www.quantum-espresso.org/quote
+
+     Parallel version (MPI), running on     4 processors
+     R & G space division:  proc/nbgrp/npool/nimage =       4
+
+   Info: using nr1, nr2, nr3 values from input
+
+   Info: using nr1, nr2, nr3 values from input
+
+     IMPORTANT: XC functional enforced from input :
+     Exchange-correlation      =  SLA  PW   PBE  PBE ( 1  4  3  4 0 0)
+     Any further DFT definition will be discarded
+     Please, verify this is what you really want
+
+
+     Parallelization info
+     --------------------
+     sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
+     Min        1595     710    178                96144    28450    3560
+     Max        1598     714    180                96150    28451    3562
+     Sum        6385    2845    717               384587   113801   14243
+
+
+     negative rho (up, down):  5.950E-03 0.000E+00
+
+     solvent charge   -0.00003, renormalised to    0.00000
+
+     Punching data of 3D-RISM
+     Writing data to file  HCHO.aq.pprism
+     Reading header from file  HCHO.aq.pprism
+
+   Info: using nr1, nr2, nr3 values from input
+     Reading data from file  HCHO.aq.pprism
+
+     Writing data to be plotted to file HCHO.aq.3drism_chg.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file HCHO.aq.3drism_v_solv.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file HCHO.aq.3drism_v_solu.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file HCHO.aq.3drism_v_tot.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file HCHO.aq.3drism_rho#1_O.h2o.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file HCHO.aq.3drism_rho#2_H.h2o.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Plot Type     : 3D
+     Output format : Gaussian cube
+
+     POST-RISM    :     3.90s CPU         4.55s WALL
+
+
+   This run was terminated on:  18:50:47  15Apr2021            
+
+=------------------------------------------------------------------------------=
+   JOB DONE.
+=------------------------------------------------------------------------------=

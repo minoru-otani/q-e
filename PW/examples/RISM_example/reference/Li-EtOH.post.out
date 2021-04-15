@@ -1,0 +1,83 @@
+
+     Program POST-RISM v.6.1 starts on 15Apr2021 at 18:56:32 
+
+     This program is part of the open-source Quantum ESPRESSO suite
+     for quantum simulation of materials; please cite
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
+          URL http://www.quantum-espresso.org", 
+     in publications or presentations arising from this work. More details at
+     http://www.quantum-espresso.org/quote
+
+     Parallel version (MPI), running on     4 processors
+     R & G space division:  proc/nbgrp/npool/nimage =       4
+
+   Info: using nr1, nr2, nr3 values from input
+
+   Info: using nr1, nr2, nr3 values from input
+
+     IMPORTANT: XC functional enforced from input :
+     Exchange-correlation      =  SLA  PW   PBE  PBE ( 1  4  3  4 0 0)
+     Any further DFT definition will be discarded
+     Please, verify this is what you really want
+
+
+     Parallelization info
+     --------------------
+     sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
+     Min         187      85     27                30391     9019    1647
+     Max         188      86     28                30426     9027    1655
+     Sum         749     341    109               121599    36093    6607
+
+
+     solvent charge    0.00003, renormalised to   -0.00000
+
+     Punching data of Laue-RISM
+     Writing data to file  Li-EtOH.pprism
+     Reading header from file  Li-EtOH.pprism
+
+   Info: using nr1, nr2, nr3 values from input
+     Reading data from file  Li-EtOH.pprism
+
+     Writing data to be plotted to file Li-EtOH.3drism_chg.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file Li-EtOH.3drism_v_solv.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file Li-EtOH.3drism_v_solu.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file Li-EtOH.3drism_v_tot.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file Li-EtOH.3drism_rho#1_CH3.et.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file Li-EtOH.3drism_rho#2_CH2.et.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file Li-EtOH.3drism_rho#3_O.et.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Writing data to be plotted to file Li-EtOH.3drism_rho#4_H.et.cube
+     Message from routine solvdens:
+     FOURIER is not done.
+
+     Plot Type     : 3D
+     Output format : Gaussian cube
+
+     POST-RISM    :     3.10s CPU         3.54s WALL
+
+
+   This run was terminated on:  18:56:36  15Apr2021            
+
+=------------------------------------------------------------------------------=
+   JOB DONE.
+=------------------------------------------------------------------------------=
