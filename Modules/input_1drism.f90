@@ -185,10 +185,10 @@ SUBROUTINE iosys_1drism(laue)
       !
       rsol = 0.0_DP
       DO iatom = 1, solVs(isolV)%natom
-        rsol = rsol + solVs(isolV)%coord(:, iatom)
+        rsol = rsol + ABS(solVs(isolV)%charge(iatom)) * solVs(isolV)%coord(:, iatom)
       END DO
       !
-      rsol = rsol / DBLE(solVs(isolV)%natom)
+      rsol = rsol / SUM(ABS(solVs(isolV)%charge(:)))
       !
       qsol = 0.0_DP
       dsol = 0.0_DP
