@@ -28,9 +28,9 @@ SUBROUTINE molebridge_vv(rismt, epsr, tau, ierr)
   ! ...               (g * r)^2         g * r
   ! ...
   ! ...
-  ! ...            eps/y - 3
-  ! ...   hc(g) = ----------- * exp(- g^2 * tau^2 / 4)
-  ! ...               rho
+  ! ...            (eps-1)/y - 3
+  ! ...   hc(g) = --------------- * exp(- g^2 * tau^2 / 4)
+  ! ...                 rho
   ! ...
   ! ... if site1 is in another molecule from site2
   ! ...
@@ -122,7 +122,7 @@ SUBROUTINE molebridge_vv(rismt, epsr, tau, ierr)
   !
   y0 = fpi * beta / 9.0_DP * y0 * e2
   !
-  a0 = ((epsr / fpi / e2) / y0 - 3.0_DP) / rho0
+  a0 = ((epsr - 1.0_DP) / y0 - 3.0_DP) / rho0
   !
   DO ig = 1, rismt%ng
     iig = rismt%mp_task%ivec_start + ig - 1
